@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "nvs_flash.h": "c",
+        "eduboard2_led.h": "c",
+        "eduboard2.h": "c",
+        "string_view": "c",
+        "queue.h": "c",
+        "eduboard2_button.h": "c",
+        "eduboard2_buzzer.h": "c",
+        "adc_continuous.h": "c"
+    },
+    "cmake.configureOnOpen": false
+}

@@ -1,0 +1,36 @@
+#pragma once
+#define EDUBOARD_CPU_BOARD_ESP32_S3
+//#define EDUBOARD_CPU_BOARD_ATMEGA328PB
+
+/*LED Config*/
+#define CONFIG_ENABLE_LED0
+#define CONFIG_ENABLE_LED1
+#define CONFIG_ENABLE_LED2
+#define CONFIG_ENABLE_LED3
+#define CONFIG_ENABLE_LED4
+#define CONFIG_ENABLE_LED5
+#define CONFIG_ENABLE_LED6
+#define CONFIG_ENABLE_LED7
+
+/*Buzzer Config*/
+#define CONFIG_ENABLE_BUZZER
+
+/*Button Config*/
+#define CONFIG_ENABLE_SW0
+#define CONFIG_ENABLE_SW1
+#define CONFIG_ENABLE_SW2
+#define CONFIG_ENABLE_SW3
+
+/*Analog Input COnfig*/
+#define CONFIG_ENABLE_AN0
+
+/*LCD Config*/
+#define CONFIG_ENABLE_LCD
+#ifdef CONFIG_ENABLE_LCD
+    #define CONFIG_LCD_ST7789
+    //#define CONFIG_LCD_ILI9488
+    
+    //#define CONFIG_LCD_RESOLUTION_240x240
+    #define CONFIG_LCD_RESOLUTION_240x320
+    //#define CONFIG_LCD_RESOLUTION_320x480
+#endif
