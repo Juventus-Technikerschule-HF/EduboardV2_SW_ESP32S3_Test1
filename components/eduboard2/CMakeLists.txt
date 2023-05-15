@@ -12,4 +12,4 @@ idf_component_register(SRCS                 .
                                             eduboardAnalog
                                             eduboardLCD
                         REQUIRES            driver 
-                                            )
+                                            led_strip_encoder)

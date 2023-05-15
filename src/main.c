@@ -17,6 +17,7 @@
 
 
 void gpioTestTask(void* p) {
+    static uint8_t pwmstate = 0;
     eduboard_init_leds();
     for(;;) {
         //ESP_LOGI(TAG, "GPIO Task:");
@@ -36,10 +37,38 @@ void gpioTestTask(void* p) {
             ESP_LOGI(TAG, "SW2 = Short:");
             eduboard_toggle_led(LED5);
         }
-        if(getButtonState(SW3, true) == SHORT_PRESSED) {
+        if(getButtonState(SW3, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW3 = Short:");
-            eduboard_toggle_led(LED6);
-        }        
+            eduboard_toggle_led(LED6);        
+        }
+        if(getButtonState(SW3, true) == LONG_PRESSED) {
+            pwmstate++;
+            switch(pwmstate) {
+                case 1:
+                    eduboard_set_pwmled(10, 50, 100);
+                    eduboard_set_ws2812(10, 50, 100);
+                    break;
+                case 2:
+                    eduboard_set_pwmled(50, 100, 10);
+                    eduboard_set_ws2812(50, 100, 10);
+                    break;
+                case 3:
+                    eduboard_set_pwmled(100, 10, 50);
+                    eduboard_set_ws2812(100, 10, 50);
+                    break;
+                case 4:
+                    eduboard_set_pwmled(100, 100, 100);
+                    eduboard_set_ws2812(100, 100, 100);
+                    break;
+                case 5:
+                    eduboard_set_pwmled(0, 0, 0);
+                    eduboard_set_ws2812(0, 0, 0);
+                    pwmstate = 0;
+                    break;
+            } 
+        }
+        eduboard_toggle_led(LED0);
+        eduboard_toggle_led(LED1);
         eduboard_toggle_led(LED7);
         vTaskDelay(100/portTICK_PERIOD_MS);
     }
@@ -54,8 +83,8 @@ void app_main()
     eduboard_init_buttons();
     eduboard_set_buzzer_volume(3);
     eduboard_init_ADC();
-    eduboard_init_lcd();
     xTaskCreate(gpioTestTask, "gpioTestTask", 2*2048, NULL, 10, NULL);
+    eduboard_init_lcd();    
     int i = 0;
     for(;;) {
         i++;

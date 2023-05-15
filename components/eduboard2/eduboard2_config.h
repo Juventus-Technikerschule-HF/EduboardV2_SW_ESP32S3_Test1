@@ -12,6 +12,10 @@
 #define CONFIG_ENABLE_LED6
 #define CONFIG_ENABLE_LED7
 
+#define CONFIG_ENABLE_PWMLED
+
+#define CONFIG_ENABLE_WS2812
+
 /*Buzzer Config*/
 #define CONFIG_ENABLE_BUZZER
 
