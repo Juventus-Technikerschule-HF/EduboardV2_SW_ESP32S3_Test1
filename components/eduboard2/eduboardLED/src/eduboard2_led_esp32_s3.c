@@ -167,7 +167,6 @@ void eduboard_set_ws2812(uint8_t red, uint8_t green, uint8_t blue) {
     led_strip_pixels[0] = green;
     led_strip_pixels[1] = red;
     led_strip_pixels[2] = blue;
-    ESP_LOGI(TAG, "Send WS2812Data: %X %X %X", red, green, blue);
     ESP_ERROR_CHECK(rmt_transmit(led_chan, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config));
     memset(led_strip_pixels, 0, sizeof(led_strip_pixels));
 }

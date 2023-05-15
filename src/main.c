@@ -18,30 +18,40 @@
 
 void gpioTestTask(void* p) {
     static uint8_t pwmstate = 0;
+    static uint8_t ledstate = 0x00;
     eduboard_init_leds();
     for(;;) {
         //ESP_LOGI(TAG, "GPIO Task:");
         if(getButtonState(SW0, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Short:");
-            eduboard_toggle_led(LED2);
+            eduboard_start_buzzer(1000, 100);  
+            vTaskDelay(100/portTICK_PERIOD_MS);
+            eduboard_start_buzzer(1500, 100);  
+            vTaskDelay(100/portTICK_PERIOD_MS);
+            eduboard_start_buzzer(2000, 100);  
         }
         if(getButtonState(SW0, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Long:");
-            eduboard_toggle_led(LED3);
+            
         }
-        if(getButtonState(SW1, true) == SHORT_PRESSED) {
+        if(getButtonState(SW1, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW1 = Short:");
-            eduboard_toggle_led(LED4);
+            
         }
-        if(getButtonState(SW2, true) == SHORT_PRESSED) {
+        if(getButtonState(SW1, true) == LONG_PRESSED) {
+            ESP_LOGI(TAG, "SW1 = Long:");
+            
+        }
+        if(getButtonState(SW2, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW2 = Short:");
-            eduboard_toggle_led(LED5);
+            
+        }
+        if(getButtonState(SW2, true) == LONG_PRESSED) {
+            ESP_LOGI(TAG, "SW2 = Long:");
+            
         }
         if(getButtonState(SW3, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW3 = Short:");
-            eduboard_toggle_led(LED6);        
-        }
-        if(getButtonState(SW3, true) == LONG_PRESSED) {
             pwmstate++;
             switch(pwmstate) {
                 case 1:
@@ -67,9 +77,22 @@ void gpioTestTask(void* p) {
                     break;
             } 
         }
-        eduboard_toggle_led(LED0);
-        eduboard_toggle_led(LED1);
-        eduboard_toggle_led(LED7);
+        if(getButtonState(SW3, true) == LONG_PRESSED) {
+            ESP_LOGI(TAG, "SW3 = Long:");
+        }
+        
+        for(int i = 0; i< 8; i++) {
+            if(ledstate == i) {
+                eduboard_set_led(i, 1);
+            } else {
+                eduboard_set_led(i, 0);
+            }
+        }
+        ledstate++;
+        if(ledstate == 8) {
+            ledstate = 0;
+        }
+
         vTaskDelay(100/portTICK_PERIOD_MS);
     }
 }
@@ -84,6 +107,7 @@ void app_main()
     eduboard_set_buzzer_volume(3);
     eduboard_init_ADC();
     xTaskCreate(gpioTestTask, "gpioTestTask", 2*2048, NULL, 10, NULL);
+    eduboard_init_tmp112();
     eduboard_init_lcd();    
     int i = 0;
     for(;;) {
@@ -94,6 +118,7 @@ void app_main()
         // eduboard_start_buzzer(1500, 100);  
         // vTaskDelay(100/portTICK_PERIOD_MS);
         // eduboard_start_buzzer(2000, 100);  
+        ESP_LOGI(TAG, "Temp: %i", (int)eduboard_get_val_tmp112());
         vTaskDelay(2000/portTICK_PERIOD_MS);        
     }
 }

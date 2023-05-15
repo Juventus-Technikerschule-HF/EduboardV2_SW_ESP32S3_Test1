@@ -22,3 +22,7 @@
 #ifdef CONFIG_ENABLE_LCD
     #include "eduboardLCD/eduboard2_lcd.h"
 #endif
+
+#ifdef CONFIG_ENABLE_SENSOR_TMP112
+    #include "eduboardSensor/eduboard2_sensor.h"
+#endif

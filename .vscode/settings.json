@@ -7,7 +7,8 @@
         "queue.h": "c",
         "eduboard2_button.h": "c",
         "eduboard2_buzzer.h": "c",
-        "adc_continuous.h": "c"
+        "adc_continuous.h": "c",
+        "esp_log.h": "c"
     },
     "cmake.configureOnOpen": false
 }

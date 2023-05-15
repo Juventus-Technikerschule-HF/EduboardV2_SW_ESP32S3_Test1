@@ -9,6 +9,7 @@
 #include <driver/gpio.h>
 #include "esp_log.h"
 #include "../eduboard2_lcd.h"
+#include "glcdfont.c"
 #include "st7789.h"
 
 #define TAG "ST7789"
@@ -31,6 +32,10 @@ struct {
   bool enabled;
   uint16_t *data;
 } vScreen;
+
+int16_t cursor_x = 0, cursor_y = 0;
+uint8_t textsize = 1;
+uint16_t textcolor = 0xFFFF;
 
 
 void spi_master_init(TFT_t * dev, int16_t pin_mosi, int16_t pin_sck, int16_t pin_cs, int16_t pin_dc, int16_t pin_reset, int16_t pin_bl)
@@ -250,14 +255,14 @@ void lcdInit(TFT_t * dev, int width, int height, int offsetx, int offsety)
 	}
 }
 
-void lcd_setupVScreen() {
+void lcdSetupVScreen() {
     vScreen.data = (uint16_t *)malloc(CONFIG_WIDTH*CONFIG_HEIGHT*sizeof(uint16_t));
     vScreen.enabled = true;
 }
-void lcd_clearVScreen(TFT_t * dev) {
+void lcdClearVScreen(TFT_t * dev) {
 	memset(vScreen.data, 0x00, CONFIG_WIDTH*CONFIG_HEIGHT*sizeof(uint16_t));
 }
-void lcd_updateVScreen(TFT_t * dev) {		
+void lcdUpdateVScreen(TFT_t * dev) {		
 	for(int y = 0; y < dev->_height; y++) {
 		uint16_t _x1 = 0 + dev->_offsetx;
 		uint16_t _x2 = _x1 + (dev->_width-1);
@@ -693,257 +698,79 @@ uint16_t rgb565_conv(uint16_t r,uint16_t g,uint16_t b) {
 	return (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));
 }
 
+void lcdPrintln (TFT_t * dev, char* text){
+	while(*text != 0) {
+		lcdWrite(dev, *text);
+		text++;
+	}
+}
+
+void lcdWrite(TFT_t * dev, uint8_t c) {
+	bool wrap = true;
+
+    if(c == '\n') {
+      cursor_y += textsize*8;
+      cursor_x  = 0;
+    } else if(c == '\r') {
+      // skip em
+    } else {
+      if(wrap && ((cursor_x + textsize * 6) >= dev->_width)) { // Heading off edge?
+        cursor_x  = 0;            // Reset x to zero
+        cursor_y += textsize * 8; // Advance y one line
+      }
+      lcdDrawChar(dev, cursor_x, cursor_y, c, textcolor, textsize);
+      cursor_x += textsize * 6;
+    }
+}
+
+void lcdSetCursor(int16_t x, int16_t y) {
+  cursor_x = x;
+  cursor_y = y;
+}
+
+void lcdSetTextSize(uint8_t s) {
+  textsize = (s > 0) ? s : 1;
+}
+
+void lcdSetTextColor(uint16_t c) {
+  // For 'transparent' background, we'll set the bg
+  // to the same as fg instead of using a flag
+  textcolor = c;
+}
+
 // Draw ASCII character
 // x:X coordinate
 // y:Y coordinate
 // ascii: ascii code
 // color:color
-int lcdDrawChar(TFT_t * dev, FontxFile *fxs, uint16_t x, uint16_t y, uint8_t ascii, uint16_t color) {
-	uint16_t xx,yy,bit,ofs;
-	unsigned char fonts[128]; // font pattern
-	unsigned char pw, ph;
-	int h,w;
-	uint16_t mask;
-	bool rc;
+void lcdDrawChar(TFT_t * dev, uint16_t x, uint16_t y, uint8_t c, uint16_t color, uint8_t size) {
+	if((x >= dev->_width)            || // Clip right
+       (y >= dev->_height)           || // Clip bottom
+       ((x + 6 * size - 1) < 0) || // Clip left
+       ((y + 8 * size - 1) < 0))   // Clip top
+    	return;
 
-	if(_DEBUG_)printf("_font_direction=%d\n",dev->_font_direction);
-	rc = GetFontx(fxs, ascii, fonts, &pw, &ph);
-	if(_DEBUG_)printf("GetFontx rc=%d pw=%d ph=%d\n",rc,pw,ph);
-	if (!rc) return 0;
-
-	int16_t xd1 = 0;
-	int16_t yd1 = 0;
-	int16_t xd2 = 0;
-	int16_t yd2 = 0;
-	uint16_t xss = 0;
-	uint16_t yss = 0;
-	int16_t xsd = 0;
-	int16_t ysd = 0;
-	int16_t next = 0;
-	uint16_t x0  = 0;
-	uint16_t x1  = 0;
-	uint16_t y0  = 0;
-	uint16_t y1  = 0;
-	if (dev->_font_direction == 0) {
-		xd1 = +1;
-		yd1 = +1; //-1;
-		xd2 =  0;
-		yd2 =  0;
-		xss =  x;
-		yss =  y - (ph - 1);
-		xsd =  1;
-		ysd =  0;
-		next = x + pw;
-
-		x0	= x;
-		y0	= y - (ph-1);
-		x1	= x + (pw-1);
-		y1	= y;
-	} else if (dev->_font_direction == 2) {
-		xd1 = -1;
-		yd1 = -1; //+1;
-		xd2 =  0;
-		yd2 =  0;
-		xss =  x;
-		yss =  y + ph + 1;
-		xsd =  1;
-		ysd =  0;
-		next = x - pw;
-
-		x0	= x - (pw-1);
-		y0	= y;
-		x1	= x;
-		y1	= y + (ph-1);
-	} else if (dev->_font_direction == 1) {
-		xd1 =  0;
-		yd1 =  0;
-		xd2 = -1;
-		yd2 = +1; //-1;
-		xss =  x + ph;
-		yss =  y;
-		xsd =  0;
-		ysd =  1;
-		next = y + pw; //y - pw;
-
-		x0	= x;
-		y0	= y;
-		x1	= x + (ph-1);
-		y1	= y + (pw-1);
-	} else if (dev->_font_direction == 3) {
-		xd1 =  0;
-		yd1 =  0;
-		xd2 = +1;
-		yd2 = -1; //+1;
-		xss =  x - (ph - 1);
-		yss =  y;
-		xsd =  0;
-		ysd =  1;
-		next = y - pw; //y + pw;
-
-		x0	= x - (ph-1);
-		y0	= y - (pw-1);
-		x1	= x;
-		y1	= y;
-	}
-
-	if (dev->_font_fill) lcdDrawFillRect(dev, x0, y0, x1, y1, dev->_font_fill_color);
-
-	int bits;
-	if(_DEBUG_)printf("xss=%d yss=%d\n",xss,yss);
-	ofs = 0;
-	yy = yss;
-	xx = xss;
-	for(h=0;h<ph;h++) {
-		if(xsd) xx = xss;
-		if(ysd) yy = yss;
-		//for(w=0;w<(pw/8);w++) {
-		bits = pw;
-		for(w=0;w<((pw+4)/8);w++) {
-			mask = 0x80;
-			for(bit=0;bit<8;bit++) {
-				bits--;
-				if (bits < 0) continue;
-				//if(_DEBUG_)printf("xx=%d yy=%d mask=%02x fonts[%d]=%02x\n",xx,yy,mask,ofs,fonts[ofs]);
-				if (fonts[ofs] & mask) {
-					lcdDrawPixel(dev, xx, yy, color);
-				} else {
-					//if (dev->_font_fill) lcdDrawPixel(dev, xx, yy, dev->_font_fill_color);
-				}
-				if (h == (ph-2) && dev->_font_underline)
-					lcdDrawPixel(dev, xx, yy, dev->_font_underline_color);
-				if (h == (ph-1) && dev->_font_underline)
-					lcdDrawPixel(dev, xx, yy, dev->_font_underline_color);
-				xx = xx + xd1;
-				yy = yy + yd2;
-				mask = mask >> 1;
-			}
-			ofs++;
+    for(int8_t i=0; i<6; i++ ) {
+		uint8_t line;
+		if(i < 5) {
+			line = *(font5x7+(c*5)+i);
 		}
-		yy = yy + yd1;
-		xx = xx + xd2;
-	}
-
-	if (next < 0) next = 0;
-	return next;
-}
-
-int lcdDrawString(TFT_t * dev, FontxFile *fx, uint16_t x, uint16_t y, uint8_t * ascii, uint16_t color) {
-	int length = strlen((char *)ascii);
-	if(_DEBUG_)printf("lcdDrawString length=%d\n",length);
-	for(int i=0;i<length;i++) {
-		if(_DEBUG_)printf("ascii[%d]=%x x=%d y=%d\n",i,ascii[i],x,y);
-		if (dev->_font_direction == 0)
-			x = lcdDrawChar(dev, fx, x, y, ascii[i], color);
-		if (dev->_font_direction == 1)
-			y = lcdDrawChar(dev, fx, x, y, ascii[i], color);
-		if (dev->_font_direction == 2)
-			x = lcdDrawChar(dev, fx, x, y, ascii[i], color);
-		if (dev->_font_direction == 3)
-			y = lcdDrawChar(dev, fx, x, y, ascii[i], color);
-	}
-	if (dev->_font_direction == 0) return x;
-	if (dev->_font_direction == 2) return x;
-	if (dev->_font_direction == 1) return y;
-	if (dev->_font_direction == 3) return y;
-	return 0;
-}
-
-
-// Draw Non-Alphanumeric character
-// x:X coordinate
-// y:Y coordinate
-// code:character code
-// color:color
-int lcdDrawCode(TFT_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t code,uint16_t color) {
-	if(_DEBUG_)printf("code=%x x=%d y=%d\n",code,x,y);
-	if (dev->_font_direction == 0)
-		x = lcdDrawChar(dev, fx, x, y, code, color);
-	if (dev->_font_direction == 1)
-		y = lcdDrawChar(dev, fx, x, y, code, color);
-	if (dev->_font_direction == 2)
-		x = lcdDrawChar(dev, fx, x, y, code, color);
-	if (dev->_font_direction == 3)
-		y = lcdDrawChar(dev, fx, x, y, code, color);
-	if (dev->_font_direction == 0) return x;
-	if (dev->_font_direction == 2) return x;
-	if (dev->_font_direction == 1) return y;
-	if (dev->_font_direction == 3) return y;
-	return 0;
-}
-
-#if 0
-// Draw UTF8 character
-// x:X coordinate
-// y:Y coordinate
-// utf8:UTF8 code
-// color:color
-int lcdDrawUTF8Char(TFT_t * dev, FontxFile *fx, uint16_t x,uint16_t y,uint8_t *utf8,uint16_t color) {
-	uint16_t sjis[1];
-
-	sjis[0] = UTF2SJIS(utf8);
-	if(_DEBUG_)printf("sjis=%04x\n",sjis[0]);
-	return lcdDrawSJISChar(dev, fx, x, y, sjis[0], color);
-}
-
-// Draw UTF8 string
-// x:X coordinate
-// y:Y coordinate
-// utfs:UTF8 string
-// color:color
-int lcdDrawUTF8String(TFT_t * dev, FontxFile *fx, uint16_t x, uint16_t y, unsigned char *utfs, uint16_t color) {
-
-	int i;
-	int spos;
-	uint16_t sjis[64];
-	spos = String2SJIS(utfs, strlen((char *)utfs), sjis, 64);
-	if(_DEBUG_)printf("spos=%d\n",spos);
-	for(i=0;i<spos;i++) {
-		if(_DEBUG_)printf("sjis[%d]=%x y=%d\n",i,sjis[i],y);
-		if (dev->_font_direction == 0)
-			x = lcdDrawSJISChar(dev, fx, x, y, sjis[i], color);
-		if (dev->_font_direction == 1)
-			y = lcdDrawSJISChar(dev, fx, x, y, sjis[i], color);
-		if (dev->_font_direction == 2)
-			x = lcdDrawSJISChar(dev, fx, x, y, sjis[i], color);
-		if (dev->_font_direction == 3)
-			y = lcdDrawSJISChar(dev, fx, x, y, sjis[i], color);
-	}
-	if (dev->_font_direction == 0) return x;
-	if (dev->_font_direction == 2) return x;
-	if (dev->_font_direction == 1) return y;
-	if (dev->_font_direction == 3) return y;
-	return 0;
-}
-#endif
-
-// Set font direction
-// dir:Direction
-void lcdSetFontDirection(TFT_t * dev, uint16_t dir) {
-	dev->_font_direction = dir;
-}
-
-// Set font filling
-// color:fill color
-void lcdSetFontFill(TFT_t * dev, uint16_t color) {
-	dev->_font_fill = true;
-	dev->_font_fill_color = color;
-}
-
-// UnSet font filling
-void lcdUnsetFontFill(TFT_t * dev) {
-	dev->_font_fill = false;
-}
-
-// Set font underline
-// color:frame color
-void lcdSetFontUnderLine(TFT_t * dev, uint16_t color) {
-	dev->_font_underline = true;
-	dev->_font_underline_color = color;
-}
-
-// UnSet font underline
-void lcdUnsetFontUnderLine(TFT_t * dev) {
-	dev->_font_underline = false;
+		else {
+			line = 0x0;
+		}
+		for(int8_t j=0; j<8; j++, line >>= 1) {
+			if(line & 0x1) {
+				if(size == 1) {
+					//lcdDrawPixel(x+i, y+j, color);
+					lcdDrawPixel(dev, x+i, y+j, color);
+				}
+				else {
+					//SSD1331_fillRect(x+(i*size), y+(j*size), size, size, color);
+					lcdDrawFillRect(dev, x+(i*size), y+(j*size), x+(i*size)+size, y+(j*size)+size, color);
+				}
+			}
+		}
+    }
 }
 
 // Backlight OFF
