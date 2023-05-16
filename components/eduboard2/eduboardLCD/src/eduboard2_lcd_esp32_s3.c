@@ -15,10 +15,10 @@
 
 #endif
 
-//#define LCD_TEST
+
 
 #define TAG "Eduboard2_LCDDriver"
-#ifdef LCD_TEST
+#ifdef CONFIG_LCD_TEST
 TickType_t FillTest(TFT_t * dev, int width, int height) {
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
@@ -283,34 +283,34 @@ TickType_t TextTest(TFT_t * dev, char* text) {
 }
 
 void lcdTest(TFT_t* dev) {
-    // FillTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    FillTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // ColorBarTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    ColorBarTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // LineTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    LineTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // CircleTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    CircleTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // RoundRectTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    RoundRectTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // RectAngleTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    RectAngleTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // TriangleTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    TriangleTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
-    // FillRectTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
-    // vTaskDelay(1000/portTICK_PERIOD_MS);
+    FillRectTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
+    vTaskDelay(1000/portTICK_PERIOD_MS);
 
     ColorTest(dev, CONFIG_WIDTH, CONFIG_HEIGHT);
     vTaskDelay(1000/portTICK_PERIOD_MS);
 
-	TextTest(dev, "Hello World\nThis is a TestText! \n:-)");
+	TextTest(dev, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam lectus justo, dapibus ut fringilla nec, interdum sed eros. Integer euismod tincidunt fermentum. Ut vel aliquet augue. Nam ullamcorper orci eget eros accumsan suscipit. Praesent \nlacus nulla, tristique a tortor lobortis, rhoncus venenatis nulla. Etiam scelerisque sodales finibus. Donec vel dui quis dolor imperdiet porta quis sed ante. Donec porta, nunc eu dignissim hendrerit, neque tortor maximus urna, eu mollis massa arcu sed lectus. Integer commodo augue tortor, id ornare nunc tempor vel. Integer nec risus tortor. Etiam iaculis fermentum libero scelerisque blandit. Mauris vestibulum eget felis a tempor. Pellentesque vitae nulla pulvinar, porttitor mi nec, lobortis est.");
 	vTaskDelay(10000/portTICK_PERIOD_MS);
 }
 #endif
@@ -322,7 +322,7 @@ void eduboard_init_lcd() {
 	lcdInit(&dev, CONFIG_WIDTH, CONFIG_HEIGHT, 0, 0);
     lcdSetupVScreen();
     ESP_LOGI(TAG, "LCD Init Done");
-#ifdef LCD_TEST
+#ifdef CONFIG_LCD_TEST
     while(1) {
         lcdTest(&dev);
         vTaskDelay(1000/portTICK_PERIOD_MS);

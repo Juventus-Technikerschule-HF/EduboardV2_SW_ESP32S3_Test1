@@ -118,7 +118,8 @@ void app_main()
         // eduboard_start_buzzer(1500, 100);  
         // vTaskDelay(100/portTICK_PERIOD_MS);
         // eduboard_start_buzzer(2000, 100);  
-        ESP_LOGI(TAG, "Temp: %i", (int)eduboard_get_val_tmp112());
+        tmp112_poll();
+        ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
         vTaskDelay(2000/portTICK_PERIOD_MS);        
     }
 }
