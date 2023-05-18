@@ -114,3 +114,7 @@
 #ifdef CONFIG_ENABLE_AN0
     #define CONFIG_ENABLE_ANALOG
 #endif
+
+#ifdef CONFIG_ENABLE_SENSOR_TMP112
+    #define CONFIG_ENABLE_I2C
+#endif

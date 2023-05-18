@@ -1,7 +1,8 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_sensor.h"
 #include "esp_log.h"
-#include "driver/i2c.h"
+//#include "driver/i2c.h"
+
 
 #include <string.h>
 
@@ -13,7 +14,7 @@
  */
 /* TMP112 temperature sensor module for Chrome EC */
 
-#define I2C_FREQ_HZ 100000 // Max 1MHz for esp-idf
+//#define I2C_FREQ_HZ 100000 // Max 1MHz for esp-idf
 
 
 
@@ -33,14 +34,11 @@ static float temp_val_local;
 
 static esp_err_t read_register16(uint8_t reg, uint16_t *r)
 {
-    return i2c_master_write_read_device(0, TMP112_I2C_ADDR_FLAGS, &reg, 1, r, 2, portMAX_DELAY);
-	//return i2c_dev_read_reg(&i2c_dev, reg, r, 2);
+	return gpi2c_readRegister(TMP112_I2C_ADDR_FLAGS, reg, (uint8_t*)r, 2);
 }
-inline static esp_err_t write_register16(uint8_t reg_addr, uint16_t data)
+inline static esp_err_t write_register16(uint8_t reg, uint16_t data)
 {
-    uint8_t senddata[3] = {reg_addr, (data >> 8), (data & 0xFF)};
-	return i2c_master_write_to_device(0, TMP112_I2C_ADDR_FLAGS, &senddata, 3, portMAX_DELAY);
-	//return i2c_dev_write_reg(&i2c_dev, reg_addr, &senddata, 3);
+	return gpi2c_writeRegister(TMP112_I2C_ADDR_FLAGS, reg, (uint8_t*)&data, 2);
 }
 
 
@@ -77,34 +75,11 @@ void tmp112_poll(void)
 
 void eduboard_init_tmp112(void)
 {
-	int i2c_master_port = 0;
-
-    i2c_config_t conf = {
-        .mode = I2C_MODE_MASTER,
-        .sda_io_num = GPIO_I2C_SDA,
-        .scl_io_num = GPIO_I2C_SCL,
-        .sda_pullup_en = GPIO_PULLUP_ENABLE,
-        .scl_pullup_en = GPIO_PULLUP_ENABLE,
-        .master.clk_speed = I2C_FREQ_HZ,
-    };
-
-    i2c_param_config(i2c_master_port, &conf);
-
-    ESP_ERROR_CHECK(i2c_driver_install(i2c_master_port, conf.mode, 0, 0, 0));
-	
+	gpi2c_init(GPIO_I2C_SDA, GPIO_I2C_SCL, 50000);
     uint16_t tmp;
-	uint16_t set_mask, clr_mask;
-	/* 12 bit mode */
-	set_mask = (3 << 5);
-	/* not oneshot mode */
-	clr_mask = 0x80;
-	//raw_read16(TMP112_REG_CONF, &tmp);
     read_register16(TMP112_REG_CONF, &tmp);
 	ESP_LOGI(TAG, "TMP112 read: %4X", (int)tmp);
-	//tmp = (tmp & ~clr_mask) | set_mask;
 	tmp = 0x8062;
-	//tmp = 0x6280;
 	ESP_LOGI(TAG, "TMP112 writeback: %4X", (int)tmp);
-	//raw_write16(TMP112_REG_CONF, (tmp & ~clr_mask) | set_mask);
-    write_register16(TMP112_REG_CONF, tmp);
+	write_register16(TMP112_REG_CONF, tmp);
 }

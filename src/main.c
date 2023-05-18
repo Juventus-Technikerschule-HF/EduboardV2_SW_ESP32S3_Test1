@@ -10,6 +10,7 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "driver/gpio.h"
+#include "gpi2c.h"
 #include "eduboard2.h"
 #include "memon.h"
 
@@ -102,6 +103,7 @@ void app_main()
     vTaskDelay(5000/portTICK_PERIOD_MS);
     //initMemon();
     //memon_enable();    
+    
     eduboard_init_buzzer();    
     eduboard_init_buttons();
     eduboard_set_buzzer_volume(3);
