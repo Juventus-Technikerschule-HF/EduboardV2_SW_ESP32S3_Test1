@@ -15,4 +15,4 @@ idf_component_register(SRCS                 .
                                             eduboardSensor
                         REQUIRES            driver 
                                             led_strip_encoder
-                                            i2cdev)
+                                            esp_adc)

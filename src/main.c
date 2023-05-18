@@ -120,6 +120,7 @@ void app_main()
         // eduboard_start_buzzer(2000, 100);  
         tmp112_poll();
         ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
+        ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
         vTaskDelay(2000/portTICK_PERIOD_MS);        
     }
 }

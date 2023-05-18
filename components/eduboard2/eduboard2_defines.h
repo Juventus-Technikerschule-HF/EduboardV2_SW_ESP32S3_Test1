@@ -34,6 +34,7 @@
     #define GPIO_SW_3           45
 
     #define GPIO_AN_0           9
+    #define AN0_CHANNEL         ADC_CHANNEL_8
 
     #define GPIO_MISO           12
     #define GPIO_MOSI           13

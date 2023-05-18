@@ -27,6 +27,9 @@
 
 /*Analog Input COnfig*/
 #define CONFIG_ENABLE_AN0
+#ifdef CONFIG_ENABLE_AN0
+    //#define CONFIG_AN0_DEBUG
+#endif
 
 /*LCD Config*/
 #define CONFIG_ENABLE_LCD
