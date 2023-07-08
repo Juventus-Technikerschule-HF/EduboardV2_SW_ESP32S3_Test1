@@ -19,6 +19,10 @@
     #include "eduboardAnalog/eduboard2_analog.h"
 #endif
 
+#ifdef CONFIG_ENABLE_SPIFFS
+    #include "eduboardSpiffs/eduboard2_spiffs.h"
+#endif
+
 #ifdef CONFIG_ENABLE_LCD
     #include "eduboardLCD/eduboard2_lcd.h"
 #endif
@@ -30,3 +34,4 @@
 #ifdef CONFIG_ENABLE_I2C
     #include "gpi2c.h"
 #endif
+

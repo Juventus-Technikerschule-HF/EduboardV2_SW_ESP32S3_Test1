@@ -24,8 +24,8 @@ static const int SPI_Data_Mode = 1;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_13M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_16M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
-static const int SPI_Frequency = SPI_MASTER_FREQ_26M;
-//static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
+//static const int SPI_Frequency = SPI_MASTER_FREQ_26M;
+static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
 
 struct {

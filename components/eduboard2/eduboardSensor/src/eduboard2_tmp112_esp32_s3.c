@@ -75,7 +75,7 @@ void tmp112_poll(void)
 
 void eduboard_init_tmp112(void)
 {
-	gpi2c_init(GPIO_I2C_SDA, GPIO_I2C_SCL, 50000);
+	gpi2c_init(GPIO_I2C_SDA, GPIO_I2C_SCL, 1000000);
     uint16_t tmp;
     read_register16(TMP112_REG_CONF, &tmp);
 	ESP_LOGI(TAG, "TMP112 read: %4X", (int)tmp);

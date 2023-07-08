@@ -6,6 +6,8 @@ idf_component_register(SRCS                 .
                                             ./eduboardLCD/src/eduboard2_lcd_esp32_s3.c
                                             ./eduboardLCD/src/st7789.c
                                             ./eduboardSensor/src/eduboard2_tmp112_esp32_s3.c
+                                            ./eduboardSpiffs/src/fontx.c
+                                            ./eduboardSpiffs/src/eduboard2_spiffs.c
                         INCLUDE_DIRS        . 
                                             eduboardLED 
                                             eduboardBuzzer 
@@ -13,7 +15,10 @@ idf_component_register(SRCS                 .
                                             eduboardAnalog
                                             eduboardLCD
                                             eduboardSensor
+                                            eduboardSpiffs
                         REQUIRES            driver 
                                             led_strip_encoder
                                             esp_adc
-                                            gpi2c)
+                                            gpi2c
+                                            vfs
+                                            spiffs)

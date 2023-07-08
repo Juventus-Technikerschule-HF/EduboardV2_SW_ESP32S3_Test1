@@ -104,13 +104,14 @@ void app_main()
     //initMemon();
     //memon_enable();    
     
+    eduboard_init_spiffs();
     eduboard_init_buzzer();    
     eduboard_init_buttons();
     eduboard_set_buzzer_volume(3);
     eduboard_init_ADC();
     xTaskCreate(gpioTestTask, "gpioTestTask", 2*2048, NULL, 10, NULL);
-    eduboard_init_tmp112();
-    eduboard_init_lcd();    
+    eduboard_init_tmp112();    
+    eduboard_init_lcd();   
     int i = 0;
     for(;;) {
         i++;
