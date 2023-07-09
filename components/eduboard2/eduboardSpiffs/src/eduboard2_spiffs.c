@@ -14,8 +14,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_system.h"
-#include "esp_vfs.h"
-#include "esp_spiffs.h"
+
 
 #include "../eduboard2_spiffs.h"
 
@@ -65,15 +64,15 @@ void eduboard_init_spiffs(void) {
 
 	// Load Font Files
 	
-	InitFontx(fx16G,"/spiffs/ILGH16XB.FNT",""); // 8x16Dot Gothic
-	InitFontx(fx24G,"/spiffs/ILGH24XB.FNT",""); // 12x24Dot Gothic
-	InitFontx(fx32G,"/spiffs/ILGH32XB.FNT",""); // 16x32Dot Gothic
-	InitFontx(fx32L,"/spiffs/LATIN32B.FNT",""); // 16x32Dot Latin
+	InitFontx(fx16G,"/spiffs/fonts/ILGH16XB.FNT",""); // 8x16Dot Gothic
+	InitFontx(fx24G,"/spiffs/fonts/ILGH24XB.FNT",""); // 12x24Dot Gothic
+	InitFontx(fx32G,"/spiffs/fonts/ILGH32XB.FNT",""); // 16x32Dot Gothic
+	InitFontx(fx32L,"/spiffs/fonts/LATIN32B.FNT",""); // 16x32Dot Latin
 
 	
-	InitFontx(fx16M,"/spiffs/ILMH16XB.FNT",""); // 8x16Dot Mincyo
-	InitFontx(fx24M,"/spiffs/ILMH24XB.FNT",""); // 12x24Dot Mincyo
-	InitFontx(fx32M,"/spiffs/ILMH32XB.FNT",""); // 16x32Dot Mincyo
+	InitFontx(fx16M,"/spiffs/fonts/ILMH16XB.FNT",""); // 8x16Dot Mincyo
+	InitFontx(fx24M,"/spiffs/fonts/ILMH24XB.FNT",""); // 12x24Dot Mincyo
+	InitFontx(fx32M,"/spiffs/fonts/ILMH32XB.FNT",""); // 16x32Dot Mincyo
 	ESP_LOGI(TAG, "Spiffs mounted successfully");
 	ESP_LOGI(TAG, "All Fonts loaded");
 }

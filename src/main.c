@@ -100,7 +100,7 @@ void gpioTestTask(void* p) {
 
 void app_main() 
 {
-    vTaskDelay(5000/portTICK_PERIOD_MS);
+    //vTaskDelay(5000/portTICK_PERIOD_MS);
     //initMemon();
     //memon_enable();    
     
@@ -109,9 +109,9 @@ void app_main()
     eduboard_init_buttons();
     eduboard_set_buzzer_volume(3);
     eduboard_init_ADC();
-    xTaskCreate(gpioTestTask, "gpioTestTask", 2*2048, NULL, 10, NULL);
+    xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
     eduboard_init_tmp112();    
-    eduboard_init_lcd();   
+    eduboard_init_lcd();       
     int i = 0;
     for(;;) {
         i++;

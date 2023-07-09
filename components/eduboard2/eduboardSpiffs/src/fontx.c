@@ -6,7 +6,7 @@
 #include "esp_log.h"
 #include "esp_spiffs.h"
 
-#include "fontx.h"
+#include "../fontx.h"
 
 void AddFontx(FontxFile *fx, const char *path)
 {

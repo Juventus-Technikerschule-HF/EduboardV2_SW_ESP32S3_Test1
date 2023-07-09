@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "src/fontx.h"
+#include "esp_vfs.h"
+#include "esp_spiffs.h"
+#include "fontx.h"
 
 // Supported Fonts:
 extern FontxFile fx16G[2];

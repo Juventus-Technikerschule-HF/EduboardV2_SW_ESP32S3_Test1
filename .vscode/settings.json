@@ -15,7 +15,8 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "eduboard2_sensor.h": "c"
+        "eduboard2_sensor.h": "c",
+        "lcddriver.h": "c"
     },
     "cmake.configureOnOpen": false
 }
