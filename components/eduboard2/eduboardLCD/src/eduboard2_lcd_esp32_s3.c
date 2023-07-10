@@ -981,25 +981,25 @@ TickType_t CodeTest(FontxFile *fx, int width, int height) {
 void lcdTest(void *param) {
 	ESP_LOGI(TAG, "Start Display Test");
 	for(;;) {		
-		FillTest(lcdGetWidth(), lcdGetHeight());
-		lcdUpdateVScreen();
-		vTaskDelay(1000/portTICK_PERIOD_MS);
+		// FillTest(lcdGetWidth(), lcdGetHeight());
+		// lcdUpdateVScreen();
+		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		ColorBarTest(lcdGetWidth(), lcdGetHeight());
-		lcdUpdateVScreen();
-		vTaskDelay(1000/portTICK_PERIOD_MS);
+		// ColorBarTest(lcdGetWidth(), lcdGetHeight());
+		// lcdUpdateVScreen();
+		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		ArrowTest(fx16G, lcdGetWidth(), lcdGetHeight());
-		lcdUpdateVScreen();
-		vTaskDelay(1000/portTICK_PERIOD_MS);
+		// ArrowTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		// lcdUpdateVScreen();
+		// vTaskDelay(4000/portTICK_PERIOD_MS);
 
 		// LineTest(lcdGetWidth(), lcdGetHeight());
 		// lcdUpdateVScreen();
 		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// CircleTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		CircleTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		// RoundRectTest(lcdGetWidth(), lcdGetHeight());
 		// lcdUpdateVScreen();
@@ -1020,17 +1020,17 @@ void lcdTest(void *param) {
 		// lcdUpdateVScreen();
 		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		VerticalTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		// VerticalTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		// lcdUpdateVScreen();
+		// vTaskDelay(1000/portTICK_PERIOD_MS);
+
+		FillRectTest(lcdGetWidth(), lcdGetHeight());
 		lcdUpdateVScreen();
 		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// FillRectTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
-
-		// ColorTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		ColorTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		// CodeTest(fx32G, lcdGetWidth(), lcdGetHeight());
 		// lcdUpdateVScreen();
@@ -1045,73 +1045,73 @@ void lcdTest(void *param) {
 		// BMPTest(file, lcdGetWidth(), lcdGetHeight());
 		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		strcpy(file, "/spiffs/esp32.jpeg");
-		JPEGTest(file, lcdGetWidth(), lcdGetHeight());
-		vTaskDelay(1000/portTICK_PERIOD_MS);
+		// strcpy(file, "/spiffs/esp32.jpeg");
+		// JPEGTest(file, lcdGetWidth(), lcdGetHeight());
+		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		// strcpy(file, "/spiffs/esp_logo.png");
 		// PNGTest(file, 240, 240);
 		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		strcpy(file, "/spiffs/qrcode.bmp");
-		QRTest(file, lcdGetWidth(), lcdGetHeight());
-		vTaskDelay(1000/portTICK_PERIOD_MS);
+		// strcpy(file, "/spiffs/qrcode.bmp");
+		// QRTest(file, lcdGetWidth(), lcdGetHeight());
+		// vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		//Multi Font Test
-		uint16_t color;
-		uint8_t ascii[40];
-		uint16_t margin = 10;
-		lcdFillScreen(BLACK);
-		color = WHITE;
-		lcdSetFontDirection(0);
-		uint16_t xpos = 0;
-		uint16_t ypos = 15;
-		int xd = 0;
-		int yd = 1;
-		if(lcdGetWidth() < lcdGetHeight()) {
-			lcdSetFontDirection(0);
-			xpos = (lcdGetWidth()-1)-16;
-			ypos = 0;
-			xd = 1;
-			yd = 0;
-		}
-		strcpy((char *)ascii, "16Dot Gothic Font");
-		lcdDrawString(fx16G, xpos, ypos, ascii, color);
+		// //Multi Font Test
+		// uint16_t color;
+		// uint8_t ascii[40];
+		// uint16_t margin = 10;
+		// lcdFillScreen(BLACK);
+		// color = WHITE;
+		// lcdSetFontDirection(0);
+		// uint16_t xpos = 0;
+		// uint16_t ypos = 15;
+		// int xd = 0;
+		// int yd = 1;
+		// if(lcdGetWidth() < lcdGetHeight()) {
+		// 	lcdSetFontDirection(0);
+		// 	xpos = (lcdGetWidth()-1)-16;
+		// 	ypos = 0;
+		// 	xd = 1;
+		// 	yd = 0;
+		// }
+		// strcpy((char *)ascii, "16Dot Gothic Font");
+		// lcdDrawString(fx16G, xpos, ypos, ascii, color);
 
-		xpos = xpos - (24 * xd) - (margin * xd);
-		ypos = ypos + (16 * yd) + (margin * yd);
-		strcpy((char *)ascii, "24Dot Gothic Font");
-		lcdDrawString(fx24G, xpos, ypos, ascii, color);
+		// xpos = xpos - (24 * xd) - (margin * xd);
+		// ypos = ypos + (16 * yd) + (margin * yd);
+		// strcpy((char *)ascii, "24Dot Gothic Font");
+		// lcdDrawString(fx24G, xpos, ypos, ascii, color);
 
-		xpos = xpos - (32 * xd) - (margin * xd);
-		ypos = ypos + (24 * yd) + (margin * yd);
-		//if (lcdGetWidth() >= 240) {
-		strcpy((char *)ascii, "32Dot Gothic Font");
-		lcdDrawString(fx32G, xpos, ypos, ascii, color);
-		xpos = xpos - (32 * xd) - (margin * xd);;
-		ypos = ypos + (32 * yd) + (margin * yd);
-		//}
+		// xpos = xpos - (32 * xd) - (margin * xd);
+		// ypos = ypos + (24 * yd) + (margin * yd);
+		// //if (lcdGetWidth() >= 240) {
+		// strcpy((char *)ascii, "32Dot Gothic Font");
+		// lcdDrawString(fx32G, xpos, ypos, ascii, color);
+		// xpos = xpos - (32 * xd) - (margin * xd);;
+		// ypos = ypos + (32 * yd) + (margin * yd);
+		// //}
 
-		xpos = xpos - (10 * xd) - (margin * xd);
-		ypos = ypos + (10 * yd) + (margin * yd);
-		strcpy((char *)ascii, "16Dot Mincyo Font");
-		lcdDrawString(fx16M, xpos, ypos, ascii, color);
+		// xpos = xpos - (10 * xd) - (margin * xd);
+		// ypos = ypos + (10 * yd) + (margin * yd);
+		// strcpy((char *)ascii, "16Dot Mincyo Font");
+		// lcdDrawString(fx16M, xpos, ypos, ascii, color);
 
-		xpos = xpos - (24 * xd) - (margin * xd);;
-		ypos = ypos + (16 * yd) + (margin * yd);
-		strcpy((char *)ascii, "24Dot Mincyo Font");
-		lcdDrawString(fx24M, xpos, ypos, ascii, color);
+		// xpos = xpos - (24 * xd) - (margin * xd);;
+		// ypos = ypos + (16 * yd) + (margin * yd);
+		// strcpy((char *)ascii, "24Dot Mincyo Font");
+		// lcdDrawString(fx24M, xpos, ypos, ascii, color);
 
-		//if (lcdGetWidth() >= 240) {
-		xpos = xpos - (32 * xd) - (margin * xd);;
-		ypos = ypos + (24 * yd) + (margin * yd);
-		strcpy((char *)ascii, "32Dot Mincyo Font");
-		lcdDrawString(fx32M, xpos, ypos, ascii, color);
-		//}
-		lcdSetFontDirection(0);
-		lcdUpdateVScreen();
-		//ESP_LOGI(TAG, "MultiFont Done");
-		vTaskDelay(1000/portTICK_PERIOD_MS);
+		// //if (lcdGetWidth() >= 240) {
+		// xpos = xpos - (32 * xd) - (margin * xd);;
+		// ypos = ypos + (24 * yd) + (margin * yd);
+		// strcpy((char *)ascii, "32Dot Mincyo Font");
+		// lcdDrawString(fx32M, xpos, ypos, ascii, color);
+		// //}
+		// lcdSetFontDirection(0);
+		// lcdUpdateVScreen();
+		// //ESP_LOGI(TAG, "MultiFont Done");
+		// vTaskDelay(1000/portTICK_PERIOD_MS);
 		
 	}
 }

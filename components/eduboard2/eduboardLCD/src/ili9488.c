@@ -16,7 +16,9 @@
 
 #ifdef CONFIG_LCD_ILI9488
 
-#define ILI9488_SPI_SENDBUFFER_SIZE	1024
+#define SPI_BUFFER_MAXLENGTH 2048
+#define COLORS_MAXLENGTH SPI_BUFFER_MAXLENGTH/2
+//#define ILI9488_SPI_SENDBUFFER_SIZE	1024
 
 static const int SPI_Command_Mode = 0;
 static const int SPI_Data_Mode = 1;
@@ -153,33 +155,51 @@ bool ili9488_spi_write_cmd(uint8_t cmd) {
 	return true;
 }
 bool ili9488_spi_write_data(uint8_t hdata, uint8_t ldata) {
-	spi_transaction_t SPITransaction;
-	esp_err_t ret;
-	uint8_t data[3];
-	uint16_t LD=0;
-	// RGB565 TO RGB666
-	LD=hdata<<8;
-	LD|=ldata;
+	// spi_transaction_t SPITransaction;
+	// esp_err_t ret;
+	// uint8_t data[3];
+	// uint16_t LD=0;
+	// // RGB565 TO RGB666
+	// LD=hdata<<8;
+	// LD|=ldata;
 
-	data[0]=(0x1f&(LD>>11))*2;
-	data[0]<<=2;
-	data[1]=0x3f&(LD>>5);
-	data[1]<<=2;
-	data[2]=	(0x1f&LD)*2;
-	data[2]<<=2;
-	gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 3*8;
-	SPITransaction.tx_buffer = &data[0];
-	ret = spi_device_transmit( lcddevice->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK); 
+	// data[0]=(0x1f&(LD>>11))*2;
+	// data[0]<<=2;
+	// data[1]=0x3f&(LD>>5);
+	// data[1]<<=2;
+	// data[2]=	(0x1f&LD)*2;
+	// data[2]<<=2;
+	// gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
+	// memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
+	// SPITransaction.length = 3*8;
+	// SPITransaction.tx_buffer = &data[0];
+	// ret = spi_device_transmit( lcddevice->_SPIHandle, &SPITransaction );
+	// assert(ret==ESP_OK); 
 	return true;
 }
 bool ili9488_spi_write_data_u16(uint16_t data) {
-	uint8_t hdata, ldata;
-	hdata = data>>8;
-	ldata = data&0xFF;
-	ili9488_spi_write_data(hdata, ldata);
+	// uint8_t hdata, ldata;
+	// hdata = data>>8;
+	// ldata = data&0xFF;
+	// ili9488_spi_write_data(hdata, ldata);
+	return true;
+}
+
+
+bool ili9488_spi_write_colors(uint16_t *colors, uint32_t length) {
+	// spi_transaction_t SPITransaction;
+	// esp_err_t ret;
+
+	// if(length > COLORS_MAXLENGTH) {
+	// 	ESP_LOGE(TAG, "bufferlength too long!");
+	// 	return false;
+	// }
+	// gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
+	// memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
+	// SPITransaction.length = length * 2 * 8;
+	// SPITransaction.tx_buffer = colors;
+	// ret = spi_device_transmit( lcddevice->_SPIHandle, &SPITransaction );
+	// assert(ret==ESP_OK); 
 	return true;
 }
 bool ili9488_lcd_setpos(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2) {
@@ -379,49 +399,6 @@ void ili9488_init(TFT_t * dev, int width, int height, int offsetx, int offsety)
 	lcddevice->_font_fill = false;
 	lcddevice->_font_underline = false;
 
-	// static DRAM_ATTR lcd_init_cmd_t ili_init_cmds[]={
-	// 	{ILI9488_CMD_POSITIVE_GAMMA_CORRECTION, {0x00, 0x03, 0x09, 0x08, 0x16, 0x0A, 0x3F, 0x78, 0x4C, 0x09, 0x0A, 0x08, 0x16, 0x1A, 0x0F}, 15},
-	// 	{ILI9488_CMD_NEGATIVE_GAMMA_CORRECTION, {0x00, 0x16, 0x19, 0x03, 0x0F, 0x05, 0x32, 0x45, 0x46, 0x04, 0x0E, 0x0D, 0x35, 0x37, 0x0F,}, 15},
-    // 	{ILI9488_CMD_POWER_CONTROL_1,           {0x17, 0x15}, 2},
-	// 	{ILI9488_CMD_POWER_CONTROL_2,           {0x41}, 1},
-	// 	{ILI9488_CMD_VCOM_CONTROL_1,            {0x00, 0x12, 0x80}, 3},
-    // 	{ILI9488_CMD_MEMORY_ACCESS_CONTROL,     {TFT_MAD_MV | TFT_MAD_MY | TFT_MAD_MX}, 1},			  // Memory Access Control
-	// 	//{ILI9488_CMD_MEMORY_ACCESS_CONTROL,     {0x20 | 0x00}, 1},			  // Memory Access Control
-	// 	//{ILI9488_CMD_MEMORY_ACCESS_CONTROL,     {0x00}, 1},			  // Memory Access Control
-	// 	//{ILI9488_CMD_COLMOD_PIXEL_FORMAT_SET,   {0x66}, 1},			  // Pixel Interface Format 18 bit colour for SPI
-	// 	{ILI9488_CMD_COLMOD_PIXEL_FORMAT_SET,   {0x55}, 1},			  // Pixel Interface Format 16 bit colour
-	// 	{ILI9488_CMD_INTERFACE_MODE_CONTROL,    {0x80}, 1},       // Interface Mode Control
-	// 	{ILI9488_CMD_FRAME_RATE_CONTROL_NORMAL, {0xA0}, 1},       // Frame Rate Control
-	// 	{ILI9488_CMD_DISPLAY_INVERSION_CONTROL, {0x02}, 1},       // Display Inversion Control
-	// 	{ILI9488_CMD_DISPLAY_FUNCTION_CONTROL,  {0x02, 0x02, 0x3B}, 3},
-	// 	//{ILI9488_CMD_DISPLAY_FUNCTION_CONTROL,  {0x02, 0x02}, 2},
-	// 	{ILI9488_CMD_ENTRY_MODE_SET,            {0xC6}, 1},
-	// 	{ILI9488_CMD_SET_IMAGE_FUNCTION,		{0x00}, 1},
-	// 	//{ILI9488_CMD_WRITE_CTRL_DISPLAY, 		{0x28}, 1},
-	// 	//{ILI9488_CMD_WRITE_DISPLAY_BRIGHTNESS, 	{0x10}, 1},
-    // 	{ILI9488_CMD_ADJUST_CONTROL_3,          {0xA9, 0x51, 0x2C, 0x82}, 4},
-	// 	//{ILI9488_CMD_ADJUST_CONTROL_3,          {0xA9, 0x51, 0x2C, 0x02}, 4},
-	// 	{ILI9488_CMD_SLEEP_OUT,                 {0}, 0x80},
-	// 	{ILI9488_CMD_DISPLAY_ON,                {0}, 0x80},
-	// 	{0, {0}, 0xff},
-	// };
-
-	// ESP_LOGI(TAG, "ILI9488 initialization.\n");
-
-  	// ili9488_spi_master_write_command(ILI9488_CMD_SOFTWARE_RESET);  //Exit Sleep
-	// vTaskDelay(100 / portTICK_PERIOD_MS);
-
- 	// //Send all the commands
-	// uint16_t cmd = 0;
-	// while (ili_init_cmds[cmd].databytes!=0xff) {
-	// 	ili9488_spi_master_write_command(ili_init_cmds[cmd].cmd);
-	// 	ili9488_spi_master_write_data_bytes(ili_init_cmds[cmd].data, ili_init_cmds[cmd].databytes&0x1F);
-	// 	if (ili_init_cmds[cmd].databytes & 0x80) {
-	// 		vTaskDelay(100 / portTICK_PERIOD_MS);
-	// 	}
-	// 	cmd++;
-	// }
-
 	ESP_LOGI(TAG, "ILI9488 initialization.\n");
 
   	ili9488_spi_write_cmd(ILI9488_CMD_SOFTWARE_RESET);  //Exit Sleep
@@ -480,8 +457,8 @@ void ili9488_init(TFT_t * dev, int width, int height, int offsetx, int offsety)
 	ili9488_spi_write_cmd_data(0x48); 
 	 
 	ili9488_spi_write_cmd(ILI9488_CMD_COLMOD_PIXEL_FORMAT_SET);      // Interface Pixel Format 
-	ili9488_spi_write_cmd_data(0x66); 	  //18 bit    
-	//ili9488_spi_write_cmd_data(0x55); 	  //18 bit    
+	//ili9488_spi_write_cmd_data(0x66); 	  //18 bit    
+	ili9488_spi_write_cmd_data(0x55); 	  //16 bit    
 	 
 	ili9488_spi_write_cmd(ILI9488_CMD_INTERFACE_MODE_CONTROL);      // Interface Mode Control 
 	 ili9488_spi_write_cmd_data(0x80);     			 //SDO NOT USE
@@ -526,7 +503,9 @@ void ili9488_DrawPixel(uint16_t x, uint16_t y, uint16_t color) {
 	uint16_t _y = y + lcddevice->_offsety;
 	
 	ili9488_lcd_setpos(_x,_x,_y,_y);
-	ili9488_spi_write_data_u16(color);
+	//ili9488_spi_write_data_u16(color);
+	uint16_t colors[1] = {color};
+	ili9488_spi_write_colors(&colors[0], 1);
 	
 	//uint8_t data[4];
 	// /*Column addresses*/
@@ -564,13 +543,18 @@ void ili9488_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * c
 	uint16_t _x2 = _x1 + size;
 	uint16_t _y1 = y + lcddevice->_offsety;
 	uint16_t _y2 = _y1;
-	uint16_t i = 0;
-	ili9488_lcd_setpos(_x1, _x2, _y1, _y2);
-	for(int y = _y1; y < _y2; y++) {
-		for(int x = _x1; x < _x2; x++) {
-			ili9488_spi_write_data_u16(colors[i]);
-			i++;
-		}
+	//uint16_t i = 0;
+	ili9488_lcd_setpos(_x1, _x2, _y1, _y2);	
+	// for(int y = _y1; y <= _y2; y++) {
+	// 	for(int x = _x1; x <= _x2; x++) {
+	// 		ili9488_spi_write_data_u16(colors[i]);
+	// 		i++;
+	// 	}
+	// }
+	if(size <= COLORS_MAXLENGTH) {
+		ili9488_spi_write_colors(&colors[0], size);
+	} else {
+		ESP_LOGE(TAG, "Size of Colors array too large");
 	}
 	// uint8_t data[4];
 	// /*Column addresses*/
@@ -622,12 +606,24 @@ void ili9488_DrawFillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, ui
 	uint16_t _y1 = y1 + lcddevice->_offsety;
 	uint16_t _y2 = y2 + lcddevice->_offsety;
 	ili9488_lcd_setpos(_x1, _x2, _y1, _y2);
-	for(int y = _y1; y < _y2; y++) {
-		for(int x = _x1; x < _x2; x++) {
-			ili9488_spi_write_data_u16(color);
-		}
+	// for(int y = _y1; y <= _y2; y++) {
+	// 	for(int x = _x1; x <= _x2; x++) {
+	// 		ili9488_spi_write_data_u16(color);
+	// 	}
+	// }
+	uint32_t size = (x2-x1+1) * (y2-y1+1);
+	uint16_t colors[size];
+	uint32_t sendpos = 0;
+	
+	for(int i = 0; i < size; i++) {
+		colors[i] = color;
 	}
-
+	while(size > COLORS_MAXLENGTH) {
+		ili9488_spi_write_colors(&colors[sendpos], COLORS_MAXLENGTH);
+		sendpos += COLORS_MAXLENGTH;
+		size -= COLORS_MAXLENGTH;
+	}
+	ili9488_spi_write_colors(&colors[sendpos], size);
 
 	// uint8_t data[4];
 	// /*Column addresses*/

@@ -101,8 +101,8 @@ void gpioTestTask(void* p) {
 void app_main() 
 {
     //vTaskDelay(5000/portTICK_PERIOD_MS);
-    //initMemon();
-    //memon_enable();    
+    initMemon();
+    memon_enable();    
     
     eduboard_init_spiffs();
     // eduboard_init_buzzer();    

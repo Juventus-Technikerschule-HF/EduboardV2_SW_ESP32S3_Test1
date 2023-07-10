@@ -152,6 +152,7 @@ bool ili9488_spi_write_cmd_data(uint8_t data);
 bool ili9488_spi_write_cmd(uint8_t cmd);
 bool ili9488_spi_write_data(uint8_t hdata, uint8_t ldata); //Convert 2x8Bit Color to 666 Color and send 3 Bytes to lcd
 bool ili9488_spi_write_data_u16(uint16_t data); //
+bool ili9488_spi_write_colors(uint16_t *colors, uint32_t length);
 bool ili9488_lcd_setpos(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2);
 bool ili9488_lcd_clearscreen(uint16_t color);
 
