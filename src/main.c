@@ -105,12 +105,12 @@ void app_main()
     //memon_enable();    
     
     eduboard_init_spiffs();
-    eduboard_init_buzzer();    
-    eduboard_init_buttons();
-    eduboard_set_buzzer_volume(3);
-    eduboard_init_ADC();
-    xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
-    eduboard_init_tmp112();    
+    // eduboard_init_buzzer();    
+    // eduboard_init_buttons();
+    // eduboard_set_buzzer_volume(3);
+    // eduboard_init_ADC();
+    // xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
+    // eduboard_init_tmp112();    
     eduboard_init_lcd();       
     int i = 0;
     for(;;) {
@@ -121,9 +121,9 @@ void app_main()
         // eduboard_start_buzzer(1500, 100);  
         // vTaskDelay(100/portTICK_PERIOD_MS);
         // eduboard_start_buzzer(2000, 100);  
-        tmp112_poll();
-        ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
-        ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
+        // tmp112_poll();
+        // ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
+        // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
         vTaskDelay(2000/portTICK_PERIOD_MS);        
     }
 }

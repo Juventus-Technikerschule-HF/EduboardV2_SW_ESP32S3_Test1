@@ -147,6 +147,14 @@
 extern TFT_t * lcddevice;
 
 void ili9488_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, int16_t PIN_CS, int16_t PIN_DC, int16_t PIN_RESET, int16_t PIN_BL);
+
+bool ili9488_spi_write_cmd_data(uint8_t data);
+bool ili9488_spi_write_cmd(uint8_t cmd);
+bool ili9488_spi_write_data(uint8_t hdata, uint8_t ldata); //Convert 2x8Bit Color to 666 Color and send 3 Bytes to lcd
+bool ili9488_spi_write_data_u16(uint16_t data); //
+bool ili9488_lcd_setpos(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2);
+bool ili9488_lcd_clearscreen(uint16_t color);
+
 // bool ili9488_spi_master_write_byte(spi_device_handle_t SPIHandle, const uint8_t* Data, size_t DataLength);
 // bool ili9488_spi_master_write_command(uint8_t cmd);
 // bool ili9488_spi_master_write_data_byte(uint8_t data);

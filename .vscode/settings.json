@@ -16,7 +16,8 @@
         "type_traits": "c",
         "utility": "c",
         "eduboard2_sensor.h": "c",
-        "lcddriver.h": "c"
+        "lcddriver.h": "c",
+        "string": "c"
     },
     "cmake.configureOnOpen": false
 }

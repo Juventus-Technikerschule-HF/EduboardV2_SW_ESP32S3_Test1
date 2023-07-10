@@ -981,13 +981,13 @@ TickType_t CodeTest(FontxFile *fx, int width, int height) {
 void lcdTest(void *param) {
 	ESP_LOGI(TAG, "Start Display Test");
 	for(;;) {		
-		// FillTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		FillTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// ColorBarTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		ColorBarTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		ArrowTest(fx16G, lcdGetWidth(), lcdGetHeight());
 		lcdUpdateVScreen();
@@ -1110,7 +1110,7 @@ void lcdTest(void *param) {
 		//}
 		lcdSetFontDirection(0);
 		lcdUpdateVScreen();
-		ESP_LOGI(TAG, "MultiFont Done");
+		//ESP_LOGI(TAG, "MultiFont Done");
 		vTaskDelay(1000/portTICK_PERIOD_MS);
 		
 	}
@@ -1122,7 +1122,7 @@ void eduboard_init_lcd() {
 	lcd_init();
 	ESP_LOGI(TAG, "Init LCD Done.");
 	ESP_LOGI(TAG, "Init VScreen...");
-    lcdSetupVScreen(rot_90);
+    //lcdSetupVScreen(rot_90);
 	lcdBacklightOn();
 	lcdFillScreen(BLACK);
 	lcdUpdateVScreen();
