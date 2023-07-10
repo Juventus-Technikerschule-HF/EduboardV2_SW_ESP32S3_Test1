@@ -150,24 +150,14 @@ void ili9488_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, in
 
 bool ili9488_spi_write_cmd_data(uint8_t data);
 bool ili9488_spi_write_cmd(uint8_t cmd);
-bool ili9488_spi_write_data(uint8_t hdata, uint8_t ldata); //Convert 2x8Bit Color to 666 Color and send 3 Bytes to lcd
-bool ili9488_spi_write_data_u16(uint16_t data); //
-bool ili9488_spi_write_colors(uint16_t *colors, uint32_t length);
+bool ili9488_spi_write_colors(uint16_t *colors565, uint32_t length);
 bool ili9488_lcd_setpos(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2);
-bool ili9488_lcd_clearscreen(uint16_t color);
-
-// bool ili9488_spi_master_write_byte(spi_device_handle_t SPIHandle, const uint8_t* Data, size_t DataLength);
-// bool ili9488_spi_master_write_command(uint8_t cmd);
-// bool ili9488_spi_master_write_data_byte(uint8_t data);
-// bool ili9488_spi_master_write_data_word(uint16_t data);
-// bool ili9488_spi_master_write_addr(uint16_t addr1, uint16_t addr2);
-// bool ili9488_spi_master_write_color(uint16_t color, uint16_t size);
-// bool ili9488_spi_master_write_colors(uint16_t * colors, uint16_t size);
 
 void ili9488_init(TFT_t * dev, int width, int height, int offsetx, int offsety);
 
 void ili9488_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void ili9488_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * colors);
+void ili9488_DrawMultiLines(uint16_t start_y, uint16_t lines, uint16_t * colors);
 void ili9488_DrawFillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 void ili9488_DisplayOff();
 void ili9488_DisplayOn();

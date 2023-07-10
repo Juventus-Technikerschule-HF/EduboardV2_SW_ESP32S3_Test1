@@ -86,15 +86,15 @@ uint16_t lcdGetHeight() {
 }
 void lcdUpdateVScreen() {
 	if(vScreen.enabled == false) return;	
+	#ifdef CONFIG_LCD_ST7789
 	for(int y = 0; y < lcddevice->_height; y++) {
 		uint16_t * colors = &vScreen.data[y*lcddevice->_width];
-		#ifdef CONFIG_LCD_ST7789
 		st7789_DrawMultiPixels(0, y, lcddevice->_width, colors);
-		#endif
-		#ifdef CONFIG_LCD_ILI9488
-		ili9488_DrawMultiPixels(0, y, lcddevice->_width, colors);
-		#endif
 	}
+	#endif
+	#ifdef CONFIG_LCD_ILI9488
+	ili9488_DrawMultiLines(0, 480, &vScreen.data[0]);
+	#endif
 }
 
 // Draw pixel

@@ -20,6 +20,7 @@
 #define TAG "Eduboard2_LCDDriver"
 #ifdef CONFIG_LCD_TEST
 TickType_t FillTest(int width, int height) {
+	ESP_LOGI(TAG, "Start FillTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -40,6 +41,7 @@ TickType_t FillTest(int width, int height) {
 }
 
 TickType_t ColorBarTest(int width, int height) {
+	ESP_LOGI(TAG, "Start ColorBarTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -72,6 +74,7 @@ TickType_t ColorBarTest(int width, int height) {
 }
 
 TickType_t ArrowTest(FontxFile *fx, int width, int height) {
+	ESP_LOGI(TAG, "Start ArrowTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -139,6 +142,7 @@ TickType_t ArrowTest(FontxFile *fx, int width, int height) {
 }
 
 TickType_t DirectionTest(FontxFile *fx, int width, int height) {
+	ESP_LOGI(TAG, "Start DirectionTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -180,6 +184,7 @@ TickType_t DirectionTest(FontxFile *fx, int width, int height) {
 }
 
 TickType_t HorizontalTest(FontxFile *fx, int width, int height) {
+	ESP_LOGI(TAG, "Start HorizontalTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -231,6 +236,7 @@ TickType_t HorizontalTest(FontxFile *fx, int width, int height) {
 }
 
 TickType_t VerticalTest(FontxFile *fx, int width, int height) {
+	ESP_LOGI(TAG, "Start VerticalTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -283,6 +289,7 @@ TickType_t VerticalTest(FontxFile *fx, int width, int height) {
 
 
 TickType_t LineTest(int width, int height) {
+	ESP_LOGI(TAG, "Start LineTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -292,13 +299,13 @@ TickType_t LineTest(int width, int height) {
 	color=RED;
 	for(int ypos=0;ypos<height;ypos=ypos+10) {
 		lcdDrawLine(0, ypos, width, ypos, color);
-		lcdUpdateVScreen();
 	}
+	lcdUpdateVScreen();
 
 	for(int xpos=0;xpos<width;xpos=xpos+10) {
 		lcdDrawLine(xpos, 0, xpos, height, color);
-		lcdUpdateVScreen();
 	}
+	lcdUpdateVScreen();
 
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
@@ -307,6 +314,7 @@ TickType_t LineTest(int width, int height) {
 }
 
 TickType_t CircleTest(int width, int height) {
+	ESP_LOGI(TAG, "Start CircleTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -318,6 +326,7 @@ TickType_t CircleTest(int width, int height) {
 	uint16_t ypos = height/2;
 	for(int i=5;i<height;i=i+5) {
 		lcdDrawCircle(xpos, ypos, i, color);
+		vTaskDelay(1);
 		lcdUpdateVScreen();
 	}
 
@@ -328,6 +337,7 @@ TickType_t CircleTest(int width, int height) {
 }
 
 TickType_t RectAngleTest(int width, int height) {
+	ESP_LOGI(TAG, "Start RectAngleTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -359,6 +369,7 @@ TickType_t RectAngleTest(int width, int height) {
 }
 
 TickType_t TriangleTest(int width, int height) {
+	ESP_LOGI(TAG, "Start TriangleTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -392,6 +403,7 @@ TickType_t TriangleTest(int width, int height) {
 }
 
 TickType_t RoundRectTest(int width, int height) {
+	ESP_LOGI(TAG, "Start RoundRectTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -416,6 +428,7 @@ TickType_t RoundRectTest(int width, int height) {
 }
 
 TickType_t FillRectTest(int width, int height) {
+	ESP_LOGI(TAG, "Start FillRectTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -445,6 +458,7 @@ TickType_t FillRectTest(int width, int height) {
 }
 
 TickType_t ColorTest(int width, int height) {
+	ESP_LOGI(TAG, "Start ColorTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -469,6 +483,7 @@ TickType_t ColorTest(int width, int height) {
 
 
 TickType_t BMPTest(char * file, int width, int height) {
+	ESP_LOGI(TAG, "Start BMPTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -612,6 +627,7 @@ TickType_t BMPTest(char * file, int width, int height) {
 }
 
 TickType_t QRTest(char * file, int width, int height) {
+	ESP_LOGI(TAG, "Start QRTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -778,6 +794,7 @@ TickType_t QRTest(char * file, int width, int height) {
 }
 
 TickType_t JPEGTest(char * file, int width, int height) {
+	ESP_LOGI(TAG, "Start JPEGTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -842,104 +859,106 @@ TickType_t JPEGTest(char * file, int width, int height) {
 }
 
 TickType_t PNGTest(char * file, int width, int height) {
-		TickType_t startTick, endTick, diffTick;
-		startTick = xTaskGetTickCount();
+	ESP_LOGI(TAG, "Start PNGTest");
+	TickType_t startTick, endTick, diffTick;
+	startTick = xTaskGetTickCount();
 
-		lcdSetFontDirection(0);
-		lcdFillScreen(BLACK);
+	lcdSetFontDirection(0);
+	lcdFillScreen(BLACK);
 
-		// open PNG file
-		FILE* fp = fopen(file, "rb");
-		if (fp == NULL) {
-				ESP_LOGW(__FUNCTION__, "File not found [%s]", file);
-				return 0;
-		}
+	// open PNG file
+	FILE* fp = fopen(file, "rb");
+	if (fp == NULL) {
+			ESP_LOGW(__FUNCTION__, "File not found [%s]", file);
+			return 0;
+	}
 
-		char buf[1024];
-		size_t remain = 0;
-		int len;
+	char buf[1024];
+	size_t remain = 0;
+	int len;
 
-		pngle_t *pngle = pngle_new(width, height);
+	pngle_t *pngle = pngle_new(width, height);
 
-		pngle_set_init_callback(pngle, png_init);
-		pngle_set_draw_callback(pngle, png_draw);
-		pngle_set_done_callback(pngle, png_finish);
+	pngle_set_init_callback(pngle, png_init);
+	pngle_set_draw_callback(pngle, png_draw);
+	pngle_set_done_callback(pngle, png_finish);
 
-		double display_gamma = 2.2;
-		pngle_set_display_gamma(pngle, display_gamma);
+	double display_gamma = 2.2;
+	pngle_set_display_gamma(pngle, display_gamma);
 
 
-		while (!feof(fp)) {
-				if (remain >= sizeof(buf)) {
-						ESP_LOGE(__FUNCTION__, "Buffer exceeded");
-						while(1) vTaskDelay(1);
-				}
+	while (!feof(fp)) {
+			if (remain >= sizeof(buf)) {
+					ESP_LOGE(__FUNCTION__, "Buffer exceeded");
+					while(1) vTaskDelay(1);
+			}
 
-				len = fread(buf + remain, 1, sizeof(buf) - remain, fp);
-				if (len <= 0) {
-						//printf("EOF\n");
-						break;
-				}
+			len = fread(buf + remain, 1, sizeof(buf) - remain, fp);
+			if (len <= 0) {
+					//printf("EOF\n");
+					break;
+			}
 
-				int fed = pngle_feed(pngle, buf, remain + len);
-				if (fed < 0) {
-						ESP_LOGE(__FUNCTION__, "ERROR; %s", pngle_error(pngle));
-						while(1) vTaskDelay(1);
-				}
+			int fed = pngle_feed(pngle, buf, remain + len);
+			if (fed < 0) {
+					ESP_LOGE(__FUNCTION__, "ERROR; %s", pngle_error(pngle));
+					while(1) vTaskDelay(1);
+			}
 
-				remain = remain + len - fed;
-				if (remain > 0) memmove(buf, buf + fed, remain);
-		}
+			remain = remain + len - fed;
+			if (remain > 0) memmove(buf, buf + fed, remain);
+	}
 
-		fclose(fp);
+	fclose(fp);
 
-		uint16_t _width = width;
-		uint16_t _cols = 0;
-		if (width > pngle->imageWidth) {
-				_width = pngle->imageWidth;
-				_cols = (width - pngle->imageWidth) / 2;
-		}
-		//ESP_LOGD(__FUNCTION__, "_width=%d _cols=%d", _width, _cols);
+	uint16_t _width = width;
+	uint16_t _cols = 0;
+	if (width > pngle->imageWidth) {
+			_width = pngle->imageWidth;
+			_cols = (width - pngle->imageWidth) / 2;
+	}
+	//ESP_LOGD(__FUNCTION__, "_width=%d _cols=%d", _width, _cols);
 
-		uint16_t _height = height;
-		uint16_t _rows = 0;
-		if (height > pngle->imageHeight) {
-				_height = pngle->imageHeight;
-				_rows = (height - pngle->imageHeight) / 2;
-		}
-		//ESP_LOGD(__FUNCTION__, "_height=%d _rows=%d", _height, _rows);
-		uint16_t *colors = (uint16_t*)malloc(sizeof(uint16_t) * _width);
+	uint16_t _height = height;
+	uint16_t _rows = 0;
+	if (height > pngle->imageHeight) {
+			_height = pngle->imageHeight;
+			_rows = (height - pngle->imageHeight) / 2;
+	}
+	//ESP_LOGD(__FUNCTION__, "_height=%d _rows=%d", _height, _rows);
+	uint16_t *colors = (uint16_t*)malloc(sizeof(uint16_t) * _width);
 
 #if 0
-		for(int y = 0; y < _height; y++){
-				for(int x = 0;x < _width; x++){
-						pixel_png pixel = pngle->pixels[y][x];
-						uint16_t color = rgb565_conv(pixel.red, pixel.green, pixel.blue);
-						lcdDrawPixel(x+_cols, y+_rows, color);
-				}
-		}
+	for(int y = 0; y < _height; y++){
+			for(int x = 0;x < _width; x++){
+					pixel_png pixel = pngle->pixels[y][x];
+					uint16_t color = rgb565_conv(pixel.red, pixel.green, pixel.blue);
+					lcdDrawPixel(x+_cols, y+_rows, color);
+			}
+	}
 #endif
 
-		for(int y = 0; y < _height; y++){
-			for(int x = 0;x < _width; x++){
-				//pixel_png pixel = pngle->pixels[y][x];
-				//colors[x] = rgb565_conv(pixel.red, pixel.green, pixel.blue);
-				colors[x] = pngle->pixels[y][x];
-			}
-			lcdDrawMultiPixels(_cols, y+_rows, _width, colors);
-			vTaskDelay(1);
+	for(int y = 0; y < _height; y++){
+		for(int x = 0;x < _width; x++){
+			//pixel_png pixel = pngle->pixels[y][x];
+			//colors[x] = rgb565_conv(pixel.red, pixel.green, pixel.blue);
+			colors[x] = pngle->pixels[y][x];
 		}
-		lcdUpdateVScreen();
-		free(colors);
-		pngle_destroy(pngle, width, height);
+		lcdDrawMultiPixels(_cols, y+_rows, _width, colors);
+		vTaskDelay(1);
+	}
+	lcdUpdateVScreen();
+	free(colors);
+	pngle_destroy(pngle, width, height);
 
-		endTick = xTaskGetTickCount();
-		diffTick = endTick - startTick;
-		////ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
-		return diffTick;
+	endTick = xTaskGetTickCount();
+	diffTick = endTick - startTick;
+	////ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
+	return diffTick;
 }
 
 TickType_t CodeTest(FontxFile *fx, int width, int height) {
+	ESP_LOGI(TAG, "Start CodeTest");
 	TickType_t startTick, endTick, diffTick;
 	startTick = xTaskGetTickCount();
 
@@ -966,12 +985,11 @@ TickType_t CodeTest(FontxFile *fx, int width, int height) {
 		uint16_t ypos =  fontHeight*(y+1)-1;
 		for(int x=0;x<xmoji;x++) {
 			xpos = lcdDrawCode(fx, xpos, ypos, code, color);
-			lcdUpdateVScreen();
 			if (code == 0xFF) break;
 			code++;
 		}
 	}
-
+	lcdUpdateVScreen();
 	endTick = xTaskGetTickCount();
 	diffTick = endTick - startTick;
 	////ESP_LOGI(__FUNCTION__, "elapsed time[ms]:%d",diffTick*portTICK_PERIOD_MS);
@@ -981,48 +999,48 @@ TickType_t CodeTest(FontxFile *fx, int width, int height) {
 void lcdTest(void *param) {
 	ESP_LOGI(TAG, "Start Display Test");
 	for(;;) {		
-		// FillTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		FillTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// ColorBarTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		ColorBarTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// ArrowTest(fx16G, lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(4000/portTICK_PERIOD_MS);
+		ArrowTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(4000/portTICK_PERIOD_MS);
 
-		// LineTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		LineTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		CircleTest(lcdGetWidth(), lcdGetHeight());
 		lcdUpdateVScreen();
 		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// RoundRectTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		RoundRectTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// RectAngleTest(lcdGetWidth(), lcdGetHeight());
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		RectAngleTest(lcdGetWidth(), lcdGetHeight());
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// TriangleTest(lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		TriangleTest(lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// DirectionTest(fx16G, lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		DirectionTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// HorizontalTest(fx16G, lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		HorizontalTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// VerticalTest(fx16G, lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		VerticalTest(fx16G, lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		FillRectTest(lcdGetWidth(), lcdGetHeight());
 		lcdUpdateVScreen();
@@ -1032,103 +1050,149 @@ void lcdTest(void *param) {
 		lcdUpdateVScreen();
 		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// CodeTest(fx32G, lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		CodeTest(fx32G, lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// CodeTest(fx32L, lcdGetWidth(), lcdGetHeight());
-		// lcdUpdateVScreen();
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		CodeTest(fx32L, lcdGetWidth(), lcdGetHeight());
+		lcdUpdateVScreen();
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
 		char file[32];
-		// strcpy(file, "/spiffs/image.bmp");
-		// BMPTest(file, lcdGetWidth(), lcdGetHeight());
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		strcpy(file, "/spiffs/image.bmp");
+		BMPTest(file, lcdGetWidth(), lcdGetHeight());
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// strcpy(file, "/spiffs/esp32.jpeg");
-		// JPEGTest(file, lcdGetWidth(), lcdGetHeight());
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		strcpy(file, "/spiffs/esp32.jpeg");
+		JPEGTest(file, lcdGetWidth(), lcdGetHeight());
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// strcpy(file, "/spiffs/esp_logo.png");
-		// PNGTest(file, 240, 240);
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		strcpy(file, "/spiffs/esp_logo.png");
+		PNGTest(file, 240, 240);
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// strcpy(file, "/spiffs/qrcode.bmp");
-		// QRTest(file, lcdGetWidth(), lcdGetHeight());
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		strcpy(file, "/spiffs/qrcode.bmp");
+		QRTest(file, lcdGetWidth(), lcdGetHeight());
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 
-		// //Multi Font Test
-		// uint16_t color;
-		// uint8_t ascii[40];
-		// uint16_t margin = 10;
-		// lcdFillScreen(BLACK);
-		// color = WHITE;
-		// lcdSetFontDirection(0);
-		// uint16_t xpos = 0;
-		// uint16_t ypos = 15;
-		// int xd = 0;
-		// int yd = 1;
-		// if(lcdGetWidth() < lcdGetHeight()) {
-		// 	lcdSetFontDirection(0);
-		// 	xpos = (lcdGetWidth()-1)-16;
-		// 	ypos = 0;
-		// 	xd = 1;
-		// 	yd = 0;
-		// }
-		// strcpy((char *)ascii, "16Dot Gothic Font");
-		// lcdDrawString(fx16G, xpos, ypos, ascii, color);
+		//Multi Font Test
+		ESP_LOGI(TAG, "Start MultiFontTest");
+		uint16_t color;
+		uint8_t ascii[40];
+		uint16_t margin = 10;
+		lcdFillScreen(BLACK);
+		color = WHITE;
+		lcdSetFontDirection(0);
+		uint16_t xpos = 0;
+		uint16_t ypos = 15;
+		int xd = 0;
+		int yd = 1;
+		if(lcdGetWidth() < lcdGetHeight()) {
+			lcdSetFontDirection(0);
+			xpos = (lcdGetWidth()-1)-16;
+			ypos = 0;
+			xd = 1;
+			yd = 0;
+		}
+		strcpy((char *)ascii, "16Dot Gothic Font");
+		lcdDrawString(fx16G, xpos, ypos, ascii, color);
 
-		// xpos = xpos - (24 * xd) - (margin * xd);
-		// ypos = ypos + (16 * yd) + (margin * yd);
-		// strcpy((char *)ascii, "24Dot Gothic Font");
-		// lcdDrawString(fx24G, xpos, ypos, ascii, color);
+		xpos = xpos - (24 * xd) - (margin * xd);
+		ypos = ypos + (16 * yd) + (margin * yd);
+		strcpy((char *)ascii, "24Dot Gothic Font");
+		lcdDrawString(fx24G, xpos, ypos, ascii, color);
 
-		// xpos = xpos - (32 * xd) - (margin * xd);
-		// ypos = ypos + (24 * yd) + (margin * yd);
-		// //if (lcdGetWidth() >= 240) {
-		// strcpy((char *)ascii, "32Dot Gothic Font");
-		// lcdDrawString(fx32G, xpos, ypos, ascii, color);
-		// xpos = xpos - (32 * xd) - (margin * xd);;
-		// ypos = ypos + (32 * yd) + (margin * yd);
-		// //}
+		xpos = xpos - (32 * xd) - (margin * xd);
+		ypos = ypos + (24 * yd) + (margin * yd);
+		//if (lcdGetWidth() >= 240) {
+		strcpy((char *)ascii, "32Dot Gothic Font");
+		lcdDrawString(fx32G, xpos, ypos, ascii, color);
+		xpos = xpos - (32 * xd) - (margin * xd);;
+		ypos = ypos + (32 * yd) + (margin * yd);
+		//}
 
-		// xpos = xpos - (10 * xd) - (margin * xd);
-		// ypos = ypos + (10 * yd) + (margin * yd);
-		// strcpy((char *)ascii, "16Dot Mincyo Font");
-		// lcdDrawString(fx16M, xpos, ypos, ascii, color);
+		xpos = xpos - (10 * xd) - (margin * xd);
+		ypos = ypos + (10 * yd) + (margin * yd);
+		strcpy((char *)ascii, "16Dot Mincyo Font");
+		lcdDrawString(fx16M, xpos, ypos, ascii, color);
 
-		// xpos = xpos - (24 * xd) - (margin * xd);;
-		// ypos = ypos + (16 * yd) + (margin * yd);
-		// strcpy((char *)ascii, "24Dot Mincyo Font");
-		// lcdDrawString(fx24M, xpos, ypos, ascii, color);
+		xpos = xpos - (24 * xd) - (margin * xd);;
+		ypos = ypos + (16 * yd) + (margin * yd);
+		strcpy((char *)ascii, "24Dot Mincyo Font");
+		lcdDrawString(fx24M, xpos, ypos, ascii, color);
 
-		// //if (lcdGetWidth() >= 240) {
-		// xpos = xpos - (32 * xd) - (margin * xd);;
-		// ypos = ypos + (24 * yd) + (margin * yd);
-		// strcpy((char *)ascii, "32Dot Mincyo Font");
-		// lcdDrawString(fx32M, xpos, ypos, ascii, color);
-		// //}
-		// lcdSetFontDirection(0);
-		// lcdUpdateVScreen();
-		// //ESP_LOGI(TAG, "MultiFont Done");
-		// vTaskDelay(1000/portTICK_PERIOD_MS);
+		//if (lcdGetWidth() >= 240) {
+		xpos = xpos - (32 * xd) - (margin * xd);;
+		ypos = ypos + (24 * yd) + (margin * yd);
+		strcpy((char *)ascii, "32Dot Mincyo Font");
+		lcdDrawString(fx32M, xpos, ypos, ascii, color);
+		//}
+		lcdSetFontDirection(0);
+		lcdUpdateVScreen();
+		//ESP_LOGI(TAG, "MultiFont Done");
+		vTaskDelay(1000/portTICK_PERIOD_MS);
 		
 	}
 }
 #endif
+
+void showJuventusLogo() {
+	lcdFillScreen(BLACK);
+	pixel_jpeg **pixels;
+	uint16_t imageWidth;
+	uint16_t imageHeight;
+	uint16_t width = lcdGetWidth();
+	uint16_t height = lcdGetHeight();
+	char file[32];
+	strcpy(file, "/spiffs/eduboard1.jpeg");
+	esp_err_t err = decode_jpeg(&pixels, file, width, height, &imageWidth, &imageHeight);
+	if (err == ESP_OK) {
+		uint16_t _width = width;
+		uint16_t _cols = 0;
+		if (width > imageWidth) {
+			_width = imageWidth;
+			_cols = (width - imageWidth) / 2;
+		}
+		uint16_t _height = height;
+		uint16_t _rows = 0;
+		if (height > imageHeight) {
+			_height = imageHeight;
+			_rows = (height - imageHeight) / 2;
+		}
+		uint16_t *colors = (uint16_t*)malloc(sizeof(uint16_t) * _width);
+		for(int y = 0; y < _height; y++){
+			for(int x = 0;x < _width; x++){
+				colors[x] = pixels[y][x];
+			}
+			lcdDrawMultiPixels(_cols, y+_rows, _width, colors);
+			vTaskDelay(1);
+		}
+		lcdUpdateVScreen();
+		free(colors);
+		release_image(&pixels, width, height);
+	}
+}
 
 void eduboard_init_lcd() {
     ESP_LOGI(TAG, "Init LCD...");
 	lcd_init();
 	ESP_LOGI(TAG, "Init LCD Done.");
 	ESP_LOGI(TAG, "Init VScreen...");
-    //lcdSetupVScreen(rot_90);
+	rotation_t screenRotation = rot_0;
+	#ifdef CONFIG_LCD_ILI9488
+		screenRotation = rot_90;
+	#endif
+    #ifdef CONFIG_USE_VSCREEN
+	lcdSetupVScreen(screenRotation);
+	#endif
 	lcdBacklightOn();
 	lcdFillScreen(BLACK);
 	lcdUpdateVScreen();
     ESP_LOGI(TAG, "Init VScreen Done.");
 #ifdef CONFIG_LCD_TEST
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
+#else
+	showJuventusLogo();
 #endif
 
 }
