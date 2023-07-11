@@ -29,6 +29,10 @@ FontxFile fx16M[2];
 FontxFile fx24M[2];
 FontxFile fx32M[2];
 
+FontxFile fx20_SIO8859_1[2];
+
+FontxFile fx24Comic[2];
+
 void eduboard_init_spiffs(void) {
 	ESP_LOGI(TAG, "Initializing SPIFFS");
 
@@ -73,6 +77,11 @@ void eduboard_init_spiffs(void) {
 	InitFontx(fx16M,"/spiffs/fonts/ILMH16XB.FNT",""); // 8x16Dot Mincyo
 	InitFontx(fx24M,"/spiffs/fonts/ILMH24XB.FNT",""); // 12x24Dot Mincyo
 	InitFontx(fx32M,"/spiffs/fonts/ILMH32XB.FNT",""); // 16x32Dot Mincyo
+
+	InitFontx(fx20_SIO8859_1, "/spiffs/fonts/font10x20-ISO8859-1.fnt", "");
+
+	InitFontx(fx24Comic, "/spiffs/fonts/COMIC24XB.FNT", ""); //24Dot Comic Sans
+	
 	ESP_LOGI(TAG, "Spiffs mounted successfully");
 	ESP_LOGI(TAG, "All Fonts loaded");
 }

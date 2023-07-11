@@ -1172,6 +1172,15 @@ void showJuventusLogo() {
 		release_image(&pixels, width, height);
 	}
 }
+void drawComicSansString(void* param) {
+	uint8_t mytext[20];
+	strcpy((char *)mytext, "Eduboard V2.1");
+	lcdDrawString(fx24Comic, 40, 170, &mytext[0], WHITE);
+	lcdUpdateVScreen();
+	for(;;) {
+		vTaskDelay(1000);
+	}
+}
 
 void eduboard_init_lcd() {
     ESP_LOGI(TAG, "Init LCD...");
@@ -1193,6 +1202,7 @@ void eduboard_init_lcd() {
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
 #else
 	showJuventusLogo();
+	xTaskCreate(drawComicSansString, "drawcomicsanstask", 4*2048, NULL, 2, NULL);
 #endif
 
 }

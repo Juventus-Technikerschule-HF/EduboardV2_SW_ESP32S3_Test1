@@ -16,4 +16,8 @@ extern FontxFile fx16M[2];
 extern FontxFile fx24M[2];
 extern FontxFile fx32M[2];
 
+extern FontxFile fx20_SIO8859_1[2];
+
+extern FontxFile fx24Comic[2];
+
 void eduboard_init_spiffs(void);
