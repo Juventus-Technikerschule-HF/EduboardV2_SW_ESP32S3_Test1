@@ -111,6 +111,7 @@ void app_main()
     eduboard_init_ADC();
     xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
     eduboard_init_tmp112();    
+    eduboard_init_ft6236();
     eduboard_init_lcd();       
     int i = 0;
     for(;;) {

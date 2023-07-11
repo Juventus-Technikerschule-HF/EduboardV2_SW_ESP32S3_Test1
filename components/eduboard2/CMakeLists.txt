@@ -11,6 +11,7 @@ idf_component_register(SRCS                 .
                                             ./eduboardLCD/src/pngle.c
                                             ./eduboardLCD/src/decode_jpeg.c
                                             ./eduboardSensor/src/eduboard2_tmp112_esp32_s3.c
+                                            ./eduboardTouch/src/eduboard2_ft6236_esp32_s3.c
                                             ./eduboardSpiffs/src/fontx.c
                                             ./eduboardSpiffs/src/eduboard2_spiffs.c
                         INCLUDE_DIRS        . 
@@ -20,6 +21,7 @@ idf_component_register(SRCS                 .
                                             eduboardAnalog
                                             eduboardLCD
                                             eduboardSensor
+                                            eduboardTouch
                                             eduboardSpiffs
                         REQUIRES            driver 
                                             led_strip_encoder

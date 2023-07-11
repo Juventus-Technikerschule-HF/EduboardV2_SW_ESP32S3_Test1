@@ -55,11 +55,11 @@ static int get_temp()
 		//Positive Number:
 		temp_val_local = (0.0625 * temp_raw);
 	} else {
-		ESP_LOGI(TAG, "1: %4X", temp_raw);
+		//ESP_LOGI(TAG, "1: %4X", temp_raw);
 		temp_raw = ((~temp_raw)+1)&0x0FFF;
-		ESP_LOGI(TAG, "2: %4X", temp_raw);
+		//ESP_LOGI(TAG, "2: %4X", temp_raw);
 		temp_val_local = -(0.0625 * temp_raw);
-		ESP_LOGI(TAG, "3: %f", temp_val_local);
+		//ESP_LOGI(TAG, "3: %f", temp_val_local);
 
 	}
 	return ESP_OK;
@@ -75,7 +75,7 @@ void tmp112_poll(void)
 
 void eduboard_init_tmp112(void)
 {
-	gpi2c_init(GPIO_I2C_SDA, GPIO_I2C_SCL, 1000000);
+	gpi2c_init(GPIO_I2C_SDA, GPIO_I2C_SCL, 400000);
     uint16_t tmp;
     read_register16(TMP112_REG_CONF, &tmp);
 	ESP_LOGI(TAG, "TMP112 read: %4X", (int)tmp);

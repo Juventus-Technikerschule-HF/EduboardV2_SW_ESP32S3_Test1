@@ -44,10 +44,12 @@
     #define CONFIG_LCD_RESOLUTION_320x480
 
     #define CONFIG_USE_VSCREEN
-
-    //#define CONFIG_LCD_TEST
+    
+    //#define CONFIG_LCD_TEST    
 #endif
 
 #define CONFIG_ENABLE_SENSOR_TMP112
+
+#define CONFIG_ENABLE_TOUCH_FT6236
 
 #define CONFIG_ENABLE_SPIFFS
