@@ -21,6 +21,8 @@
 
 #define TAG "lcdDriver"
 
+#ifdef CONFIG_ENABLE_LCD
+
 TFT_t dev;
 
 struct {
@@ -817,3 +819,5 @@ void lcdDrawDataUInt8(uint16_t x, uint16_t y, uint8_t width, uint8_t height, uin
 void lcdDrawDataInt8(uint16_t x, uint16_t y, uint8_t width, uint8_t height, int8_t min, int8_t max, int8_t* data, uint16_t color) {
 
 }
+
+#endif

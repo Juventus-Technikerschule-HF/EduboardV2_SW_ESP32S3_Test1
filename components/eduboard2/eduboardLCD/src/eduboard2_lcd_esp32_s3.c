@@ -18,6 +18,9 @@
 #include "pngle.h"
 
 #define TAG "Eduboard2_LCDDriver"
+
+#ifdef CONFIG_ENABLE_LCD
+
 #ifdef CONFIG_LCD_TEST
 TickType_t FillTest(int width, int height) {
 	ESP_LOGI(TAG, "Start FillTest");
@@ -1202,7 +1205,8 @@ void eduboard_init_lcd() {
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
 #else
 	showJuventusLogo();
-	xTaskCreate(drawComicSansString, "drawcomicsanstask", 4*2048, NULL, 2, NULL);
+	//xTaskCreate(drawComicSansString, "drawcomicsanstask", 4*2048, NULL, 2, NULL);
 #endif
-
 }
+
+#endif
