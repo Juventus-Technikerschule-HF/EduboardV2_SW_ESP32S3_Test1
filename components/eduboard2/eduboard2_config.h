@@ -25,6 +25,8 @@
 #define CONFIG_ENABLE_SW2
 #define CONFIG_ENABLE_SW3
 
+#define CONFIG_ENABLE_ROTARYENCODER
+
 /*Analog Input COnfig*/
 #define CONFIG_ENABLE_AN0
 #ifdef CONFIG_ENABLE_AN0

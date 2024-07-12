@@ -20,8 +20,8 @@
     #define GPIO_PWMLED_G       40
     #define GPIO_PWMLED_B       41
 
-    #define GPIO_PotEnc_A       41
-    #define GPIO_PotEnc_B       40
+    #define GPIO_RotEnc_A       41
+    #define GPIO_RotEnc_B       40
     #define GPIO_PotEnc_SW      39
 
     #define GPIO_WS2812         15
@@ -108,6 +108,10 @@
     #define CONFIG_ENABLE_BUTTONS
 #endif
 #ifdef CONFIG_ENABLE_SW3
+    #define CONFIG_ENABLE_BUTTONS
+#endif
+
+#ifdef CONFIG_ENABLE_ROTARYENCODER
     #define CONFIG_ENABLE_BUTTONS
 #endif
 
