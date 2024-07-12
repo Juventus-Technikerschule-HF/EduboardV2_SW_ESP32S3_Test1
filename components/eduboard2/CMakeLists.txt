@@ -14,6 +14,7 @@ idf_component_register(SRCS                 .
                                             ./eduboardTouch/src/eduboard2_ft6236_esp32_s3.c
                                             ./eduboardSpiffs/src/fontx.c
                                             ./eduboardSpiffs/src/eduboard2_spiffs.c
+                                            ./eduboardInit/src/eduboard2_init.c
                         INCLUDE_DIRS        . 
                                             eduboardLED 
                                             eduboardBuzzer 
@@ -23,6 +24,7 @@ idf_component_register(SRCS                 .
                                             eduboardSensor
                                             eduboardTouch
                                             eduboardSpiffs
+                                            eduboardInit
                         REQUIRES            driver 
                                             led_strip_encoder
                                             esp_adc

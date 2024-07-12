@@ -1185,28 +1185,38 @@ void drawComicSansString(void* param) {
 	}
 }
 
+void showVersionString() {
+	uint8_t mytext[20];
+	float version = EDUBOARD2_HWVERSION;
+	sprintf((char *)mytext, "Eduboard V%.1f", version);
+	lcdDrawString(fx24Comic, 55, 300, &mytext[0], WHITE);
+	lcdUpdateVScreen();
+}
+
 void eduboard_init_lcd() {
     ESP_LOGI(TAG, "Init LCD...");
 	lcd_init();
 	ESP_LOGI(TAG, "Init LCD Done.");
-	ESP_LOGI(TAG, "Init VScreen...");
 	rotation_t screenRotation = rot_0;
 	#ifdef CONFIG_LCD_ILI9488
-		screenRotation = rot_90;
+	screenRotation = rot_90;
 	#endif
-    #ifdef CONFIG_USE_VSCREEN
+	#ifdef CONFIG_USE_VSCREEN
+	ESP_LOGI(TAG, "Init VScreen...");
 	lcdSetupVScreen(screenRotation);
 	#endif
 	lcdBacklightOn();
 	lcdFillScreen(BLACK);
+	#ifdef CONFIG_USE_VSCREEN
 	lcdUpdateVScreen();
     ESP_LOGI(TAG, "Init VScreen Done.");
-#ifdef CONFIG_LCD_TEST
+	#endif
+	#ifdef CONFIG_LCD_TEST
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
-#else
+	#else
 	showJuventusLogo();
-	//xTaskCreate(drawComicSansString, "drawcomicsanstask", 4*2048, NULL, 2, NULL);
-#endif
+	showVersionString();
+	#endif
 }
 
 #endif

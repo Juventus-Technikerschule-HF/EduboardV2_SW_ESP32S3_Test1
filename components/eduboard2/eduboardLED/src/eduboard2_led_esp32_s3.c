@@ -7,6 +7,7 @@
 #endif
 #ifdef CONFIG_ENABLE_WS2812
 #include <string.h>
+#include <assert.h>
 #include "driver/rmt_tx.h"
 #include "led_strip_encoder.h"
 #endif
@@ -226,6 +227,9 @@ void eduboard_init_leds() {
         gpio_config(&io_conf);
     }
     #ifdef CONFIG_ENABLE_PWMLED
+    #ifdef CONFIG_ENABLE_ROTARYENCODER
+    ESP_LOGE(TAG, "PWM-LED and RotaryEncoder are enabled at the same time. Pins are shared.");
+    #endif
     init_pwm_led();
     #endif
     #ifdef CONFIG_ENABLE_WS2812

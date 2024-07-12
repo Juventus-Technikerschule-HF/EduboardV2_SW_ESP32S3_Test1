@@ -20,9 +20,7 @@
 void gpioTestTask(void* p) {
     static uint8_t pwmstate = 0;
     static uint8_t ledstate = 0x00;
-    eduboard_init_leds();
     for(;;) {
-        //ESP_LOGI(TAG, "GPIO Task:");
         if(getButtonState(SW0, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Short:");
             eduboard_start_buzzer(1000, 100);  
@@ -56,23 +54,23 @@ void gpioTestTask(void* p) {
             pwmstate++;
             switch(pwmstate) {
                 case 1:
-                    eduboard_set_pwmled(10, 50, 100);
+                    // eduboard_set_pwmled(10, 50, 100);
                     eduboard_set_ws2812(10, 50, 100);
                     break;
                 case 2:
-                    eduboard_set_pwmled(50, 100, 10);
+                    // eduboard_set_pwmled(50, 100, 10);
                     eduboard_set_ws2812(50, 100, 10);
                     break;
                 case 3:
-                    eduboard_set_pwmled(100, 10, 50);
+                    // eduboard_set_pwmled(100, 10, 50);
                     eduboard_set_ws2812(100, 10, 50);
                     break;
                 case 4:
-                    eduboard_set_pwmled(100, 100, 100);
+                    // eduboard_set_pwmled(100, 100, 100);
                     eduboard_set_ws2812(100, 100, 100);
                     break;
                 case 5:
-                    eduboard_set_pwmled(0, 0, 0);
+                    // eduboard_set_pwmled(0, 0, 0);
                     eduboard_set_ws2812(0, 0, 0);
                     pwmstate = 0;
                     break;
@@ -104,27 +102,13 @@ void app_main()
     // initMemon();
     // memon_enable();    
     
-    //eduboard_init_spiffs();
-    eduboard_init_buzzer();    
-    eduboard_init_buttons();
-    eduboard_set_buzzer_volume(3);
-    eduboard_init_ADC();
+    eduboard2_init();
+
     xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
-    eduboard_init_tmp112();    
-    //eduboard_init_ft6236();
-    //eduboard_init_lcd();       
-    int i = 0;
     for(;;) {
-        i++;
-        // ESP_LOGI(TAG, "Test: %i", i);      
-        // eduboard_start_buzzer(1000, 100);  
-        // vTaskDelay(100/portTICK_PERIOD_MS);
-        // eduboard_start_buzzer(1500, 100);  
-        // vTaskDelay(100/portTICK_PERIOD_MS);
-        // eduboard_start_buzzer(2000, 100);  
         tmp112_poll();
         ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
         ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
-        vTaskDelay(2000/portTICK_PERIOD_MS);        
+        vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }

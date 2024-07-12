@@ -18,6 +18,7 @@ esp_err_t gpi2c_readRegister(uint8_t addr, uint8_t reg, uint8_t * data, uint8_t 
     xSemaphoreGive(i2cMutex);
     return err;
 }
+
 esp_err_t gpi2c_writeRegister(uint8_t addr, uint8_t reg, uint8_t * data, uint8_t len) {
     esp_err_t err = ESP_ERR_TIMEOUT;
     xSemaphoreTake(i2cMutex, 50/portTICK_PERIOD_MS);
@@ -30,6 +31,7 @@ esp_err_t gpi2c_writeRegister(uint8_t addr, uint8_t reg, uint8_t * data, uint8_t
     xSemaphoreGive(i2cMutex);
     return err;
 }
+
 esp_err_t gpi2c_writeData(uint8_t addr, uint8_t * data, uint8_t len) {
     esp_err_t err = ESP_ERR_TIMEOUT;
     xSemaphoreTake(i2cMutex, 50/portTICK_PERIOD_MS);
@@ -37,8 +39,6 @@ esp_err_t gpi2c_writeData(uint8_t addr, uint8_t * data, uint8_t len) {
     xSemaphoreGive(i2cMutex);
     return err;
 }
-
-
 
 void gpi2c_init(int pinI2C_SDA, int pinI2C_SCL, uint32_t frequency) {
     if(i2cMutex == NULL) {

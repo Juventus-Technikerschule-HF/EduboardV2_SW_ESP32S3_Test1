@@ -17,7 +17,9 @@
         "utility": "c",
         "eduboard2_sensor.h": "c",
         "lcddriver.h": "c",
-        "string": "c"
+        "string": "c",
+        "gpi2c.h": "c",
+        "eduboard2_init.h": "c",
     },
     "cmake.configureOnOpen": false
 }
