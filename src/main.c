@@ -79,6 +79,17 @@ void gpioTestTask(void* p) {
         if(getButtonState(SW3, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW3 = Long:");
         }
+        if(getEncoderButtonState(false) == SHORT_PRESSED) {
+            ESP_LOGI(TAG, "RotEnc Button Short Pressed");
+        }
+        if(getEncoderButtonState(true) == LONG_PRESSED) {
+            ESP_LOGI(TAG, "RotEnc Button Long Pressed");
+            getEncoderRotation(true);
+        }
+        int32_t rotenc_value = getEncoderRotation(false);
+        // if(rotenc_value != 0) {
+        ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
+        // }
         
         for(int i = 0; i< 8; i++) {
             if(ledstate == i) {

@@ -20,7 +20,9 @@
         "string": "c",
         "gpi2c.h": "c",
         "eduboard2_init.h": "c",
-        "eduboard2_rotary_encoder.h": "c"
+        "eduboard2_rotary_encoder.h": "c",
+        "freertos.h": "c",
+        "freertosconfig.h": "c"
     },
     "cmake.configureOnOpen": false
 }

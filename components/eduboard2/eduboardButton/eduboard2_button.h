@@ -16,8 +16,8 @@
     #define SW3 3
 #endif
 
-#define BUTTONPRESS_LONG_MS     1000
-#define BUTTONPRESS_SHORT_MS    100
+#define BUTTONPRESS_LONG_MS     500
+#define BUTTONPRESS_SHORT_MS    50
 
 typedef enum {
     NOT_PRESSED, 

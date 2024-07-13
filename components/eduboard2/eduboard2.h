@@ -14,6 +14,9 @@
 #ifdef CONFIG_ENABLE_BUTTONS
     #include "eduboardButton/eduboard2_button.h"
 #endif
+#ifdef CONFIG_ENABLE_ROTARYENCODER
+    #include "eduboardRotaryEncoder/eduboard2_rotary_encoder.h"
+#endif
 
 #ifdef CONFIG_ENABLE_ANALOG
     #include "eduboardAnalog/eduboard2_analog.h"

@@ -22,7 +22,7 @@
 
     #define GPIO_RotEnc_A       41
     #define GPIO_RotEnc_B       40
-    #define GPIO_PotEnc_SW      39
+    #define GPIO_RotEnc_SW      39
 
     #define GPIO_WS2812         15
 
