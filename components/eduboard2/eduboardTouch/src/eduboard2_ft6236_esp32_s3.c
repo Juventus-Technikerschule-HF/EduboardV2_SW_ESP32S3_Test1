@@ -13,10 +13,9 @@
 #define TAG "FT6236_driver"
 
 //#define FT6236_ADDR             0x36
-#define FT6236_ADDR             0x38
+#define FT6236_ADDR             0x38 //I2C Address
 
-#define FT6236_ADDR             0x38           // I2C address
-#define FT6236_G_FT5201ID       0xA8     // FocalTech's panel ID
+#define FT6236_G_FT5201ID       0xA8 // FocalTech's panel ID
 #define FT6236_REG_NUMTOUCHES   0x02 // Number of touch points
 
 #define FT6236_NUM_X            0x33 // Touch X position
@@ -42,6 +41,9 @@
 #define FT6236_DEFAULT_THRESHOLD    128 // Default threshold for touch detection
 #define FT6236_REFRESH_RATE_HZ      50
 
+SemaphoreHandle_t touchlock;
+touchevent_t touchevent;
+
 void writeFT6236TouchRegister(uint8_t reg, uint8_t val) {
     gpi2c_writeRegister(FT6236_ADDR, reg, (uint8_t*)&val, 1);
 }
@@ -57,15 +59,11 @@ uint8_t readFT6236TouchLocation(touchevent_t *te) {
     uint8_t touches = touchdata[2];
     if(touches>0 && touches <= 2) {
         te->touches = touches;
-        te->points[0].strength = touchdata[0x07]; //Weight
         te->points[0].x = ((touchdata[3]&0x0F)<<8) + touchdata[4];
         te->points[0].y = ((touchdata[5]&0x0F)<<8) + touchdata[6];
-        te->points[0].area = touchdata[0x08];
         if(touches>1) {
-            te->points[1].strength = touchdata[0x0D]; //Weight
             te->points[1].x = ((touchdata[0x09]&0x0F)<<8) + touchdata[0x0A];
             te->points[1].y = ((touchdata[0x0B]&0x0F)<<8) + touchdata[0x0C];
-            te->points[0].area = touchdata[0x0E];
         }
         return touches;
     }
@@ -79,14 +77,13 @@ void touchupdate_task(void* param) {
     touchevent_t te;
     for(;;) {
         if(readFT6236TouchLocation(&te) > 0) {
-            ESP_LOGI(TAG, "Touched");
-            ESP_LOGI(TAG, "touches: %i", te.touches);
-            if(te.touches > 0) {
-                ESP_LOGI(TAG, "P1: %i:%i - strength:%i - area:%i", te.points[0].x, te.points[0].y, te.points[0].strength, te.points[0].area);
-                if(te.touches > 1) {
-                    ESP_LOGI(TAG, "P2: %i:%i - strength:%i - area:%i", te.points[1].x, te.points[1].y, te.points[1].strength, te.points[1].area);
-                }
-            }
+            xSemaphoreTake(touchlock, portMAX_DELAY);
+            touchevent.touches = te.touches;
+            touchevent.points[0].x = te.points[0].x;
+            touchevent.points[0].y = te.points[0].y;
+            touchevent.points[1].x = te.points[1].x;
+            touchevent.points[1].y = te.points[1].y;
+            xSemaphoreGive(touchlock);
         }
         vTaskDelay((1000/FT6236_REFRESH_RATE_HZ)/portTICK_PERIOD_MS);
     }
@@ -94,6 +91,7 @@ void touchupdate_task(void* param) {
 
 void eduboard_init_ft6236(void) {
     ESP_LOGI(TAG, "Init FT6236...");
+    touchlock = xSemaphoreCreateMutex();
     gpi2c_init(GPIO_I2C_SDA, GPIO_I2C_SCL, 400000);
     writeFT6236TouchRegister(FT6236_REG_MODE, 0x00); // device mode = Normal
     writeFT6236TouchRegister(FT6236_REG_G_MODE, 0x01); // Interrupt trigger mode
@@ -101,4 +99,22 @@ void eduboard_init_ft6236(void) {
     writeFT6236TouchRegister(FT6236_REG_CTRL, 0); // Active Mode.
     xTaskCreate(touchupdate_task, "touch_task", 2*2048, NULL, 3, NULL);
     ESP_LOGI(TAG, "Init FT6236 done.");
+}
+
+touchevent_t getTouchEvent(bool reset) {
+    touchevent_t returnvalue;
+    xSemaphoreTake(touchlock, portMAX_DELAY);
+    memcpy(&returnvalue, &touchevent, sizeof(touchevent_t));
+    if(reset == true) {
+        memset(&touchevent, 0, sizeof(touchevent_t));
+    }
+    xSemaphoreGive(touchlock);
+    return returnvalue;
+}
+
+bool isTouched() {
+    xSemaphoreTake(touchlock, portMAX_DELAY);
+    uint8_t touches = touchevent.touches;
+    xSemaphoreGive(touchlock);
+    return (touches > 0 ? true : false);
 }

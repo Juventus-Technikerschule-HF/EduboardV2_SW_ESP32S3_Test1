@@ -90,7 +90,15 @@ void gpioTestTask(void* p) {
         // if(rotenc_value != 0) {
         ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
         // }
-        
+        if(isTouched()) {
+            touchevent_t touchevent = getTouchEvent(true);
+            ESP_LOGI(TAG, "Touched");
+            ESP_LOGI(TAG, "touches: %i", touchevent.touches);
+            ESP_LOGI(TAG, "P1: %i:%i", touchevent.points[0].x, touchevent.points[0].y);
+            if(touchevent.touches > 1) {
+                ESP_LOGI(TAG, "P2: %i:%i", touchevent.points[1].x, touchevent.points[1].y);
+            }
+        }
         for(int i = 0; i< 8; i++) {
             if(ledstate == i) {
                 eduboard_set_led(i, 1);
