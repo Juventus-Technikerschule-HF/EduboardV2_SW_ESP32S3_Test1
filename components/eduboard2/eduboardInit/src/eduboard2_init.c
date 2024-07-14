@@ -40,6 +40,9 @@
 #ifdef CONFIG_ENABLE_LCD
     #include "eduboardLCD/eduboard2_lcd.h"
 #endif
+#ifdef CONFIG_ENABLE_FLASH
+    #include "eduboardFlash/eduboard2_flash.h"
+#endif
 
 #ifdef CONFIG_ENABLE_SENSOR_TMP112
     #include "eduboardSensor/eduboard2_sensor.h"
@@ -88,6 +91,10 @@ void eduboard2_initTask(void* param) {
 
     #ifdef CONFIG_ENABLE_LCD
     eduboard_init_lcd();
+    #endif
+    
+    #ifdef CONFIG_ENABLE_FLASH
+    eduboard_init_flash();
     #endif
 
     #ifdef CONFIG_ENABLE_SENSOR_TMP112

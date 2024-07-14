@@ -61,3 +61,5 @@
     // #define CONFIG_RTC_RESET_DATA_ON_STARTUP
     // #define CONFIG_RTC_SHOW_TIME
 #endif
+
+#define CONFIG_ENABLE_FLASH

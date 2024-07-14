@@ -11,6 +11,7 @@ idf_component_register(SRCS                 .
                                             ./eduboardLCD/src/decode_png.c
                                             ./eduboardLCD/src/pngle.c
                                             ./eduboardLCD/src/decode_jpeg.c
+                                            ./eduboardFlash/src/eduboard2_flash_esp32_s3.c
                                             ./eduboardSensor/src/eduboard2_tmp112_esp32_s3.c
                                             ./eduboardTouch/src/eduboard2_ft6236_esp32_s3.c
                                             ./eduboardRTC/src/eduboard2_rtc_esp32_s3.c
@@ -24,6 +25,7 @@ idf_component_register(SRCS                 .
                                             eduboardRotaryEncoder
                                             eduboardAnalog
                                             eduboardLCD
+                                            eduboardFlash
                                             eduboardSensor
                                             eduboardTouch
                                             eduboardRTC

@@ -23,6 +23,7 @@ void gpioTestTask(void* p) {
     static int32_t rotenc_value_last = 0;
     SemaphoreHandle_t sem_alarm;
     sem_alarm = xSemaphoreCreateBinary();
+    eduboard_set_buzzer_volume(40);
     for(;;) {
         if(getButtonState(SW0, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Short:");
@@ -158,9 +159,6 @@ void app_main()
 
     xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
     for(;;) {
-        tmp112_poll();
-        ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
-        ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
         // tmp112_poll();
         // ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
         // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());

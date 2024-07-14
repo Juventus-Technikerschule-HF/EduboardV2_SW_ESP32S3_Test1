@@ -26,7 +26,11 @@
         "eduboard2_rtc.h": "c",
         "cstdint": "c",
         "random": "c",
-        "limits": "c"
+        "limits": "c",
+        "eduboard2_flash.h": "c",
+        "spi_pins.h": "c",
+        "esp_flash.h": "c",
+        "esp_flash_spi_init.h": "c"
     },
     "cmake.configureOnOpen": false
 }
