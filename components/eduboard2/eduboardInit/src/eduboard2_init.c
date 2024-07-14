@@ -102,7 +102,9 @@ void eduboard2_initTask(void* param) {
 
 void eduboard2_init() {
     sem_initdone = xSemaphoreCreateBinary();
+    ESP_LOGI(TAG, "Init Eduboard2...");
     xTaskCreate(eduboard2_initTask, "init_task", 4*2048, NULL, 10, NULL);
     xSemaphoreTake(sem_initdone, portMAX_DELAY);
+    ESP_LOGI(TAG, "Init Eduboard2 done");
     vSemaphoreDelete(sem_initdone);
 }

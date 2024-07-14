@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#define TAG "Sensor_TMP112"
+#define TAG "Sensor_TMP112_Driver"
 
 /* Copyright 2016 The Chromium OS Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be

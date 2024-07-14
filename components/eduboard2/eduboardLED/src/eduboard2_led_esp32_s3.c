@@ -12,7 +12,7 @@
 #include "led_strip_encoder.h"
 #endif
 
-#define TAG "Eduboard2_LEDDriver"
+#define TAG "LED_Driver"
 
 
 

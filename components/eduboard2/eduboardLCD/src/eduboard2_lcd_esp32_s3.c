@@ -17,7 +17,7 @@
 #include "decode_png.h"
 #include "pngle.h"
 
-#define TAG "Eduboard2_LCDDriver"
+#define TAG "LCD_Driver"
 
 #ifdef CONFIG_ENABLE_LCD
 

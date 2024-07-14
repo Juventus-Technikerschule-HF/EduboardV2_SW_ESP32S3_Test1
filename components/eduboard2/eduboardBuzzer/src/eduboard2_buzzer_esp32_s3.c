@@ -7,7 +7,7 @@
 #include "driver/ledc.h"
 #include "esp_err.h"
 
-#define TAG "Eduboard2_BuzzerDriver"
+#define TAG "Buzzer_Driver"
 
 #define BUZZER_TIMER              LEDC_TIMER_0
 #define BUZZER_MODE               LEDC_LOW_SPEED_MODE

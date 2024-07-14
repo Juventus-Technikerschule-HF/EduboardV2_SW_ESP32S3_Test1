@@ -7,7 +7,7 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
-#define TAG Eduboard2_ButtonDriver
+#define TAG "Button_Driver"
 #define BUTTON_UPDATE_TIME_MS       10
 
 typedef struct {

@@ -7,7 +7,7 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
-#define TAG "Eduboard2_RotaryEncoderDriver"
+#define TAG "RotaryEncoder_Driver"
 #ifdef ROTARYENCODER_USE_INTERRUPTS
 #define ROTARY_ENCODER_UPDATE_TIME_MS       10
 #else

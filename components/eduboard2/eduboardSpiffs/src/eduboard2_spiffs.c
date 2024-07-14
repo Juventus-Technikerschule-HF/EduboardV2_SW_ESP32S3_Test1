@@ -18,7 +18,7 @@
 
 #include "../eduboard2_spiffs.h"
 
-#define TAG "Eduboard2_SpiffsDriver"
+#define TAG "Spiffs_Driver"
 
 FontxFile fx16G[2];
 FontxFile fx24G[2];
