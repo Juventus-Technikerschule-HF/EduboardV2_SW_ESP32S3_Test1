@@ -142,7 +142,7 @@
 #define ILI9488_CMD_ADJUST_CONTROL_6                0xFC
 #define ILI9488_CMD_ADJUST_CONTROL_7                0xFF
 
-#define HOST_ID SPI2_HOST
+// #define HOST_ID SPI2_HOST
 
 extern TFT_t * lcddevice;
 

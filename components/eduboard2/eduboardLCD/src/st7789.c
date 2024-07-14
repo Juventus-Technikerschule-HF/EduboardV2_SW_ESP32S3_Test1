@@ -27,25 +27,13 @@ TFT_t * lcddevice = NULL;
 
 void st7789_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, int16_t PIN_CS, int16_t PIN_DC, int16_t PIN_RESET, int16_t PIN_BL)
 {
-	esp_err_t ret;
-
-	//ESP_LOGI(TAG, "GPIO_CS=%d",GPIO_CS);
-	if ( PIN_CS >= 0 ) {
-		//gpio_pad_select_gpio( GPIO_CS );
-		gpio_reset_pin( PIN_CS );
-		gpio_set_direction( PIN_CS, GPIO_MODE_OUTPUT );
-		gpio_set_level( PIN_CS, 0 );
-	}
-
 	//ESP_LOGI(TAG, "GPIO_DC=%d",GPIO_DC);
-	//gpio_pad_select_gpio( GPIO_DC );
 	gpio_reset_pin( PIN_DC );
 	gpio_set_direction( PIN_DC, GPIO_MODE_OUTPUT );
 	gpio_set_level( PIN_DC, 0 );
 
 	//ESP_LOGI(TAG, "GPIO_RESET=%d",GPIO_RESET);
 	if ( PIN_RESET >= 0 ) {
-		//gpio_pad_select_gpio( GPIO_RESET );
 		gpio_reset_pin( PIN_RESET );
 		gpio_set_direction( PIN_RESET, GPIO_MODE_OUTPUT );
 		gpio_set_level( PIN_RESET, 1 );
@@ -58,48 +46,21 @@ void st7789_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, int
 
 	//ESP_LOGI(TAG, "GPIO_BL=%d",GPIO_BL);
 	if ( PIN_BL >= 0 ) {
-		//gpio_pad_select_gpio(GPIO_BL);
 		gpio_reset_pin(PIN_BL);
 		gpio_set_direction( PIN_BL, GPIO_MODE_OUTPUT );
 		gpio_set_level( PIN_BL, 0 );
 	}
 
-	//ESP_LOGI(TAG, "GPIO_MOSI=%d",GPIO_MOSI);
-	//ESP_LOGI(TAG, "GPIO_SCLK=%d",GPIO_SCLK);
-	spi_bus_config_t buscfg = {
-		.mosi_io_num = PIN_MOSI,
-		.miso_io_num = -1,
-		.sclk_io_num = PIN_SCLK,
-		.quadwp_io_num = -1,
-		.quadhd_io_num = -1,
-		.max_transfer_sz = 0,
-		.flags = 0
-	};
+	// spi_device_interface_config_t devcfg;
+	// memset(&devcfg, 0, sizeof(devcfg));
+	// devcfg.clock_speed_hz = SPI_Frequency;
+	// devcfg.queue_size = 7;
+	// devcfg.mode = 2;
+	// devcfg.flags = SPI_DEVICE_NO_DUMMY;
 
-	ret = spi_bus_initialize( HOST_ID, &buscfg, SPI_DMA_CH_AUTO );
-	//ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
-	assert(ret==ESP_OK);
-
-	spi_device_interface_config_t devcfg;
-	memset(&devcfg, 0, sizeof(devcfg));
-	devcfg.clock_speed_hz = SPI_Frequency;
-	devcfg.queue_size = 7;
-	devcfg.mode = 2;
-	devcfg.flags = SPI_DEVICE_NO_DUMMY;
-
-	if ( PIN_CS >= 0 ) {
-		devcfg.spics_io_num = PIN_CS;
-	} else {
-		devcfg.spics_io_num = -1;
-	}
-	
-	spi_device_handle_t handle;
-	ret = spi_bus_add_device( HOST_ID, &devcfg, &handle);
-	//ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
-	assert(ret==ESP_OK);
+	gpspi_init(&dev->_SPIHandle, PIN_MOSI, -1, PIN_SCLK, PIN_CS, SPI_Frequency);
 	dev->_dc = PIN_DC;
 	dev->_bl = PIN_BL;
-	dev->_SPIHandle = handle;
 }
 
 

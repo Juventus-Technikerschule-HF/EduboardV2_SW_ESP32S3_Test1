@@ -2,7 +2,7 @@
 
 #include "lcdDriver.h"
 
-#define HOST_ID SPI2_HOST
+// #define HOST_ID SPI2_HOST
 
 extern TFT_t * lcddevice;
 
