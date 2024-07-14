@@ -11,8 +11,6 @@
 #define TAG "RTC_Driver"
 #define RTC_UPDATE_TIME_MS       10
 
-/* the read and write values for pcf8563 rtcc */
-/* these are adjusted for arduino */
 #define RTC_ADDR 0x51
 
 #define RTCC_SEC        1
@@ -62,36 +60,8 @@
 #define RTCC_TIMER_TD10     0x03  // Timer source clock, TMR_1MIN saves power
 #define RTCC_TIMER_TE       0x80  // Timer 1:enable/0:disable
 
-/* Timer source-clock frequency constants */
-#define TMR_4096HZ      B00000000
-#define TMR_64Hz        B00000001
-#define TMR_1Hz         B00000010
-#define TMR_1MIN        B00000011
-
 #define RTCC_CENTURY_MASK   0x80
 #define RTCC_VLSEC_MASK     0x80
-
-/* date format flags */
-#define RTCC_DATE_WORLD     0x01
-#define RTCC_DATE_ASIA      0x02
-#define RTCC_DATE_US        0x04
-/* time format flags */
-#define RTCC_TIME_HMS       0x01
-#define RTCC_TIME_HM        0x02
-
-/* square wave constants */
-#define SQW_DISABLE     B00000000
-#define SQW_32KHZ       B10000000
-#define SQW_1024HZ      B10000001
-#define SQW_32HZ        B10000010
-#define SQW_1HZ         B10000011
-
-/* epoch timestamp constants : 01/01/2016 à 00:00:00 : 1451599200 */
-#define epoch_day	1
-#define epoch_month	1
-#define epoch_year	16
-#define EPOCH_TIMESTAMP 1451606400
-const unsigned int months_days[]={31,59,90,120,151,181,212,243,273,304,334};	// days count for each month
 
 typedef struct {
     /* time variables */
@@ -108,6 +78,10 @@ typedef struct {
     uint8_t alarm_minute;
     uint8_t alarm_weekday;
     uint8_t alarm_day;
+    bool alarm_hour_active;
+    bool alarm_minute_active;
+    bool alarm_weekday_active;
+    bool alarm_day_active;
     /* CLKOUT */
     uint8_t squareWave;
     /* timer */
@@ -121,12 +95,18 @@ typedef struct {
 
 timedata_t timedata;
 
-SemaphoreHandle_t rtclock;
+SemaphoreHandle_t rtclock = NULL;
+
+rtc_alarm_mode_t alarmmode;
+bool alarm_occured = false;
+SemaphoreHandle_t rtcAlarmSemaphore = NULL;
+rtc_timer_mode_t timermode;
+bool timer_elapsed = false;
+SemaphoreHandle_t rtcTimerSemaphore = NULL;
 
 void writePCF8563Register(uint8_t reg, uint8_t data) {
     gpi2c_writeRegister(RTC_ADDR, reg, (uint8_t*)&data, 1);
 }
-
 void writePCF8563Registers(uint8_t reg, uint8_t* data, uint8_t len) {
     gpi2c_writeRegister(RTC_ADDR, reg, data, len);
 }
@@ -138,7 +118,6 @@ uint8_t decToBcd(uint8_t val)
 {
     return ( (val/10*16) + (val%10) );
 }
-
 uint8_t bcdToDec(uint8_t val)
 {
     return ( (val/16*10) + (val%16) );
@@ -148,7 +127,6 @@ int yisleap(int year)
 {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
-
 int get_yday(int mon, int day, int year)
 {
     static const int days[2][13] = {
@@ -174,10 +152,10 @@ void getRTCData() {
     timedata.month = bcdToDec(data[7] & 0x1F);    
     timedata.century = (data[7] & RTCC_CENTURY_MASK ? true : false);
     timedata.year = bcdToDec(data[8]);
-    timedata.alarm_minute = (data[9] & 0x80 ? RTCC_NO_ALARM : bcdToDec(data[9] & 0x7F));
-    timedata.alarm_hour = (data[10] & 0x80 ? RTCC_NO_ALARM : bcdToDec(data[10] & 0x3F));
-    timedata.alarm_day = (data[11] & 0x80 ? RTCC_NO_ALARM : bcdToDec(data[11] & 0x3F));
-    timedata.alarm_weekday = (data[12] & 0x80 ? RTCC_NO_ALARM : bcdToDec(data[12] & 0x07));
+    timedata.alarm_minute = bcdToDec(data[9] & 0x7F);
+    timedata.alarm_hour = bcdToDec(data[10] & 0x7F);
+    timedata.alarm_day = bcdToDec(data[11] & 0x7F);
+    timedata.alarm_weekday = bcdToDec(data[12] & 0x7F);
     timedata.squareWave = data[13] & 0x03;
     timedata.timer_control = data[14] & 0x03;
     timedata.timer_value = data[15];
@@ -195,40 +173,36 @@ void setDateTime() {
     writePCF8563Registers(RTCC_SEC_ADDR, &data[0], sizeof(data));
     getRTCData();
 }
-void enableAlarm() {
-    getRTCData();
-    timedata.status2 &= ~RTCC_ALARM_AF;
-    timedata.status2 |= RTCC_TIMER_TF;
-    writePCF8563Register(RTCC_STAT2_ADDR, timedata.status2);
-}
 void clearAlarm() {
     getRTCData();
-    timedata.status2 &= ~RTCC_ALARM_AF;
-    timedata.status2 |= RTCC_TIMER_TF;
+    timedata.status2 &= ~RTCC_ALARM_AF; //Reset Alarm Flag
     writePCF8563Register(RTCC_STAT2_ADDR, timedata.status2);
 }
-void setAlarm() {
-    uint8_t data[] = {  timedata.alarm_minute,
-                        timedata.alarm_hour,
-                        timedata.alarm_day,
-                        timedata.alarm_weekday
+void enableAlarm() {
+    uint8_t data[] = {  decToBcd(timedata.alarm_minute) | (timedata.alarm_minute_active ? 0x00 : 0x80),
+                        decToBcd(timedata.alarm_hour) | (timedata.alarm_hour_active ? 0x00 : 0x80),
+                        decToBcd(timedata.alarm_day) | (timedata.alarm_day_active ? 0x00 : 0x80),
+                        decToBcd(timedata.alarm_weekday) | (timedata.alarm_weekday_active ? 0x00 : 0x80)
                         };
     writePCF8563Registers(RTCC_ALRM_MIN_ADDR, &data[0], sizeof(data));
+    clearAlarm();
 }
-void enableTimer() {
-    getRTCData();
-    timedata.timer_control |= RTCC_TIMER_TE;
-    timedata.status2 &= ~RTCC_TIMER_TF;
-    timedata.status2 |= RTCC_ALARM_AF;
-    writePCF8563Register(RTCC_STAT2_ADDR, timedata.status2);
-    writePCF8563Register(RTCC_TIMER1_ADDR, timedata.timer_control);
+void disableAlarm() {
+    uint8_t data[] = {  decToBcd(timedata.alarm_minute) | (0x80),
+                        decToBcd(timedata.alarm_hour) | (0x80),
+                        decToBcd(timedata.alarm_day) | (0x80),
+                        decToBcd(timedata.alarm_weekday) | (0x80)
+                        };
+    writePCF8563Registers(RTCC_ALRM_MIN_ADDR, &data[0], sizeof(data));
+    clearAlarm();
 }
-void setTimer() {
+void writeTimerData() {
     writePCF8563Register(RTCC_TIMER1_ADDR, timedata.timer_control);
     writePCF8563Register(RTCC_TIMER2_ADDR, timedata.timer_value);
+    getRTCData();
+    timedata.status2 &= ~RTCC_TIMER_TF;
     writePCF8563Register(RTCC_STAT2_ADDR, timedata.status2);
 }
-
 
 void initClock() {
     uint8_t data[] = {  0x00, //status1
@@ -276,9 +250,21 @@ void rtc_task(void* param) {
         getRTCData();
         if(timedata.status2 & RTCC_ALARM_AF) {
             //Alarm occured
+            if(alarmmode == RTCALARM_ENABLED) {
+                if(rtcAlarmSemaphore != NULL) {
+                    xSemaphoreGive(rtcAlarmSemaphore);
+                }
+                alarm_occured = true;
+            }
         }
         if(timedata.status2 & RTCC_TIMER_TF) {
             //Timer elapsed
+            if(timermode == RTCTIMER_ENABLED) {
+                if(rtcTimerSemaphore != NULL) {
+                    xSemaphoreGive(rtcTimerSemaphore);
+                }
+                timer_elapsed = true;
+            }
         }
 #ifdef CONFIG_RTC_SHOW_TIME        
         ESP_LOGI(TAG, "Time: %02i:%02i:%02i", timedata.hour, timedata.minute, timedata.sec);
@@ -291,6 +277,93 @@ void rtc_task(void* param) {
 
 void eduboard_init_rtc() {
     xTaskCreate(rtc_task, "rtc_task", 2*2048, NULL, 10, NULL);
+}
+
+void rtc_setAlarmTime(int8_t hour, int8_t minute, int8_t day, int8_t weekday) {
+    if(rtclock == NULL) return;
+    xSemaphoreTake(rtclock, portMAX_DELAY);
+    if(hour >= 0 && hour < 24) {
+        timedata.alarm_hour = hour;
+        timedata.alarm_hour_active = true;
+    } else {
+        timedata.alarm_hour_active = false;
+    }
+    if(minute >= 0 && minute < 60) {
+        timedata.alarm_minute = minute;
+        timedata.alarm_minute_active = true;
+    } else {
+        timedata.alarm_minute_active = false;
+    }
+    if(day >= 0 && day < 32) {
+        timedata.alarm_day = day;
+        timedata.alarm_day_active = true;
+    } else {
+        timedata.alarm_day_active = false;
+    }
+    if(weekday >= 0 && weekday < 7) {
+        timedata.alarm_weekday = weekday;
+        timedata.alarm_weekday_active = true;
+    } else {
+        timedata.alarm_weekday_active = false;
+    }
+    xSemaphoreGive(rtclock);
+}
+void rtc_configAlarm(rtc_alarm_mode_t mode, SemaphoreHandle_t alarm_semaphore) {
+    if(rtclock == NULL) return;
+    xSemaphoreTake(rtclock, portMAX_DELAY);
+    rtcAlarmSemaphore = alarm_semaphore;    
+    if(rtcAlarmSemaphore != NULL) {
+        xSemaphoreGive(rtcAlarmSemaphore);
+        xSemaphoreTake(rtcAlarmSemaphore, portMAX_DELAY);
+    }
+    alarmmode = mode;
+    if(alarmmode == RTCALARM_ENABLED) {
+        enableAlarm();
+    } else {
+        disableAlarm();
+    }
+    alarm_occured = false;
+    xSemaphoreGive(rtclock);
+}
+
+void rtc_setTimerTime(uint8_t value) {
+    if(rtclock == NULL) return;
+    xSemaphoreTake(rtclock, portMAX_DELAY);
+    timedata.timer_value = value;
+    xSemaphoreGive(rtclock);
+}
+void rtc_configTimer(rtc_timer_mode_t mode, SemaphoreHandle_t timer_semaphore, rtc_timer_frequency_t frequency_mode) {
+    if(rtclock == NULL) return;
+    xSemaphoreTake(rtclock, portMAX_DELAY);
+    rtcTimerSemaphore = timer_semaphore;
+    if(rtcTimerSemaphore != NULL) {
+        xSemaphoreGive(rtcTimerSemaphore);
+        xSemaphoreTake(rtcTimerSemaphore, portMAX_DELAY);
+    }
+    timermode = mode;
+    timedata.timer_control = (frequency_mode & 0x03) | (timermode == RTCTIMER_ENABLED ? 0x80 : 0x00);
+    writeTimerData();
+    timer_elapsed = false;
+    xSemaphoreGive(rtclock);
+}
+
+bool rtc_alarm_occured() {
+    bool returnValue = false;
+    if(rtclock == NULL) return false;
+    xSemaphoreTake(rtclock, portMAX_DELAY);
+    returnValue = alarm_occured;
+    alarm_occured = false;
+    xSemaphoreGive(rtclock);
+    return returnValue;
+}
+bool rtc_timer_elapsed() {
+    bool returnValue = false;
+    if(rtclock == NULL) return false;
+    xSemaphoreTake(rtclock, portMAX_DELAY);
+    returnValue = timer_elapsed;
+    timer_elapsed = false;
+    xSemaphoreGive(rtclock);
+    return returnValue;
 }
 
 void rtc_setTime(uint8_t hour, uint8_t minute, uint8_t sec) {
