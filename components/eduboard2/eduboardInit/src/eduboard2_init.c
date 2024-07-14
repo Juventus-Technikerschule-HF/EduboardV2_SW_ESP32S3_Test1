@@ -47,6 +47,9 @@
 #ifdef CONFIG_ENABLE_TOUCH_FT6236
     #include "eduboardTouch/eduboard2_touch.h"
 #endif
+#ifdef CONFIG_ENABLE_RTC
+    #include "eduboardRTC/eduboard2_rtc.h"
+#endif
 
 #ifdef CONFIG_ENABLE_I2C
     #include "gpi2c.h"
@@ -89,6 +92,9 @@ void eduboard2_initTask(void* param) {
     #endif
     #ifdef CONFIG_ENABLE_TOUCH_FT6236
     eduboard_init_ft6236();
+    #endif
+    #ifdef CONFIG_ENABLE_RTC
+    eduboard_init_rtc();
     #endif
     xSemaphoreGive(sem_initdone);
     vTaskDelete(NULL);

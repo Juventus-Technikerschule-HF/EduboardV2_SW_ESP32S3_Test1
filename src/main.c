@@ -122,12 +122,25 @@ void app_main()
     // memon_enable();    
     
     eduboard2_init();
+    rtc_setDate(14,SUNDAY, JULY, 2024);
+    rtc_setTime(06,29,00);
 
     xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
     for(;;) {
         tmp112_poll();
         ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
         ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
+        // tmp112_poll();
+        // ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
+        // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
+        uint8_t hour,min,sec;
+        uint16_t year;
+        uint8_t month,day,weekday;
+        rtc_getTime(&hour,&min, &sec);
+        rtc_getDate(&year,&month,&day,&weekday);
+        ESP_LOGI(TAG, "Time: %02i:%02i:%02i", hour,min,sec);
+        ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", day,month,year,weekday);
+        ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_getUnixTimestamp()));
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }
