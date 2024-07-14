@@ -33,5 +33,6 @@ idf_component_register(SRCS                 .
                                             led_strip_encoder
                                             esp_adc
                                             gpi2c
+                                            gpspi
                                             vfs
                                             spiffs)

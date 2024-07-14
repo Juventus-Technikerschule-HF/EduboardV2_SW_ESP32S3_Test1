@@ -126,5 +126,9 @@
     #define CONFIG_ENABLE_I2C
 #endif
 
+#ifdef CONFIG_ENABLE_LCD
+    #define CONFIG_ENABLE_SPI
+#endif
+
 #define EDUBOARD2_HWVERSION 2.2
 #define EDUBOARD2_SWVERSION 0.1

@@ -44,5 +44,9 @@
     #include "gpi2c.h"
 #endif
 
+#ifdef CONFIG_ENABLE_SPI
+    #include "gpspi.h"
+#endif
+
 #include "eduboardInit/eduboard2_init.h"
 

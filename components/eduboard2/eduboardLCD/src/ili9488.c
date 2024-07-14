@@ -38,18 +38,7 @@ TFT_t * lcddevice = NULL;
 
 void ili9488_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, int16_t PIN_CS, int16_t PIN_DC, int16_t PIN_RESET, int16_t PIN_BL)
 {
-	esp_err_t ret;
-
-	//ESP_LOGI(TAG, "GPIO_CS=%d",GPIO_CS);
-	if ( PIN_CS >= 0 ) {
-		//gpio_pad_select_gpio( GPIO_CS );
-		gpio_reset_pin( PIN_CS );
-		gpio_set_direction( PIN_CS, GPIO_MODE_OUTPUT );
-		gpio_set_level( PIN_CS, 0 );
-	}
-
 	//ESP_LOGI(TAG, "GPIO_DC=%d",GPIO_DC);
-	//gpio_pad_select_gpio( GPIO_DC );
 	gpio_reset_pin( PIN_DC );
 	gpio_set_direction( PIN_DC, GPIO_MODE_OUTPUT );
 	gpio_set_level( PIN_DC, 0 );
@@ -69,77 +58,27 @@ void ili9488_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, in
 
 	//ESP_LOGI(TAG, "GPIO_BL=%d",GPIO_BL);
 	if ( PIN_BL >= 0 ) {
-		//gpio_pad_select_gpio(GPIO_BL);
 		gpio_reset_pin(PIN_BL);
 		gpio_set_direction( PIN_BL, GPIO_MODE_OUTPUT );
 		gpio_set_level( PIN_BL, 0 );
 	}
 
-	//ESP_LOGI(TAG, "GPIO_MOSI=%d",GPIO_MOSI);
-	//ESP_LOGI(TAG, "GPIO_SCLK=%d",GPIO_SCLK);
-	spi_bus_config_t buscfg = {
-		.mosi_io_num = PIN_MOSI,
-		.miso_io_num = -1,
-		.sclk_io_num = PIN_SCLK,
-		.quadwp_io_num = -1,
-		.quadhd_io_num = -1,
-		.max_transfer_sz = 0,
-		.flags = 0
-	};
-
-	ret = spi_bus_initialize( HOST_ID, &buscfg, SPI_DMA_CH_AUTO );
-	assert(ret==ESP_OK);
-
-	spi_device_interface_config_t devcfg;
-	memset(&devcfg, 0, sizeof(devcfg));
-	devcfg.clock_speed_hz = SPI_Frequency;
-	devcfg.queue_size = 4;
-	devcfg.mode = 0;
-	devcfg.flags = SPI_DEVICE_HALFDUPLEX;
-	
-
-	if ( PIN_CS >= 0 ) {
-		devcfg.spics_io_num = PIN_CS;
-	} else {
-		devcfg.spics_io_num = -1;
-	}
-	
-	spi_device_handle_t handle;
-	ret = spi_bus_add_device( HOST_ID, &devcfg, &handle);
-	//ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
-	assert(ret==ESP_OK);
+	gpspi_init(&dev->_SPIHandle, PIN_MOSI, -1, PIN_SCLK, PIN_CS, SPI_Frequency);
 	dev->_dc = PIN_DC;
 	dev->_bl = PIN_BL;
-	dev->_SPIHandle = handle;
 }
 
 bool ili9488_spi_write_cmd_data(uint8_t data) {
-	spi_transaction_t SPITransaction;
-	esp_err_t ret;
 	gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 8;
-	SPITransaction.tx_buffer = &data;
-	ret = spi_device_transmit( lcddevice->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK); 
-	return true;
+	return gpspi_write_data(lcddevice->_SPIHandle, &data, 1);
 }
 bool ili9488_spi_write_cmd(uint8_t cmd) {
-	spi_transaction_t SPITransaction;
-	esp_err_t ret;
 	gpio_set_level( lcddevice->_dc, SPI_Command_Mode );
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = 8;
-	SPITransaction.tx_buffer = &cmd;
-	ret = spi_device_transmit( lcddevice->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK); 
-	return true;
+	return gpspi_write_data(lcddevice->_SPIHandle, &cmd, 1);
 }
 
 
 bool IRAM_ATTR ili9488_spi_write_colors(uint16_t *colors565, uint32_t length) {
-	spi_transaction_t SPITransaction;
-	esp_err_t ret;
 	uint8_t colors666[length*3];
 	for(uint32_t i = 0; i < length; i++) {
 		colors666[(i*3)+0] = (0x1F&(colors565[i]>>11))*2;
@@ -154,12 +93,7 @@ bool IRAM_ATTR ili9488_spi_write_colors(uint16_t *colors565, uint32_t length) {
 		return false;
 	}
 	gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
-	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = length * 3 * 8;
-	SPITransaction.tx_buffer = &colors666[0];
-	ret = spi_device_transmit( lcddevice->_SPIHandle, &SPITransaction );
-	assert(ret==ESP_OK); 
-	return true;
+	return gpspi_write_data(lcddevice->_SPIHandle, &colors666[0], length * 3);
 }
 bool ili9488_lcd_setpos(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2) {
 	ili9488_spi_write_cmd(ILI9488_CMD_COLUMN_ADDRESS_SET);
