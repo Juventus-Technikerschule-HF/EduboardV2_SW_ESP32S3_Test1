@@ -20,6 +20,7 @@
 void gpioTestTask(void* p) {
     static uint8_t pwmstate = 0;
     static uint8_t ledstate = 0x00;
+    static int32_t rotenc_value_last = 0;
     for(;;) {
         if(getButtonState(SW0, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Short:");
@@ -87,9 +88,10 @@ void gpioTestTask(void* p) {
             getEncoderRotation(true);
         }
         int32_t rotenc_value = getEncoderRotation(false);
-        // if(rotenc_value != 0) {
-        ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
-        // }
+        if(rotenc_value != rotenc_value_last) {
+            ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
+        }
+        rotenc_value_last = rotenc_value;
         if(isTouched()) {
             touchevent_t touchevent = getTouchEvent(true);
             ESP_LOGI(TAG, "Touched");
