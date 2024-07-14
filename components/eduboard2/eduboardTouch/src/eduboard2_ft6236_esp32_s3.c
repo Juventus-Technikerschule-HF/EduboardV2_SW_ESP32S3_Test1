@@ -8,7 +8,6 @@
 #include "freertos/semphr.h"
 #include "esp_log.h"
 #include "esp_system.h"
-#include "gpi2c.h"
 
 #define TAG "FT6236_driver"
 

@@ -54,6 +54,9 @@
 #ifdef CONFIG_ENABLE_I2C
     #include "gpi2c.h"
 #endif
+#ifdef CONFIG_ENABLE_SPI
+    #include "gpspi.h"
+#endif
 
 SemaphoreHandle_t sem_initdone;
 
