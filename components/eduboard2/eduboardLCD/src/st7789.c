@@ -58,7 +58,7 @@ void st7789_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, int
 	// devcfg.mode = 2;
 	// devcfg.flags = SPI_DEVICE_NO_DUMMY;
 
-	gpspi_init(&dev->_SPIHandle, PIN_MOSI, -1, PIN_SCLK, PIN_CS, SPI_Frequency);
+	gpspi_init(&dev->_SPIHandle, PIN_MOSI, -1, PIN_SCLK, PIN_CS, SPI_Frequency, true);
 	dev->_dc = PIN_DC;
 	dev->_bl = PIN_BL;
 }

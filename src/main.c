@@ -23,7 +23,7 @@ void gpioTestTask(void* p) {
     static int32_t rotenc_value_last = 0;
     SemaphoreHandle_t sem_alarm;
     sem_alarm = xSemaphoreCreateBinary();
-    eduboard_set_buzzer_volume(40);
+    // eduboard_set_buzzer_volume(40);
     for(;;) {
         if(getButtonState(SW0, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Short:");
@@ -170,6 +170,8 @@ void app_main()
         ESP_LOGI(TAG, "Time: %02i:%02i:%02i", hour,min,sec);
         ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", day,month,year,weekday);
         ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_getUnixTimestamp()));
+        flash_checkConnection();
         vTaskDelay(2000/portTICK_PERIOD_MS);
+        
     }
 }

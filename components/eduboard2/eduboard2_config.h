@@ -47,7 +47,7 @@
 
     #define CONFIG_USE_VSCREEN
     
-    // #define CONFIG_LCD_TEST    
+    #define CONFIG_LCD_TEST    
 #endif
 
 #define CONFIG_ENABLE_SENSOR_TMP112

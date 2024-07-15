@@ -89,12 +89,12 @@ void eduboard2_initTask(void* param) {
     eduboard_init_spiffs();
     #endif
 
-    #ifdef CONFIG_ENABLE_LCD
-    eduboard_init_lcd();
-    #endif
-    
     #ifdef CONFIG_ENABLE_FLASH
     eduboard_init_flash();
+    #endif
+    
+    #ifdef CONFIG_ENABLE_LCD
+    eduboard_init_lcd();
     #endif
 
     #ifdef CONFIG_ENABLE_SENSOR_TMP112

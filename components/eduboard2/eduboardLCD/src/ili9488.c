@@ -63,18 +63,18 @@ void ili9488_spi_master_init(TFT_t * dev, int16_t PIN_MOSI, int16_t PIN_SCLK, in
 		gpio_set_level( PIN_BL, 0 );
 	}
 
-	gpspi_init(&dev->_SPIHandle, PIN_MOSI, -1, PIN_SCLK, PIN_CS, SPI_Frequency);
+	gpspi_init(&dev->_SPIHandle, PIN_MOSI, -1, PIN_SCLK, PIN_CS, SPI_Frequency, true);
 	dev->_dc = PIN_DC;
 	dev->_bl = PIN_BL;
 }
 
 bool ili9488_spi_write_cmd_data(uint8_t data) {
 	gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
-	return gpspi_write_data(lcddevice->_SPIHandle, &data, 1);
+	return gpspi_write_data(&lcddevice->_SPIHandle, &data, 1);
 }
 bool ili9488_spi_write_cmd(uint8_t cmd) {
 	gpio_set_level( lcddevice->_dc, SPI_Command_Mode );
-	return gpspi_write_data(lcddevice->_SPIHandle, &cmd, 1);
+	return gpspi_write_data(&lcddevice->_SPIHandle, &cmd, 1);
 }
 
 
@@ -93,7 +93,7 @@ bool IRAM_ATTR ili9488_spi_write_colors(uint16_t *colors565, uint32_t length) {
 		return false;
 	}
 	gpio_set_level( lcddevice->_dc, SPI_Data_Mode );
-	return gpspi_write_data(lcddevice->_SPIHandle, &colors666[0], length * 3);
+	return gpspi_write_data(&lcddevice->_SPIHandle, &colors666[0], length * 3);
 }
 bool ili9488_lcd_setpos(uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2) {
 	ili9488_spi_write_cmd(ILI9488_CMD_COLUMN_ADDRESS_SET);
