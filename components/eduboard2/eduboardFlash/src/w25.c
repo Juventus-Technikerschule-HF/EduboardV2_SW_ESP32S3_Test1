@@ -14,7 +14,7 @@
 #define W25_PAGE_PROGRAM_COMMAND  0x02
 #define W25_SECTOR_ERASE_COMMAND  0x20
 
-#define W25_DEBUG 1
+// #define W25_DEBUG 1
 
 spi_device_handle_t* spidevice;
 

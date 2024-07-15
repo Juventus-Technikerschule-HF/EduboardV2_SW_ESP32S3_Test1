@@ -35,9 +35,9 @@ idf_component_register(SRCS                 .
                         REQUIRES            driver 
                                             led_strip_encoder
                                             esp_adc
-                                            fatfs
-                                            spi_flash
+                                            littlefs
                                             gpi2c
                                             gpspi
                                             vfs                                            
-                                            spiffs)
+                                            spiffs
+                                            )
