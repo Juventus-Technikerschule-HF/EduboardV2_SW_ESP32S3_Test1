@@ -100,6 +100,9 @@ void eduboard2_initTask(void* param) {
     #ifdef CONFIG_ENABLE_SENSOR_TMP112
     eduboard_init_tmp112();
     #endif
+    #ifdef CONFIG_ENABLE_SENSOR_STK8321
+    eduboard_init_stk8321();
+    #endif
     #ifdef CONFIG_ENABLE_TOUCH_FT6236
     eduboard_init_ft6236();
     #endif

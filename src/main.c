@@ -162,6 +162,9 @@ void app_main()
         // tmp112_poll();
         // ESP_LOGI(TAG, "Temp: %f", eduboard_get_val_tmp112());
         // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
+        float x,y,z;
+        stk8321_get_motion_data(&x,&y,&z);
+        ESP_LOGI(TAG, "ACC: x:%.2f - y:%.2f - z:%.2f", x, y, z);
         uint8_t hour,min,sec;
         uint16_t year;
         uint8_t month,day,weekday;

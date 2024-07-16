@@ -1,7 +1,16 @@
 #pragma once
+#include "../eduboard2_config.h"
 
 #include <esp_err.h>
 
 float eduboard_get_val_tmp112(void);
 void tmp112_poll(void);
-void eduboard_init_tmp112(void);
+void eduboard_init_tmp112(void);#ifdef CONFIG_ENABLE_SENSOR_STK8321
+void stk8321_anymotion_init();
+void stk8321_sigmotion_init();
+void stk8321_disable_motion();
+int  stk8321_get_sensitivity();
+void stk8321_get_motion_data(float *X_DataOut, float *Y_DataOut, float *Z_DataOut);
+void eduboard_init_stk8321(void);
+#endif
+

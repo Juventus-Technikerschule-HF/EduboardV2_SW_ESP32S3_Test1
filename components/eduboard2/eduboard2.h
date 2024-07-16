@@ -38,6 +38,9 @@
 #ifdef CONFIG_ENABLE_SENSOR_TMP112
     #include "eduboardSensor/eduboard2_sensor.h"
 #endif
+#ifdef CONFIG_ENABLE_SENSOR_STK8321
+    #include "eduboardSensor/eduboard2_sensor.h"
+#endif
 #ifdef CONFIG_ENABLE_TOUCH_FT6236
     #include "eduboardTouch/eduboard2_touch.h"
 #endif
