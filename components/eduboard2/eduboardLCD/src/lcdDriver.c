@@ -49,6 +49,73 @@ void lcdSetupVScreen(rotation_t rotation) {
 void lcdClearVScreen() {
 	memset(vScreen.data, 0x00, CONFIG_WIDTH*CONFIG_HEIGHT*sizeof(uint16_t));
 }
+
+#ifdef CONFIG_USE_LVGL
+#define LVGL_TICK_PERIOD_MS    2
+
+static TimerHandle_t lvgl_timer;
+static TimerHandle_t lvgl_tick_timer;
+
+
+void set_pixel(uint8_t x, uint8_t y, uint8_t color) {
+    // gu_drawPixel(x,y,(color > 0 ? 1 : 0));
+}
+
+void disp_flush(lv_display_t * display, const lv_area_t * area, void * px_map)
+{
+    uint16_t * buf16 = (uint16_t *)px_map; /*Let's say it's a 16 bit (RGB565) display*/
+    int32_t x, y;
+    for(y = area->y1; y <= area->y2; y++) {
+        for(x = area->x1; x <= area->x2; x++) {
+            set_pixel(x, y, *buf16);
+            buf16++;
+        }
+    }
+
+    /* IMPORTANT!!!
+     * Inform LVGL that you are ready with the flushing and buf is not used anymore*/
+    lv_display_flush_ready(display);
+}
+
+static void IRAM_ATTR lvgl_task_time_callback(TimerHandle_t xTimer)
+{
+    /* Periodically call this function.
+     * The timing is not critical but should be between 1..10 ms */
+    lv_task_handler();
+}
+
+
+static void IRAM_ATTR lv_tick_task_callback(TimerHandle_t xTimer)
+{
+    /* Initialize a Timer for 1 ms period and
+     * in its interrupt call
+     * lv_tick_inc(1); */
+    lv_tick_inc(LVGL_TICK_PERIOD_MS);
+}
+
+static TimerHandle_t lvgl_timer;
+void lcdSetupLVGL(rotation_t rotation) {
+	lv_init();
+	lvgl_tick_timer = xTimerCreate("lv_tickinc",LVGL_TICK_PERIOD_MS / portTICK_PERIOD_MS, pdTRUE, (void *)NULL, lv_tick_task_callback);
+    xTimerStart(lvgl_tick_timer, 0);
+	lvgl_timer = xTimerCreate("lv_task", LVGL_TICK_PERIOD_MS/portTICK_PERIOD_MS, pdTRUE, NULL, lvgl_task_time_callback);
+	xTimerStart(lvgl_timer, 0);
+
+	lv_display_t * lv_display = lv_display_create(SCREEN_MAX_X, SCREEN_MAX_Y);
+	lv_display_set_flush_cb(lv_display, disp_flush);
+
+	static uint16_t buf[SCREEN_MAX_X * SCREEN_MAX_Y / 10];
+	lv_display_set_buffers(lv_display, buf, NULL, sizeof(buf), LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+	switch(rotation) {
+		case 0: lv_display_set_rotation(lv_display, LV_DISPLAY_ROTATION_0); break;
+		case 90: lv_display_set_rotation(lv_display, LV_DISPLAY_ROTATION_90); break;
+		case 180: lv_display_set_rotation(lv_display, LV_DISPLAY_ROTATION_180); break;
+		case 270: lv_display_set_rotation(lv_display, LV_DISPLAY_ROTATION_270); break;
+	}
+}
+#endif
+
 uint16_t lcdGetWidth() {
 	switch(vScreen.rotation) {
 		case rot_0:

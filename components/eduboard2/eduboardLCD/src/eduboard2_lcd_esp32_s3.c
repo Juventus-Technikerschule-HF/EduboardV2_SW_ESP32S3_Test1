@@ -1198,6 +1198,10 @@ void eduboard_init_lcd() {
 	ESP_LOGI(TAG, "Init VScreen...");
 	lcdSetupVScreen(screenRotation);
 	#endif
+	#ifdef CONFIG_USE_LVGL
+	ESP_LOGI(TAG, "Init LVGL...");
+	lcdSetupLVGL(screenRotation);
+	#endif
 	lcdBacklightOn();
 	lcdFillScreen(BLACK);
 	#ifdef CONFIG_USE_VSCREEN
@@ -1207,7 +1211,7 @@ void eduboard_init_lcd() {
 	#ifdef CONFIG_LCD_TEST
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
 	#else
-	lcdFillScreen(BLACK);
+	lcdFillScreen(BLACK);	
 	showJuventusLogo();
 	showVersionString();
 	lcdUpdateVScreen();

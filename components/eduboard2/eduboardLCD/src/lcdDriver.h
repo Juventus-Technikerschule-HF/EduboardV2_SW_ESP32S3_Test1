@@ -40,6 +40,9 @@ void lcd_init();
 void lcdSetupVScreen(rotation_t rotation);
 void lcdUpdateVScreen();
 void lcdClearVScreen();
+#ifdef CONFIG_USE_LVGL
+void lcdSetupLVGL(rotation_t rotation);
+#endif
 uint16_t lcdGetWidth();
 uint16_t lcdGetHeight();
 

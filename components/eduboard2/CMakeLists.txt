@@ -39,6 +39,7 @@ idf_component_register(SRCS                 .
                                             lfs
                                             gpi2c
                                             gpspi
-                                            vfs                                            
+                                            vfs
+                                            lvgl
                                             spiffs
                                             )

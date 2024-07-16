@@ -2,6 +2,11 @@
 #include "../eduboard2_config.h"
 #include <stdlib.h>
 
+#ifdef CONFIG_USE_LVGL
+    #include "freertos/timers.h"
+    #include "../lvgl/lvgl.h"
+#endif
+
 #ifdef CONFIG_LCD_RESOLUTION_240x240
     #define CONFIG_WIDTH    240
     #define CONFIG_HEIGHT   240
