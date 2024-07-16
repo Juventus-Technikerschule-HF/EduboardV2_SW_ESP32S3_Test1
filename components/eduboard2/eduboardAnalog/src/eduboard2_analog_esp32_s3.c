@@ -68,12 +68,12 @@ void adcTask(void * parameter) {
     //-------------ADC1 Config---------------//
     adc_oneshot_chan_cfg_t config = {
         .bitwidth = ADC_BITWIDTH_DEFAULT,
-        .atten = ADC_ATTEN_DB_11,
+        .atten = ADC_ATTEN_DB_12,
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, AN0_CHANNEL, &config));
     //-------------ADC1 Calibration Init---------------//
     adc_cali_handle_t adc1_cali_handle = NULL;
-    bool do_calibration1 = adc_calibration_init(ADC_UNIT_1, ADC_ATTEN_DB_11, &adc1_cali_handle);
+    bool do_calibration1 = adc_calibration_init(ADC_UNIT_1, ADC_ATTEN_DB_12, &adc1_cali_handle);
     ESP_LOGI(TAG, "ADC init done");
     for(;;) {
         xSemaphoreTake(hADCMutex, portMAX_DELAY);

@@ -124,8 +124,6 @@ void updateRotaryEncoderButton() {
     xSemaphoreGive(rotencdataLock);
 }
 void updateRotaryEncoder() {
-    static bool lastA = false;
-    static bool lastB = false;
     #ifdef ROTARYENCODER_USE_INTERRUPTS
     static rotenc_event_t lastEvent = ROTENC_NOEDGE;    
     rotenc_event_t rotenc_evt = ROTENC_NOEDGE;
@@ -197,6 +195,7 @@ void updateRotaryEncoder() {
     bool rotencB = gpio_get_level(GPIO_RotEnc_B);
     xSemaphoreTake(rotencdataLock, portMAX_DELAY);
     #ifdef ROTARYENCODER_USE_EDGEA
+    static bool lastA = false;
     if(rotencA != lastA) {
         if(rotencA == true) {
             if(rotencB == false) {
@@ -214,6 +213,7 @@ void updateRotaryEncoder() {
     }
     #endif
     #ifdef ROTARYENCODER_USE_EDGEB
+    static bool lastB = false;
     if(rotencB != lastB) {
         if(rotencB == true) {
             if(rotencA == true) {
@@ -231,8 +231,12 @@ void updateRotaryEncoder() {
     }
     #endif
     xSemaphoreGive(rotencdataLock);
+    #ifdef ROTARYENCODER_USE_EDGEA
     lastA = rotencA;
+    #endif
+    #ifdef ROTARYENCODER_USE_EDGEB
     lastB = rotencB;
+    #endif
     #endif
 }
 
