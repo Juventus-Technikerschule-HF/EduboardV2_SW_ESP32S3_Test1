@@ -60,7 +60,7 @@
 #endif
 
 #ifdef CONFIG_ENABLE_LITTLEFS
-    #include "lfs.h"
+    #include "../lfs/lfs.h"
 #endif
 
 #ifdef CONFIG_ENABLE_I2C
