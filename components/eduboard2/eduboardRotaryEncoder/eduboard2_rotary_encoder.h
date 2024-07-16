@@ -8,6 +8,6 @@
 // #define ROTARYENCODER_USE_EDGEA
 #define ROTARYENCODER_USE_EDGEB
 
-button_state getEncoderButtonState(bool reset);
-int32_t getEncoderRotation(bool reset);
+button_state rotary_encoder_button_get_state(bool reset);
+int32_t rotary_encoder_get_rotation(bool reset);
 void eduboard_init_rotary_encoder();

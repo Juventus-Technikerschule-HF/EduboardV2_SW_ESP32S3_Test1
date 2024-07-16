@@ -47,20 +47,19 @@ typedef enum {
     RTCFREQ_1MIN = 0x03,
 } rtc_timer_frequency_t;
 
-
 void eduboard_init_rtc();
 
-void rtc_setAlarmTime(int8_t hour, int8_t minute, int8_t day, int8_t weekday);
-void rtc_configAlarm(rtc_alarm_mode_t mode, SemaphoreHandle_t alarm_semaphore);
+void rtc_set_alarm_time(int8_t hour, int8_t minute, int8_t day, int8_t weekday);
+void rtc_config_alarm(rtc_alarm_mode_t mode, SemaphoreHandle_t alarm_semaphore);
 
-void rtc_setTimerTime(uint8_t value);
-void rtc_configTimer(rtc_timer_mode_t mode, SemaphoreHandle_t timer_semaphore, rtc_timer_frequency_t frequency_mode);
+void rtc_set_timer_time(uint8_t value);
+void rtc_config_timer(rtc_timer_mode_t mode, SemaphoreHandle_t timer_semaphore, rtc_timer_frequency_t frequency_mode);
 
 bool rtc_alarm_occured();
 bool rtc_timer_elapsed();
 
-void rtc_setTime(uint8_t hour, uint8_t minute, uint8_t sec);
-void rtc_setDate(uint8_t day, uint8_t weekday, uint8_t month, uint16_t year);
-void rtc_getTime(uint8_t* hour, uint8_t* minute, uint8_t* sec);
-void rtc_getDate(uint16_t* year, uint8_t* month, uint8_t* day, uint8_t* weekday);
-uint32_t rtc_getUnixTimestamp();
+void rtc_set_time(uint8_t hour, uint8_t minute, uint8_t sec);
+void rtc_set_date(uint8_t day, uint8_t weekday, uint8_t month, uint16_t year);
+void rtc_get_time(uint8_t* hour, uint8_t* minute, uint8_t* sec);
+void rtc_get_date(uint16_t* year, uint8_t* month, uint8_t* day, uint8_t* weekday);
+uint32_t rtc_get_unix_timestamp();

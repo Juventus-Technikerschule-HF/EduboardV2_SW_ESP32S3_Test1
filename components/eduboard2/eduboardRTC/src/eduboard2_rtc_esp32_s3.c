@@ -274,7 +274,7 @@ void eduboard_init_rtc() {
     xTaskCreate(rtc_task, "rtc_task", 2*2048, NULL, 10, NULL);
 }
 
-void rtc_setAlarmTime(int8_t hour, int8_t minute, int8_t day, int8_t weekday) {
+void rtc_set_alarm_time(int8_t hour, int8_t minute, int8_t day, int8_t weekday) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     if(hour >= 0 && hour < 24) {
@@ -303,7 +303,7 @@ void rtc_setAlarmTime(int8_t hour, int8_t minute, int8_t day, int8_t weekday) {
     }
     xSemaphoreGive(rtclock);
 }
-void rtc_configAlarm(rtc_alarm_mode_t mode, SemaphoreHandle_t alarm_semaphore) {
+void rtc_config_alarm(rtc_alarm_mode_t mode, SemaphoreHandle_t alarm_semaphore) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     rtcAlarmSemaphore = alarm_semaphore;    
@@ -321,13 +321,13 @@ void rtc_configAlarm(rtc_alarm_mode_t mode, SemaphoreHandle_t alarm_semaphore) {
     xSemaphoreGive(rtclock);
 }
 
-void rtc_setTimerTime(uint8_t value) {
+void rtc_set_timer_time(uint8_t value) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     timedata.timer_value = value;
     xSemaphoreGive(rtclock);
 }
-void rtc_configTimer(rtc_timer_mode_t mode, SemaphoreHandle_t timer_semaphore, rtc_timer_frequency_t frequency_mode) {
+void rtc_config_timer(rtc_timer_mode_t mode, SemaphoreHandle_t timer_semaphore, rtc_timer_frequency_t frequency_mode) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     rtcTimerSemaphore = timer_semaphore;
@@ -361,7 +361,7 @@ bool rtc_timer_elapsed() {
     return returnValue;
 }
 
-void rtc_setTime(uint8_t hour, uint8_t minute, uint8_t sec) {
+void rtc_set_time(uint8_t hour, uint8_t minute, uint8_t sec) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     getRTCData();
@@ -371,7 +371,7 @@ void rtc_setTime(uint8_t hour, uint8_t minute, uint8_t sec) {
     setDateTime();
     xSemaphoreGive(rtclock);
 }
-void rtc_setDate(uint8_t day, uint8_t weekday, uint8_t month, uint16_t year) {
+void rtc_set_date(uint8_t day, uint8_t weekday, uint8_t month, uint16_t year) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     getRTCData();
@@ -393,7 +393,7 @@ void rtc_setDate(uint8_t day, uint8_t weekday, uint8_t month, uint16_t year) {
     setDateTime();
     xSemaphoreGive(rtclock);
 }
-void rtc_getTime(uint8_t* hour, uint8_t* minute, uint8_t* sec) {
+void rtc_get_time(uint8_t* hour, uint8_t* minute, uint8_t* sec) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     getRTCData();
@@ -402,7 +402,7 @@ void rtc_getTime(uint8_t* hour, uint8_t* minute, uint8_t* sec) {
     *sec = timedata.sec;
     xSemaphoreGive(rtclock);
 }
-void rtc_getDate(uint16_t* year, uint8_t* month, uint8_t* day, uint8_t* weekday) {
+void rtc_get_date(uint16_t* year, uint8_t* month, uint8_t* day, uint8_t* weekday) {
     if(rtclock == NULL) return;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     getRTCData();
@@ -417,7 +417,7 @@ void rtc_getDate(uint16_t* year, uint8_t* month, uint8_t* day, uint8_t* weekday)
     xSemaphoreGive(rtclock);
 }
 
-uint32_t rtc_getUnixTimestamp() {
+uint32_t rtc_get_unix_timestamp() {
     if(rtclock == NULL) return 0;
     xSemaphoreTake(rtclock, portMAX_DELAY);
     getRTCData();

@@ -23,10 +23,10 @@ void gpioTestTask(void* p) {
         if(button_get_state(SW0, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Long:");
             uint8_t hour,min,sec;
-            rtc_getTime(&hour, &min, &sec);
+            rtc_get_time(&hour, &min, &sec);
             min += 2;
-            rtc_setAlarmTime(RTC_ALARM_DEACTIVATED, min, RTC_ALARM_DEACTIVATED, RTC_ALARM_DEACTIVATED);
-            rtc_configAlarm(RTCALARM_ENABLED, sem_alarm);
+            rtc_set_alarm_time(RTC_ALARM_DEACTIVATED, min, RTC_ALARM_DEACTIVATED, RTC_ALARM_DEACTIVATED);
+            rtc_config_alarm(RTCALARM_ENABLED, sem_alarm);
             ESP_LOGI(TAG, "RTC Alarm set to %02i:%02i:%02i", hour,min,sec);
         }
         if(button_get_state(SW1, false) == SHORT_PRESSED) {
@@ -35,8 +35,8 @@ void gpioTestTask(void* p) {
         }
         if(button_get_state(SW1, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW1 = Long:");
-            rtc_setTimerTime(10);
-            rtc_configTimer(RTCTIMER_ENABLED, NULL, RTCFREQ_1HZ);
+            rtc_set_timer_time(10);
+            rtc_config_timer(RTCTIMER_ENABLED, NULL, RTCFREQ_1HZ);
             ESP_LOGI(TAG, "RTC Alarm started for 10s");
         }
         if(button_get_state(SW2, false) == SHORT_PRESSED) {
@@ -77,20 +77,20 @@ void gpioTestTask(void* p) {
         if(button_get_state(SW3, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW3 = Long:");
         }
-        if(getEncoderButtonState(false) == SHORT_PRESSED) {
+        if(rotary_encoder_button_get_state(false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "RotEnc Button Short Pressed");
         }
-        if(getEncoderButtonState(true) == LONG_PRESSED) {
+        if(rotary_encoder_button_get_state(true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "RotEnc Button Long Pressed");
-            getEncoderRotation(true);
+            rotary_encoder_get_rotation(true);
         }
-        int32_t rotenc_value = getEncoderRotation(false);
+        int32_t rotenc_value = rotary_encoder_get_rotation(false);
         if(rotenc_value != rotenc_value_last) {
             ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
         }
         rotenc_value_last = rotenc_value;
-        if(ft6236_isTouched()) {
-            touchevent_t touchevent = ft6236_getTouchEvent(true);
+        if(ft6236_is_touched()) {
+            touchevent_t touchevent = ft6236_get_touch_event(true);
             ESP_LOGI(TAG, "Touched");
             ESP_LOGI(TAG, "touches: %i", touchevent.touches);
             ESP_LOGI(TAG, "P1: %i:%i", touchevent.points[0].x, touchevent.points[0].y);
@@ -118,7 +118,7 @@ void gpioTestTask(void* p) {
             buzzer_start(2000, 100);
             vTaskDelay(200/portTICK_PERIOD_MS);
             buzzer_start(2000, 100);
-            rtc_configAlarm(RTCALARM_DISABLED, NULL);
+            rtc_config_alarm(RTCALARM_DISABLED, NULL);
         }
         if(rtc_timer_elapsed()) {
             ESP_LOGI(TAG, "Timer elapsed!");
@@ -127,7 +127,7 @@ void gpioTestTask(void* p) {
             buzzer_start(2000, 50);
             vTaskDelay(100/portTICK_PERIOD_MS);
             buzzer_start(4000, 50);
-            rtc_configTimer(RTCALARM_DISABLED, NULL, 0);
+            rtc_config_timer(RTCALARM_DISABLED, NULL, 0);
         }
 
         vTaskDelay(100/portTICK_PERIOD_MS);
@@ -141,8 +141,8 @@ void app_main()
     // memon_enable();    
     
     eduboard2_init();
-    rtc_setDate(14,SUNDAY, JULY, 2024);
-    rtc_setTime(06,29,00);
+    rtc_set_date(14,SUNDAY, JULY, 2024);
+    rtc_set_time(06,29,00);
 
     xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
     for(;;) {
@@ -155,11 +155,11 @@ void app_main()
         uint8_t hour,min,sec;
         uint16_t year;
         uint8_t month,day,weekday;
-        rtc_getTime(&hour,&min, &sec);
-        rtc_getDate(&year,&month,&day,&weekday);
+        rtc_get_time(&hour,&min, &sec);
+        rtc_get_date(&year,&month,&day,&weekday);
         ESP_LOGI(TAG, "Time: %02i:%02i:%02i", hour,min,sec);
         ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", day,month,year,weekday);
-        ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_getUnixTimestamp()));
+        ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_get_unix_timestamp()));
         flash_checkConnection();
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }

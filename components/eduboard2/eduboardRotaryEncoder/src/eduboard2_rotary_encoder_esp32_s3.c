@@ -245,7 +245,7 @@ void rotaryEncoderTask(void* param) {
     }
 }
 
-button_state getEncoderButtonState(bool reset) {
+button_state rotary_encoder_button_get_state(bool reset) {
     button_state returnValue = NOT_PRESSED;
     if(rotencdataLock == NULL) {
         return NOT_PRESSED;
@@ -258,7 +258,7 @@ button_state getEncoderButtonState(bool reset) {
     xSemaphoreGive(rotencdataLock);
     return returnValue;
 }
-int32_t getEncoderRotation(bool reset) {
+int32_t rotary_encoder_get_rotation(bool reset) {
     int32_t returnvalue = 0;
     if(rotencdataLock == NULL) {
         return NOT_PRESSED;
