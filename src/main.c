@@ -159,9 +159,9 @@ void app_main()
 
     xTaskCreate(gpioTestTask, "gpioTestTask", 20*2048, NULL, 10, NULL);
     for(;;) {
-        // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)eduboard_get_ADC_raw(), (unsigned int)eduboard_get_ADC_voltage_mv());
         ESP_LOGW(TAG, "-------------------------------------------------------------------");
         ESP_LOGI(TAG, "Temp: %.2f°C", tmp112_get_value());
+        ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)adc_get_raw(), (unsigned int)adc_get_voltage_mv());
         float x,y,z;
         stk8321_get_motion_data(&x,&y,&z);
         ESP_LOGI(TAG, "ACC: x:%.2f - y:%.2f - z:%.2f", x, y, z);
@@ -175,6 +175,5 @@ void app_main()
         ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_getUnixTimestamp()));
         flash_checkConnection();
         vTaskDelay(2000/portTICK_PERIOD_MS);
-        
     }
 }
