@@ -122,7 +122,7 @@ void ili9488_init(TFT_t * dev, int width, int height, int offsetx, int offsety)
 	lcddevice->_font_fill = false;
 	lcddevice->_font_underline = false;
 
-	ESP_LOGI(TAG, "ILI9488 initialization.\n");
+	ESP_LOGI(TAG, "ILI9488 initialization.");
 
   	ili9488_spi_write_cmd(ILI9488_CMD_SOFTWARE_RESET);  //Exit Sleep
 	vTaskDelay(100 / portTICK_PERIOD_MS);
@@ -210,7 +210,7 @@ void ili9488_init(TFT_t * dev, int width, int height, int offsetx, int offsety)
 	ili9488_spi_write_cmd(ILI9488_CMD_DISPLAY_ON);
   
 	///Enable backlight
-	ESP_LOGI(TAG, "Enable backlight.\n");
+	ESP_LOGI(TAG, "Enable backlight.");
 	if(lcddevice->_bl >= 0) {
 		gpio_set_level( lcddevice->_bl, 1 );
 	}
