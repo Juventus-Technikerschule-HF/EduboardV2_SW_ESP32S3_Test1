@@ -1,16 +1,7 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_lcd.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
 #include <driver/gpio.h>
-#include "esp_log.h"
-
 #include "lcdDriver.h"
 #ifdef CONFIG_LCD_ST7789
 	#include "st7789.h"

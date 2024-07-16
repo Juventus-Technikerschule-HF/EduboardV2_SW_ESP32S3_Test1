@@ -1,6 +1,5 @@
 #pragma once
-#include <stdio.h>
-#include <driver/spi_master.h>
+#include "../../eduboard2.h"
 
 void w25_read_jedec_id(void);
 uint8_t w25_read_status(void);

@@ -1,13 +1,5 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_touch.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "esp_log.h"
-#include "esp_system.h"
 
 #define TAG "FT6236_driver"
 

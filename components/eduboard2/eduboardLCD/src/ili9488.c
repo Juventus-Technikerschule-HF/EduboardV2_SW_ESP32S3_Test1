@@ -1,15 +1,5 @@
 #include "../../eduboard2.h"
-
-#include <string.h>
-#include <math.h>
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-
-#include <driver/spi_master.h>
 #include <driver/gpio.h>
-#include "esp_log.h"
-
 #include "ili9488.h"
 
 #define TAG "ili9488"

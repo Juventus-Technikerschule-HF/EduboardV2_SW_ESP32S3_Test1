@@ -1,10 +1,5 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_rotary_encoder.h"
-#include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "esp_log.h"
 #include "driver/gpio.h"
 
 #define TAG "RotaryEncoder_Driver"

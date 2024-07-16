@@ -1,13 +1,10 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_led.h"
-#include "esp_log.h"
 #include "driver/gpio.h"
 #ifdef CONFIG_ENABLE_PWMLED
 #include "driver/ledc.h"
 #endif
 #ifdef CONFIG_ENABLE_WS2812
-#include <string.h>
-#include <assert.h>
 #include "driver/rmt_tx.h"
 #include "led_strip_encoder.h"
 #endif

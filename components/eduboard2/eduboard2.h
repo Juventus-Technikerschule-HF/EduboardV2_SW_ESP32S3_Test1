@@ -1,13 +1,16 @@
 #pragma once
 #include <stdlib.h>
 #include <stdio.h>
+#include <inttypes.h>
 #include <assert.h>
+#include <string.h>
+#include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "esp_log.h"
+#include "esp_err.h"
 #include "esp_system.h"
-
 
 #include "eduboard2_config.h"
 #include "eduboard2_defines.h"
@@ -39,7 +42,7 @@
     #include "eduboardLCD/eduboard2_lcd.h"
 #endif
 #ifdef CONFIG_ENABLE_FLASH
-    #include "lfs.h"
+    #define CONFIG_ENABLE_LITTLEFS
     #include "eduboardFlash/eduboard2_flash.h"
 #endif
 
@@ -54,6 +57,10 @@
 #endif
 #ifdef CONFIG_ENABLE_RTC
     #include "eduboardRTC/eduboard2_rtc.h"
+#endif
+
+#ifdef CONFIG_ENABLE_LITTLEFS
+    #include "lfs.h"
 #endif
 
 #ifdef CONFIG_ENABLE_I2C

@@ -1,8 +1,6 @@
 #pragma once
 #include "../eduboard2_config.h"
 
-#include <esp_err.h>
-
 #ifdef CONFIG_ENABLE_SENSOR_STK8321
 void stk8321_anymotion_init();
 void stk8321_sigmotion_init();

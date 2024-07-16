@@ -1,8 +1,5 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_sensor.h"
-#include "esp_log.h"
-
-#include <string.h>
 
 #define TAG "Sensor_TMP112_Driver"
 

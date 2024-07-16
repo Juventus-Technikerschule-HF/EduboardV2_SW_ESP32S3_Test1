@@ -1,17 +1,7 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_lcd.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_log.h"
-#include "esp_err.h"
-#include "esp_system.h"
 #include "lcdDriver.h"
 
-#include "eduboard2_spiffs.h"
 #include "bmpfile.h"
 #include "decode_jpeg.h"
 #include "decode_png.h"

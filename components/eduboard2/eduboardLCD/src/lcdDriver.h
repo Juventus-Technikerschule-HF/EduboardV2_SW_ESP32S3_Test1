@@ -1,6 +1,4 @@
 #pragma once
-// #include "driver/spi_master.h"
-#include "lcdDriver.h"
 #include "fontx.h"
 
 #define RED			0xf800
