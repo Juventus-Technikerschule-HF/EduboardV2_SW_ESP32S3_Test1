@@ -14,6 +14,5 @@ void eduboard_init_stk8321(void);
 
 #ifdef CONFIG_ENABLE_SENSOR_TMP112
 float tmp112_get_value(void);
-void  tmp112_poll(void);
 void  eduboard_init_tmp112(void);
 #endif

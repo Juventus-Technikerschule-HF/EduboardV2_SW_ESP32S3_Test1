@@ -46,29 +46,26 @@ static int get_temp()
 	uint16_t temp_raw = 0;
 	err = read_register16(TMP112_REG_TEMP, &temp_raw);
 	temp_raw = ((temp_raw << 8) | (temp_raw >> 8))>>4;
-	ESP_LOGI(TAG, "Temp read: %4x", temp_raw);
+	// ESP_LOGI(TAG, "Temp read: %4x", temp_raw);
     if (err != ESP_OK)
 		return err;
 	if((temp_raw & 0x0800) == 0x0000) {
 		//Positive Number:
 		temp_val_local = (0.0625 * temp_raw);
 	} else {
-		//ESP_LOGI(TAG, "1: %4X", temp_raw);
+		// ESP_LOGI(TAG, "1: %4X", temp_raw);
 		temp_raw = ((~temp_raw)+1)&0x0FFF;
-		//ESP_LOGI(TAG, "2: %4X", temp_raw);
+		// ESP_LOGI(TAG, "2: %4X", temp_raw);
 		temp_val_local = -(0.0625 * temp_raw);
-		//ESP_LOGI(TAG, "3: %f", temp_val_local);
+		// ESP_LOGI(TAG, "3: %f", temp_val_local);
 
 	}
 	return ESP_OK;
 }
-float get_tmp112_value(void)
-{
-	return temp_val_local;
-}
-void tmp112_poll(void)
+float tmp112_get_value(void)
 {
 	get_temp();
+	return temp_val_local;
 }
 
 void eduboard_init_tmp112(void)
