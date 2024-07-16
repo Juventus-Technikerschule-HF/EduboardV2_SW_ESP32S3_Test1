@@ -92,6 +92,40 @@ void eduboard_init_ft6236(void) {
     ESP_LOGI(TAG, "Init FT6236 done.");
 }
 
+void rotate_touchpoint(touchevent_t* te) {
+    int x1 = te->points[0].x;
+    int y1 = te->points[0].y;
+    int x2 = te->points[1].x;
+    int y2 = te->points[1].y;
+    switch(SCREEN_ROTATION) {
+        case 0:
+            te->points[0].x = x1;
+            te->points[0].y = y1;
+            te->points[1].x = x2;
+            te->points[1].y = y2;
+        break;
+        case 90:
+            te->points[0].x = y1;
+            te->points[0].y = SCREEN_MAX_Y - x1;
+            te->points[1].x = y2;
+            te->points[1].y = SCREEN_MAX_Y - x2;
+        break;
+        case 180:
+            te->points[0].x = x1;
+            te->points[0].y = y1;
+            te->points[1].x = x2;
+            te->points[1].y = y2;
+        break;
+        case 270:
+            te->points[0].x = x1;
+            te->points[0].y = y1;
+            te->points[1].x = x2;
+            te->points[1].y = y2;
+        break;
+        default:
+    }
+}
+
 touchevent_t ft6236_get_touch_event(bool reset) {
     touchevent_t returnvalue;
     xSemaphoreTake(touchlock, portMAX_DELAY);
@@ -100,6 +134,9 @@ touchevent_t ft6236_get_touch_event(bool reset) {
         memset(&touchevent, 0, sizeof(touchevent_t));
     }
     xSemaphoreGive(touchlock);
+
+    rotate_touchpoint(&returnvalue);
+
     return returnvalue;
 }
 

@@ -3,6 +3,8 @@
 
 #define TAG "TEST"
 
+#define UPDATETIME_MS 10
+
 struct systemdata_t {
     struct {
         float x;
@@ -67,6 +69,8 @@ void readSensorValues() {
             systemdata.touch.p2.touched = true;
             systemdata.touch.p2.x = touchevent.points[1].x;
             systemdata.touch.p2.y = touchevent.points[1].y;
+        } else {
+            systemdata.touch.p2.touched = false;
         }
     } else {
         systemdata.touch.p1.touched = false;
@@ -111,30 +115,58 @@ void stateManager() {
 }
 
 void drawTouchPoints() {
-    lcdDrawRect(240,0,479,159, RED);
+    lcdDrawRect(360,0,479,79, RED);
     if(systemdata.touch.p1.touched) {
-        lcdDrawPixel(240 + (systemdata.touch.p1.x), 0 + (systemdata.touch.p1.y/2), GREEN);
+        lcdDrawPixel(360 + (systemdata.touch.p1.x/4), 0 + (systemdata.touch.p1.y/4), PURPLE);
     }
     if(systemdata.touch.p2.touched) {
-        lcdDrawPixel(240 + (systemdata.touch.p2.x), 0 + (systemdata.touch.p2.y/2), BLUE);
+        lcdDrawPixel(360 + (systemdata.touch.p2.x/4), 0 + (systemdata.touch.p2.y/4), YELLOW);
     }
+}
+void drawACCValues() {
+    lcdDrawRect(360, 79, 479, 159, RED);
+    lcdDrawFillRect(370, 95, 370 + (1+systemdata.accsensor.x)*50.0, 105, RED);
+    lcdDrawFillRect(370, 115, 370 + (1+systemdata.accsensor.y)*50.0, 125, GREEN);
+    lcdDrawFillRect(370, 135, 370 + (1+systemdata.accsensor.z)*50.0, 145, BLUE);
+}
+
+void drawTextValues() {
+    lcdDrawRect(340, 160, 479, 319, RED);
+    uint8_t mytext[50];
+    sprintf((char *)mytext, "Temp: %.2f C", systemdata.temperature);
+    lcdDrawString(fx16M, 350, 180, &mytext[0], WHITE);
+    sprintf((char *)mytext, "ADC-Raw: %u", (unsigned int)systemdata.adc_raw);
+    lcdDrawString(fx16M, 350, 200, &mytext[0], WHITE);
+    sprintf((char *)mytext, "ADC-V: %umV", (unsigned int)systemdata.adc_mv);
+    lcdDrawString(fx16M, 350, 220, &mytext[0], WHITE);
+    sprintf((char *)mytext, "rotenc: %i", (int)systemdata.rotation);
+    lcdDrawString(fx16M, 350, 240, &mytext[0], WHITE);
+    
+    sprintf((char *)mytext, "Time: %02u:%02u:%02u", (unsigned int)systemdata.rtc.hour, (unsigned int)systemdata.rtc.min, (unsigned int)systemdata.rtc.sec);
+    lcdDrawString(fx16M, 350, 260, &mytext[0], WHITE);
+    sprintf((char *)mytext, "Date: %02u:%02u:%04u", (unsigned int)systemdata.rtc.day, (unsigned int)systemdata.rtc.month, (unsigned int)systemdata.rtc.year);
+    lcdDrawString(fx16M, 350, 280, &mytext[0], WHITE);
 }
 
 void drawMainScreen() {
     lcdFillScreen(BLACK);
     drawTouchPoints();
+    drawACCValues();
+    drawTextValues();
     lcdUpdateVScreen();
 }
 
 
 
+
+
 void testTask(void* p) {
     
-    static uint8_t pwmstate = 0;
-    static uint8_t ledstate = 0x00;
-    // static int32_t rotenc_value_last = 0;
-    SemaphoreHandle_t sem_alarm;
-    sem_alarm = xSemaphoreCreateBinary();
+    // static uint8_t pwmstate = 0;
+    // static uint8_t ledstate = 0x00;
+    // // static int32_t rotenc_value_last = 0;
+    // SemaphoreHandle_t sem_alarm;
+    // sem_alarm = xSemaphoreCreateBinary();
     // eduboard_set_buzzer_volume(40);
     for(;;) {
         switch(state) {
@@ -271,7 +303,7 @@ void testTask(void* p) {
         //     rtc_config_timer(RTCALARM_DISABLED, NULL, 0);
         // }
 
-        vTaskDelay(50/portTICK_PERIOD_MS);
+        vTaskDelay(UPDATETIME_MS/portTICK_PERIOD_MS);
     }
 }
 
@@ -289,7 +321,7 @@ void app_main()
     for(;;) {
         ESP_LOGW(TAG, "-------------------------------------------------------------------");
         // ESP_LOGI(TAG, "Temp: %.2f°C", tmp112_get_value());
-        ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)adc_get_raw(), (unsigned int)adc_get_voltage_mv());
+        // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)adc_get_raw(), (unsigned int)adc_get_voltage_mv());
         // float x,y,z;
         // stk8321_get_motion_data(&x,&y,&z);
         // ESP_LOGI(TAG, "ACC: x:%.2f - y:%.2f - z:%.2f", x, y, z);

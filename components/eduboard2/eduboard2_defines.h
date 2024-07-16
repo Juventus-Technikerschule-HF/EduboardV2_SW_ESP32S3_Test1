@@ -125,13 +125,41 @@
 #ifdef CONFIG_ENABLE_SENSOR_STK8321
     #define CONFIG_ENABLE_I2C
 #endif
-#ifdef CONFIG_ENABLE_TOUCH_FT6236
-    #define CONFIG_ENABLE_I2C
-#endif
 
 #ifdef CONFIG_ENABLE_LCD
+    #define SCREEN_MAX_X 480
+    #define SCREEN_MAX_Y 320
+    #ifndef SCREEN_ROTATION
+        #ifdef CONFIG_LCD_ILI9488
+            #define SCREEN_ROTATION 90
+            #define SCREEN_MAX_X 480
+            #define SCREEN_MAX_Y 320
+        #endif
+        #ifdef CONFIG_LCD_ST7789
+            #define SCREEN_ROTATION 0
+            #ifdef CONFIG_LCD_RESOLUTION_240x240
+                #define SCREEN_MAX_X 240
+                #define SCREEN_MAX_Y 240
+            #endif
+            #ifdef CONFIG_LCD_RESOLUTION_240x320
+                #define SCREEN_MAX_X 240
+                #define SCREEN_MAX_Y 320
+            #endif            
+        #endif
+        #ifndef SCREEN_ROTATION
+		    #define SCREEN_ROTATION 0
+        #endif
+    #endif
     #define CONFIG_ENABLE_SPI
 #endif
+
+#ifdef CONFIG_ENABLE_TOUCH_FT6236
+    #define CONFIG_ENABLE_I2C
+    #ifndef SCREEN_ROTATION
+        #define SCREEN_ROTATION 0
+    #endif
+#endif
+
 #ifdef CONFIG_ENABLE_FLASH
     #define CONFIG_ENABLE_LITTLEFS
     #define CONFIG_ENABLE_SPI

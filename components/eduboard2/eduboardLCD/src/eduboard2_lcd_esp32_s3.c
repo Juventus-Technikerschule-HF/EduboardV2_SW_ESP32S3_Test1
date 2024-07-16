@@ -1185,8 +1185,14 @@ void eduboard_init_lcd() {
 	lcd_init();
 	ESP_LOGI(TAG, "Init LCD Done.");
 	rotation_t screenRotation = rot_0;
-	#ifdef CONFIG_LCD_ILI9488
+	#if SCREEN_ROTATION == 0
+	screenRotation = rot_0;
+	#elif SCREEN_ROTATION == 90
 	screenRotation = rot_90;
+	#elif SCREEN_ROTATION == 180
+	screenRotation = rot_180;
+	#elif SCREEN_ROTATION == 270
+	screenRotation = rot_270;
 	#endif
 	#ifdef CONFIG_USE_VSCREEN
 	ESP_LOGI(TAG, "Init VScreen...");
