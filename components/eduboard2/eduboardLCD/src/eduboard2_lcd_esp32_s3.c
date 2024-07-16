@@ -1140,7 +1140,6 @@ void lcdTest(void *param) {
 #endif
 
 void showJuventusLogo() {
-	lcdFillScreen(BLACK);
 	pixel_jpeg **pixels;
 	uint16_t imageWidth;
 	uint16_t imageHeight;
@@ -1170,18 +1169,8 @@ void showJuventusLogo() {
 			lcdDrawMultiPixels(_cols, y+_rows, _width, colors);
 			vTaskDelay(1);
 		}
-		lcdUpdateVScreen();
 		free(colors);
 		release_image(&pixels, width, height);
-	}
-}
-void drawComicSansString(void* param) {
-	uint8_t mytext[20];
-	strcpy((char *)mytext, "Eduboard V2.1");
-	lcdDrawString(fx24Comic, 40, 170, &mytext[0], WHITE);
-	lcdUpdateVScreen();
-	for(;;) {
-		vTaskDelay(1000);
 	}
 }
 
@@ -1189,8 +1178,16 @@ void showVersionString() {
 	uint8_t mytext[20];
 	float version = EDUBOARD2_HWVERSION;
 	sprintf((char *)mytext, "Eduboard V%.1f", version);
+	#ifdef CONFIG_LCD_RESOLUTION_240x240
+	lcdDrawString(fx16M, 25, 200, &mytext[0], WHITE);
+	#endif
+    #ifdef CONFIG_LCD_RESOLUTION_240x320
+	lcdDrawString(fx16M, 25, 235, &mytext[0], WHITE);
+	#endif
+    #ifdef CONFIG_LCD_RESOLUTION_320x480
 	lcdDrawString(fx24Comic, 55, 300, &mytext[0], WHITE);
-	lcdUpdateVScreen();
+	#endif
+	
 }
 
 void eduboard_init_lcd() {
@@ -1214,8 +1211,10 @@ void eduboard_init_lcd() {
 	#ifdef CONFIG_LCD_TEST
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
 	#else
+	lcdFillScreen(BLACK);
 	showJuventusLogo();
 	showVersionString();
+	lcdUpdateVScreen();
 	#endif
 }
 
