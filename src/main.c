@@ -1,16 +1,14 @@
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
-#include "esp_event.h"
-#include "nvs_flash.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include "driver/gpio.h"
-#include "gpi2c.h"
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <assert.h>
+// #include "freertos/FreeRTOS.h"
+// #include "freertos/task.h"
+// #include "freertos/semphr.h"
+// #include "esp_event.h"
+// #include "nvs_flash.h"
+// #include "esp_log.h"
+// #include "esp_system.h"
 #include "eduboard2.h"
 #include "memon.h"
 

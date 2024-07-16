@@ -1,4 +1,13 @@
 #pragma once
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/semphr.h"
+#include "esp_log.h"
+#include "esp_system.h"
+
 
 #include "eduboard2_config.h"
 #include "eduboard2_defines.h"
