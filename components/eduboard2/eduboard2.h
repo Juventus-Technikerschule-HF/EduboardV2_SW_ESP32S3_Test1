@@ -15,6 +15,18 @@
 #include "eduboard2_config.h"
 #include "eduboard2_defines.h"
 
+#ifdef CONFIG_ENABLE_LITTLEFS
+    #include "../lfs/lfs.h"
+#endif
+
+#ifdef CONFIG_ENABLE_I2C
+    #include "gpi2c.h"
+#endif
+
+#ifdef CONFIG_ENABLE_SPI
+    #include "gpspi.h"
+#endif
+
 #ifdef CONFIG_ENABLE_LED
     #include "eduboardLED/eduboard2_led.h"
 #endif
@@ -40,9 +52,9 @@
 
 #ifdef CONFIG_ENABLE_LCD
     #include "eduboardLCD/eduboard2_lcd.h"
+    #include "eduboardLCD/src/lcdDriver.h"
 #endif
 #ifdef CONFIG_ENABLE_FLASH
-    #define CONFIG_ENABLE_LITTLEFS
     #include "eduboardFlash/eduboard2_flash.h"
 #endif
 
@@ -57,18 +69,6 @@
 #endif
 #ifdef CONFIG_ENABLE_RTC
     #include "eduboardRTC/eduboard2_rtc.h"
-#endif
-
-#ifdef CONFIG_ENABLE_LITTLEFS
-    #include "../lfs/lfs.h"
-#endif
-
-#ifdef CONFIG_ENABLE_I2C
-    #include "gpi2c.h"
-#endif
-
-#ifdef CONFIG_ENABLE_SPI
-    #include "gpspi.h"
 #endif
 
 #include "eduboardInit/eduboard2_init.h"

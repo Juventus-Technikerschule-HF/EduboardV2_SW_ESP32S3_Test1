@@ -133,6 +133,7 @@
     #define CONFIG_ENABLE_SPI
 #endif
 #ifdef CONFIG_ENABLE_FLASH
+    #define CONFIG_ENABLE_LITTLEFS
     #define CONFIG_ENABLE_SPI
 #endif
 
