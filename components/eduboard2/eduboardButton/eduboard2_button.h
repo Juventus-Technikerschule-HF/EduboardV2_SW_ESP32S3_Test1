@@ -25,5 +25,5 @@ typedef enum {
     LONG_PRESSED
 } button_state;
 
-button_state getButtonState(uint8_t button_num, bool reset);
+button_state button_get_state(uint8_t button_num, bool reset);
 void eduboard_init_buttons();

@@ -100,7 +100,7 @@ void eduboard_init_ft6236(void) {
     ESP_LOGI(TAG, "Init FT6236 done.");
 }
 
-touchevent_t getTouchEvent(bool reset) {
+touchevent_t ft6236_getTouchEvent(bool reset) {
     touchevent_t returnvalue;
     xSemaphoreTake(touchlock, portMAX_DELAY);
     memcpy(&returnvalue, &touchevent, sizeof(touchevent_t));
@@ -111,7 +111,7 @@ touchevent_t getTouchEvent(bool reset) {
     return returnvalue;
 }
 
-bool isTouched() {
+bool ft6236_isTouched() {
     xSemaphoreTake(touchlock, portMAX_DELAY);
     uint8_t touches = touchevent.touches;
     xSemaphoreGive(touchlock);

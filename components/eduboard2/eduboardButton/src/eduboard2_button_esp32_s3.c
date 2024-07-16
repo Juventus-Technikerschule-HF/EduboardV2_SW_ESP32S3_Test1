@@ -109,7 +109,7 @@ void buttonTask(void* arg) {
     }
 }
 
-button_state getButtonState(uint8_t button_num, bool reset) {
+button_state button_get_state(uint8_t button_num, bool reset) {
     button_state returnValue = NOT_PRESSED;
     if(buttondataLock == NULL) {
         return NOT_PRESSED;

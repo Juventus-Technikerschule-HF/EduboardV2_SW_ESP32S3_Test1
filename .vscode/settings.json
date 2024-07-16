@@ -30,7 +30,8 @@
         "eduboard2_flash.h": "c",
         "spi_pins.h": "c",
         "esp_flash.h": "c",
-        "esp_flash_spi_init.h": "c"
+        "esp_flash_spi_init.h": "c",
+        "soc_caps.h": "c"
     },
     "cmake.configureOnOpen": false
 }

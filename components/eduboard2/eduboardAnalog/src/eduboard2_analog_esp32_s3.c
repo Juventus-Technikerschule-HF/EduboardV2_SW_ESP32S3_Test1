@@ -93,21 +93,20 @@ void adcTask(void * parameter) {
     }
 }
 
-uint32_t eduboard_get_ADC_raw() {
+uint32_t adc_get_raw() {
     uint32_t returnValue = 0;
     xSemaphoreTake(hADCMutex, portMAX_DELAY);
     returnValue = adc_raw;
     xSemaphoreGive(hADCMutex);
     return returnValue;
 }
-uint32_t eduboard_get_ADC_voltage_mv() {
+uint32_t adc_get_voltage_mv() {
     uint32_t returnValue = 0;
     xSemaphoreTake(hADCMutex, portMAX_DELAY);
     returnValue = voltage;
     xSemaphoreGive(hADCMutex);
     return returnValue;
 }
-void eduboard_init_ADC() {
-    
+void eduboard_init_adc() {
     xTaskCreate(adcTask, "adcTask", 2 * 2048, NULL, 5, NULL);
 }

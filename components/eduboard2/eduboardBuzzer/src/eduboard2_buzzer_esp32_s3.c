@@ -21,9 +21,9 @@ struct {
 }  buzzer_stat;
 uint32_t buzzer_volume = 4096; //Max Volume, 50% duty cycle
 
-void eduboard_start_buzzer(uint16_t freq_hz, uint32_t length_ms) {
+void buzzer_start(uint16_t freq_hz, uint32_t length_ms) {
     if(buzzer_stat.frequency > 0) {
-        eduboard_stop_buzzer();
+        buzzer_stop();
     } 
     buzzer_stat.frequency = freq_hz;
     buzzer_stat.length_tick = length_ms/portTICK_PERIOD_MS;
@@ -32,7 +32,7 @@ void eduboard_start_buzzer(uint16_t freq_hz, uint32_t length_ms) {
     ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, buzzer_volume);
     ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL);
 }
-void eduboard_stop_buzzer() {
+void buzzer_stop() {
     ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, 0);
     ledc_update_duty(BUZZER_MODE, BUZZER_CHANNEL);
     buzzer_stat.frequency = 0;
@@ -45,13 +45,13 @@ void buzzerControlTask(void* arg) {
     for(;;) {
         now = xTaskGetTickCount();
         if(now - buzzer_stat.starttime_tick > buzzer_stat.length_tick) {
-            eduboard_stop_buzzer();
+            buzzer_stop();
         }
         vTaskDelay(1/portTICK_PERIOD_MS);
     }
 }
 
-void eduboard_set_buzzer_volume(uint8_t volume) {
+void buzzer_set_volume(uint8_t volume) {
     volume = (volume > 100 ? 100:volume);
     buzzer_volume = (uint32_t)(4095.0 / 100.0 * volume);
     ledc_set_duty(BUZZER_MODE, BUZZER_CHANNEL, buzzer_volume);

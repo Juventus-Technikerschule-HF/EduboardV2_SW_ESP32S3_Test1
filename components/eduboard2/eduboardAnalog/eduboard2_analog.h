@@ -1,5 +1,5 @@
 #pragma once
 
-uint32_t eduboard_get_ADC_raw();
-uint32_t eduboard_get_ADC_voltage_mv();
-void eduboard_init_ADC();
+uint32_t adc_get_raw();
+uint32_t adc_get_voltage_mv();
+void eduboard_init_adc();

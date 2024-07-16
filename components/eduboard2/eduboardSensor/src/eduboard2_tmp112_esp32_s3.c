@@ -1,8 +1,6 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_sensor.h"
 #include "esp_log.h"
-//#include "driver/i2c.h"
-
 
 #include <string.h>
 
@@ -64,7 +62,7 @@ static int get_temp()
 	}
 	return ESP_OK;
 }
-float eduboard_get_val_tmp112(void)
+float get_tmp112_value(void)
 {
 	return temp_val_local;
 }

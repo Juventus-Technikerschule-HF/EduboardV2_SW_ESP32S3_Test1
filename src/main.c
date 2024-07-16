@@ -25,15 +25,15 @@ void gpioTestTask(void* p) {
     sem_alarm = xSemaphoreCreateBinary();
     // eduboard_set_buzzer_volume(40);
     for(;;) {
-        if(getButtonState(SW0, false) == SHORT_PRESSED) {
+        if(button_get_state(SW0, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Short:");
-            eduboard_start_buzzer(1000, 100);  
+            buzzer_start(1000, 100);  
             vTaskDelay(100/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(1500, 100);  
+            buzzer_start(1500, 100);  
             vTaskDelay(100/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(2000, 100);  
+            buzzer_start(2000, 100);  
         }
-        if(getButtonState(SW0, true) == LONG_PRESSED) {
+        if(button_get_state(SW0, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW0 = Long:");
             uint8_t hour,min,sec;
             rtc_getTime(&hour, &min, &sec);
@@ -42,25 +42,25 @@ void gpioTestTask(void* p) {
             rtc_configAlarm(RTCALARM_ENABLED, sem_alarm);
             ESP_LOGI(TAG, "RTC Alarm set to %02i:%02i:%02i", hour,min,sec);
         }
-        if(getButtonState(SW1, false) == SHORT_PRESSED) {
+        if(button_get_state(SW1, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW1 = Short:");
             
         }
-        if(getButtonState(SW1, true) == LONG_PRESSED) {
+        if(button_get_state(SW1, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW1 = Long:");
             rtc_setTimerTime(10);
             rtc_configTimer(RTCTIMER_ENABLED, NULL, RTCFREQ_1HZ);
             ESP_LOGI(TAG, "RTC Alarm started for 10s");
         }
-        if(getButtonState(SW2, false) == SHORT_PRESSED) {
+        if(button_get_state(SW2, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW2 = Short:");
             
         }
-        if(getButtonState(SW2, true) == LONG_PRESSED) {
+        if(button_get_state(SW2, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW2 = Long:");
             
         }
-        if(getButtonState(SW3, false) == SHORT_PRESSED) {
+        if(button_get_state(SW3, false) == SHORT_PRESSED) {
             ESP_LOGI(TAG, "SW3 = Short:");
             pwmstate++;
             switch(pwmstate) {
@@ -87,7 +87,7 @@ void gpioTestTask(void* p) {
                     break;
             } 
         }
-        if(getButtonState(SW3, true) == LONG_PRESSED) {
+        if(button_get_state(SW3, true) == LONG_PRESSED) {
             ESP_LOGI(TAG, "SW3 = Long:");
         }
         if(getEncoderButtonState(false) == SHORT_PRESSED) {
@@ -102,8 +102,8 @@ void gpioTestTask(void* p) {
             ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
         }
         rotenc_value_last = rotenc_value;
-        if(isTouched()) {
-            touchevent_t touchevent = getTouchEvent(true);
+        if(ft6236_isTouched()) {
+            touchevent_t touchevent = ft6236_getTouchEvent(true);
             ESP_LOGI(TAG, "Touched");
             ESP_LOGI(TAG, "touches: %i", touchevent.touches);
             ESP_LOGI(TAG, "P1: %i:%i", touchevent.points[0].x, touchevent.points[0].y);
@@ -124,22 +124,22 @@ void gpioTestTask(void* p) {
         }
         if(xSemaphoreTake(sem_alarm, 0) == pdTRUE) {
             ESP_LOGI(TAG, "Alarm occured!");
-            eduboard_start_buzzer(2000, 100);
+            buzzer_start(2000, 100);
             vTaskDelay(200/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(2000, 100);
+            buzzer_start(2000, 100);
             vTaskDelay(200/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(2000, 100);
+            buzzer_start(2000, 100);
             vTaskDelay(200/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(2000, 100);
+            buzzer_start(2000, 100);
             rtc_configAlarm(RTCALARM_DISABLED, NULL);
         }
         if(rtc_timer_elapsed()) {
             ESP_LOGI(TAG, "Timer elapsed!");
-            eduboard_start_buzzer(4000, 50);
+            buzzer_start(4000, 50);
             vTaskDelay(100/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(2000, 50);
+            buzzer_start(2000, 50);
             vTaskDelay(100/portTICK_PERIOD_MS);
-            eduboard_start_buzzer(4000, 50);
+            buzzer_start(4000, 50);
             rtc_configTimer(RTCALARM_DISABLED, NULL, 0);
         }
 

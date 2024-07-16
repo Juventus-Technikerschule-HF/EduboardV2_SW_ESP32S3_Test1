@@ -70,7 +70,7 @@ void eduboard2_initTask(void* param) {
 
     #ifdef CONFIG_ENABLE_BUZZER
     eduboard_init_buzzer();
-    eduboard_set_buzzer_volume(3);
+    buzzer_set_volume(3);
     #endif
 
     #ifdef CONFIG_ENABLE_BUTTONS
@@ -82,7 +82,7 @@ void eduboard2_initTask(void* param) {
     #endif
 
     #ifdef CONFIG_ENABLE_ANALOG
-    eduboard_init_ADC();
+    eduboard_init_adc();
     #endif
 
     #ifdef CONFIG_ENABLE_SPIFFS

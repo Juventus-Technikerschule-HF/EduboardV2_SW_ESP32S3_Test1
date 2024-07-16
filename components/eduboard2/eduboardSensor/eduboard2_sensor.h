@@ -3,9 +3,7 @@
 
 #include <esp_err.h>
 
-float eduboard_get_val_tmp112(void);
-void tmp112_poll(void);
-void eduboard_init_tmp112(void);#ifdef CONFIG_ENABLE_SENSOR_STK8321
+#ifdef CONFIG_ENABLE_SENSOR_STK8321
 void stk8321_anymotion_init();
 void stk8321_sigmotion_init();
 void stk8321_disable_motion();
@@ -14,3 +12,8 @@ void stk8321_get_motion_data(float *X_DataOut, float *Y_DataOut, float *Z_DataOu
 void eduboard_init_stk8321(void);
 #endif
 
+#ifdef CONFIG_ENABLE_SENSOR_TMP112
+float tmp112_get_value(void);
+void  tmp112_poll(void);
+void  eduboard_init_tmp112(void);
+#endif

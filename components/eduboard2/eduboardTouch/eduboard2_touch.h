@@ -16,5 +16,5 @@ typedef struct {
 
 void eduboard_init_ft6236(void);
 
-touchevent_t getTouchEvent(bool reset);
-bool isTouched();
+touchevent_t ft6236_getTouchEvent(bool reset);
+bool ft6236_isTouched();
