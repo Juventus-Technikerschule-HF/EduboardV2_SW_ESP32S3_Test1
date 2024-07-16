@@ -5,8 +5,7 @@
  * Copyright (c) 2017, Arm Limited. All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef LFS_H
-#define LFS_H
+#pragma once
 
 #include "lfs_util.h"
 
@@ -766,6 +765,4 @@ int lfs_migrate(lfs_t *lfs, const struct lfs_config *cfg);
 
 #ifdef __cplusplus
 } /* extern "C" */
-#endif
-
 #endif
