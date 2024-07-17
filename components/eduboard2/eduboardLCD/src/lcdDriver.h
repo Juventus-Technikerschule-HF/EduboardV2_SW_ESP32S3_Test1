@@ -37,6 +37,10 @@ typedef enum {rot_0, rot_90, rot_180, rot_270} rotation_t;
 void delayMS(int ms);
 
 void lcd_init();
+
+void lcdSetupFastLCD(rotation_t rotation);
+
+
 void lcdSetupVScreen(rotation_t rotation);
 void lcdUpdateVScreen();
 void lcdClearVScreen();

@@ -45,7 +45,8 @@
     // #define CONFIG_LCD_RESOLUTION_240x320
     #define CONFIG_LCD_RESOLUTION_320x480
 
-    #define CONFIG_USE_VSCREEN
+    // #define CONFIG_USE_VSCREEN
+    #define CONFIG_USE_FASTLCD
     
     // #define CONFIG_LCD_TEST    
 #endif

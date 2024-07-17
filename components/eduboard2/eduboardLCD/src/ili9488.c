@@ -236,6 +236,23 @@ void ili9488_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * c
 	}
 }
 
+void ili9488_DrawArea(uint16_t x, uint16_t y, uint16_t size_x, uint16_t size_y, uint16_t * colors) 
+{
+	if (x+size_x > lcddevice->_width) {ESP_LOGE(TAG, "ERROR"); return;}
+	if (y+size_y >= lcddevice->_height) {ESP_LOGE(TAG, "ERROR"); return;}
+	uint16_t _x1 = x + lcddevice->_offsetx;
+	uint16_t _x2 = _x1 + size_x;
+	uint16_t _y1 = y + lcddevice->_offsety;
+	uint16_t _y2 = _y1 + size_y;
+	//uint16_t i = 0;
+	ili9488_lcd_setpos(_x1, _x2, _y1, _y2);
+	if(size_x * size_y <= COLORS_MAXLENGTH) {
+		ili9488_spi_write_colors(&colors[0], size_x * size_y);
+	} else {
+		ESP_LOGE(TAG, "Size of Colors array too large");
+	}
+}
+
 void ili9488_DrawMultiLines(uint16_t start_y, uint16_t lines, uint16_t * colors) {
 	uint16_t _x1 = 0;
 	uint16_t _x2 = lcddevice->_width-1;
@@ -250,9 +267,9 @@ void ili9488_DrawMultiLines(uint16_t start_y, uint16_t lines, uint16_t * colors)
 }
 
 void ili9488_DrawFillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
-	if (x1 >= lcddevice->_width) return;
+	if (x1 >= lcddevice->_width) {ESP_LOGE(TAG, "ERROR"); return;}
 	if (x2 >= lcddevice->_width) x2=lcddevice->_width-1;
-	if (y1 >= lcddevice->_height) return;
+	if (y1 >= lcddevice->_height) {ESP_LOGE(TAG, "ERROR"); return;}
 	if (y2 >= lcddevice->_height) y2=lcddevice->_height-1;
 
 	uint16_t _x1 = x1 + lcddevice->_offsetx;

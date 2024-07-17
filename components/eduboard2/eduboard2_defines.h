@@ -150,6 +150,9 @@
 		    #define SCREEN_ROTATION 0
         #endif
     #endif
+    #ifdef CONFIG_USE_FASTLCD
+        #define CONFIG_USE_VSCREEN
+    #endif
     #define CONFIG_ENABLE_SPI
 #endif
 

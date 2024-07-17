@@ -148,12 +148,36 @@ void drawTextValues() {
     lcdDrawString(fx16M, 350, 280, &mytext[0], WHITE);
 }
 
+
 void drawMainScreen() {
-    lcdFillScreen(BLACK);
-    drawTouchPoints();
-    drawACCValues();
-    drawTextValues();
-    lcdUpdateVScreen();
+    static uint16_t x=0,y=0;
+
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        x+=1;
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        y+=1;
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        lcdFillScreen(BLACK);
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        lcdFillScreen(BLUE);
+    }
+    
+    
+    if(x>=SCREEN_MAX_X) {
+        x=0;
+    }
+    if(y>=SCREEN_MAX_Y) {
+        y=0;
+    }
+    lcdDrawPixel(x,y,RED);
+    // lcdFillScreen(BLACK);
+    // drawTouchPoints();
+    // drawACCValues();
+    // drawTextValues();
+    // lcdUpdateVScreen();
 }
 
 
@@ -180,7 +204,7 @@ void testTask(void* p) {
                 stateManager();
             break;
             case STATE_MAINSCREEN:
-                readSensorValues();
+                // readSensorValues();
                 stateManager();
                 drawMainScreen();
             break;
@@ -333,7 +357,7 @@ void app_main()
         // ESP_LOGI(TAG, "Time: %02i:%02i:%02i", hour,min,sec);
         // ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", day,month,year,weekday);
         // ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_get_unix_timestamp()));
-        flash_checkConnection();
+        //flash_checkConnection();
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }

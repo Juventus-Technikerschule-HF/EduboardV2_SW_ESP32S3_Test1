@@ -41,13 +41,107 @@ void lcd_init() {
 	#endif
 }
 
+/*---------------------------------------------------------------------------------------------------------------------*/
+/*   fastLCD Driver                                                                                                    */
+/*                                                                                                                     */
+/*   Uses Map for changed pixels                                                                                       */
+/*                                                                                                                     */
+/*                                                                                                                     */
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+#define FASTLCD_UPDATE_TIME_MS 10
+
+#define FASTLCD_AREAWIDTH	16
+#define FASTLCD_AREAHEIGHT	16
+
+#define FASTLCD_AREASIZE_X CONFIG_WIDTH / FASTLCD_AREAWIDTH
+#define FASTLCD_AREASIZE_Y CONFIG_HEIGHT / FASTLCD_AREAHEIGHT
+
+#define FASTLCD_AREA_MAX FASTLCD_AREASIZE_X * FASTLCD_AREASIZE_Y
+
+uint16_t fastLCD_convertCoordinateToArea(uint16_t x, uint16_t y) {
+	uint16_t _x = x / FASTLCD_AREAWIDTH;
+	uint16_t _y = y / FASTLCD_AREAHEIGHT;
+	uint16_t pos = _y * FASTLCD_AREASIZE_X + _x;
+	return pos;
+}
+
+void fastLCD_convertAreaPosToCoordinateArea(uint16_t areapos, uint16_t *x1, uint16_t *y1, uint16_t *x2, uint16_t *y2) {
+	uint16_t _y = 0;
+	uint16_t _x = 0;
+	uint16_t area_per_horizontal_line = FASTLCD_AREASIZE_X;
+	_y = areapos / area_per_horizontal_line;
+	_x = (areapos - (_y * FASTLCD_AREASIZE_X));
+	*x1 = _x*FASTLCD_AREAWIDTH;
+	*y1 = _y*FASTLCD_AREAHEIGHT;
+	*x2 = ((_x+1)*FASTLCD_AREAWIDTH)-1;
+	*y2 = ((_y+1)*FASTLCD_AREAHEIGHT)-1;
+}
+
+void copyVScreenArea(uint16_t x1, uint16_t y1, uint16_t sizex, uint16_t sizey, uint16_t *buffer) {
+	for(int _y = y1; _y < y1+sizey; _y++) {
+		for(int _x = x1; _x < x1+sizex; _x++) {
+			buffer[((_y - y1) * (sizex)) + (_x - x1)] = vScreen.data[(_y*CONFIG_WIDTH) + _x];
+		}
+	}
+}
+
+SemaphoreHandle_t fastLCDMapLock;
+SemaphoreHandle_t vScreenLock;
+uint8_t fastLCD_updatemap[FASTLCD_AREA_MAX / 8];
+
+void fastLCDUpdateTask(void* param) {
+	for(;;) {
+		xSemaphoreTake(fastLCDMapLock, portMAX_DELAY);
+		for(int i = 0; i < FASTLCD_AREA_MAX / 8; i++) {
+			if(fastLCD_updatemap[i] > 0) {
+				for(int j = 0; j < 8; j++) {
+					if((fastLCD_updatemap[i] >> j) & 0x01) {
+						fastLCD_updatemap[i] &= ~(0x01 << j);
+						uint16_t areapos = (i*8) + j;
+						uint16_t x1,y1,x2,y2;
+						fastLCD_convertAreaPosToCoordinateArea(areapos, &x1,&y1,&x2,&y2);
+						uint16_t sizex = x2-x1+1;
+						uint16_t sizey = y2-y1+1;
+						uint16_t colors[(sizex)*(sizey)];
+						// xSemaphoreTake(vScreenLock, portMAX_DELAY);
+						// Copy Area from VSCREEN to buffer
+						copyVScreenArea(x1,y1,sizex,sizey,&colors[0]);					
+						// xSemaphoreGive(vScreenLock);
+						ili9488_DrawArea(x1,y1,sizex,sizey,&colors[0]);
+					}
+					
+				}
+			}
+		}
+		xSemaphoreGive(fastLCDMapLock);		
+		vTaskDelay(FASTLCD_UPDATE_TIME_MS/portTICK_PERIOD_MS);
+	}
+}
+
+void fastLCD_markUpdateMap(uint16_t x, uint16_t y) {
+	xSemaphoreTake(fastLCDMapLock, portMAX_DELAY);
+	uint16_t areapos = fastLCD_convertCoordinateToArea(x,y);
+	fastLCD_updatemap[areapos/8] |= 0x01 << (areapos%8);
+	xSemaphoreGive(fastLCDMapLock);
+}
+
+void lcdSetupFastLCD(rotation_t rotation) {
+	fastLCDMapLock = xSemaphoreCreateMutex();
+	memset(fastLCD_updatemap, 0xFF, FASTLCD_AREA_MAX/8);
+	xTaskCreate(fastLCDUpdateTask, "fastLCDUpdateTask", 4*2048, NULL, 10, NULL);
+}
+
 void lcdSetupVScreen(rotation_t rotation) {
+	vScreenLock = xSemaphoreCreateMutex();
     vScreen.data = (uint16_t *)malloc(CONFIG_WIDTH*CONFIG_HEIGHT*sizeof(uint16_t));
     vScreen.enabled = true;
 	vScreen.rotation = rotation;
 }
 void lcdClearVScreen() {
+	xSemaphoreTake(vScreenLock, portMAX_DELAY);
 	memset(vScreen.data, 0x00, CONFIG_WIDTH*CONFIG_HEIGHT*sizeof(uint16_t));
+	xSemaphoreGive(vScreenLock);
 }
 uint16_t lcdGetWidth() {
 	switch(vScreen.rotation) {
@@ -79,14 +173,18 @@ uint16_t lcdGetHeight() {
 }
 void lcdUpdateVScreen() {
 	if(vScreen.enabled == false) return;	
-	#ifdef CONFIG_LCD_ST7789
-	for(int y = 0; y < lcddevice->_height; y++) {
-		uint16_t * colors = &vScreen.data[y*lcddevice->_width];
-		st7789_DrawMultiPixels(0, y, lcddevice->_width, colors);
-	}
-	#endif
-	#ifdef CONFIG_LCD_ILI9488
-	ili9488_DrawMultiLines(0, 480, &vScreen.data[0]);
+	#ifndef CONFIG_USE_FASTLCD
+		#ifdef CONFIG_LCD_ST7789
+		for(int y = 0; y < lcddevice->_height; y++) {
+			uint16_t * colors = &vScreen.data[y*lcddevice->_width];
+			st7789_DrawMultiPixels(0, y, lcddevice->_width, colors);
+		}
+		#endif
+		#ifdef CONFIG_LCD_ILI9488	
+		ili9488_DrawMultiLines(0, 480, &vScreen.data[0]);
+		#endif
+	#else
+	//If CONFIG_USE_FASTLCD is active, do not update anything...
 	#endif
 }
 
@@ -110,7 +208,7 @@ void lcdDrawPixel(uint16_t x, uint16_t y, uint16_t color){
 		// uint16_t _x = x;
 		// uint16_t _y = y;
 		uint16_t _x = x;
-		uint16_t _y = y;
+		uint16_t _y = y;		
 		switch(vScreen.rotation) {
 			case rot_0:
 			break;
@@ -128,8 +226,17 @@ void lcdDrawPixel(uint16_t x, uint16_t y, uint16_t color){
 			break;
 		}
 		if (_x >= lcddevice->_width) return;
-		if (_y >= lcddevice->_height) return;	
+		if (_y >= lcddevice->_height) return;
+		#ifdef CONFIG_USE_FASTLCD
+		xSemaphoreTake(vScreenLock, portMAX_DELAY);
+		if(vScreen.data[(_y * lcddevice->_width) + _x] != color) {
+			vScreen.data[(_y * lcddevice->_width) + _x] = color;
+			fastLCD_markUpdateMap(_x, _y);
+		}
+		xSemaphoreGive(vScreenLock);
+		#else
 		vScreen.data[(_y * lcddevice->_width) + _x] = color;
+		#endif
 	}
 }
 

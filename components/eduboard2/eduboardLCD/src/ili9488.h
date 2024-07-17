@@ -157,6 +157,7 @@ void ili9488_init(TFT_t * dev, int width, int height, int offsetx, int offsety);
 
 void ili9488_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void ili9488_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * colors);
+void ili9488_DrawArea(uint16_t x, uint16_t y, uint16_t size_x, uint16_t size_y, uint16_t * colors);
 void ili9488_DrawMultiLines(uint16_t start_y, uint16_t lines, uint16_t * colors);
 void ili9488_DrawFillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 void ili9488_DisplayOff();
