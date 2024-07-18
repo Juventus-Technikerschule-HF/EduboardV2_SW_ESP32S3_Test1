@@ -127,26 +127,25 @@
 #endif
 
 #ifdef CONFIG_ENABLE_LCD
-    #ifndef SCREEN_ROTATION
-        #ifdef CONFIG_LCD_ILI9488
-            #define SCREEN_ROTATION 90
-            #define SCREEN_MAX_X 480
+    
+    #ifdef CONFIG_LCD_ILI9488
+        #define SCREEN_ROTATION 90
+        #define SCREEN_MAX_X 480
+        #define SCREEN_MAX_Y 320
+    #endif
+    #ifdef CONFIG_LCD_ST7789
+        #define SCREEN_ROTATION 0
+        #ifdef CONFIG_LCD_RESOLUTION_240x240
+            #define SCREEN_MAX_X 240
+            #define SCREEN_MAX_Y 240
+        #endif
+        #ifdef CONFIG_LCD_RESOLUTION_240x320
+            #define SCREEN_MAX_X 240
             #define SCREEN_MAX_Y 320
-        #endif
-        #ifdef CONFIG_LCD_ST7789
-            #define SCREEN_ROTATION 0
-            #ifdef CONFIG_LCD_RESOLUTION_240x240
-                #define SCREEN_MAX_X 240
-                #define SCREEN_MAX_Y 240
-            #endif
-            #ifdef CONFIG_LCD_RESOLUTION_240x320
-                #define SCREEN_MAX_X 240
-                #define SCREEN_MAX_Y 320
-            #endif            
-        #endif
-        #ifndef SCREEN_ROTATION
-		    #define SCREEN_ROTATION 0
-        #endif
+        #endif            
+    #endif
+    #ifndef SCREEN_ROTATION
+        #define SCREEN_ROTATION 0
     #endif
     #ifdef CONFIG_USE_DIFFUPDATE
         #define CONFIG_USE_VSCREEN
