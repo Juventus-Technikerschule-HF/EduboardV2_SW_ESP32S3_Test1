@@ -19,6 +19,7 @@ void st7789_init(TFT_t * dev, int width, int height, int offsetx, int offsety);
 
 void st7789_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void st7789_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * colors);
+void st7789_DrawArea(uint16_t x, uint16_t y, uint16_t size_x, uint16_t size_y, uint16_t * colors);
 void st7789_DrawFillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
 void st7789_DisplayOff();
 void st7789_DisplayOn();

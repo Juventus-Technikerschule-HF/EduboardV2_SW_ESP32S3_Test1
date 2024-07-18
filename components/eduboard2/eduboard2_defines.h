@@ -127,8 +127,6 @@
 #endif
 
 #ifdef CONFIG_ENABLE_LCD
-    #define SCREEN_MAX_X 480
-    #define SCREEN_MAX_Y 320
     #ifndef SCREEN_ROTATION
         #ifdef CONFIG_LCD_ILI9488
             #define SCREEN_ROTATION 90
@@ -150,9 +148,10 @@
 		    #define SCREEN_ROTATION 0
         #endif
     #endif
-    #ifdef CONFIG_USE_FASTLCD
+    #ifdef CONFIG_USE_DIFFUPDATE
         #define CONFIG_USE_VSCREEN
     #endif
+    #define CONFIG_ENABLE_SPIFFS
     #define CONFIG_ENABLE_SPI
 #endif
 

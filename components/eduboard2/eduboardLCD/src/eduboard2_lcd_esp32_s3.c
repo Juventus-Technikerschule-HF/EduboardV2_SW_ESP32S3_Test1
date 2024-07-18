@@ -1157,7 +1157,7 @@ void showJuventusLogo() {
 				colors[x] = pixels[y][x];
 			}
 			lcdDrawMultiPixels(_cols, y+_rows, _width, colors);
-			vTaskDelay(1);
+			// vTaskDelay(1);
 		}
 		free(colors);
 		release_image(&pixels, width, height);
@@ -1198,23 +1198,19 @@ void eduboard_init_lcd() {
 	ESP_LOGI(TAG, "Init VScreen...");
 	lcdSetupVScreen(screenRotation);
 	#endif
-	#ifdef CONFIG_USE_FASTLCD
-	ESP_LOGI(TAG, "Init FastLCD...");
-	lcdSetupFastLCD(screenRotation);
-	#endif
 	lcdBacklightOn();
 	lcdFillScreen(BLACK);
 	#ifdef CONFIG_USE_VSCREEN
-	// lcdUpdateVScreen();
+	lcdUpdateVScreen();
     ESP_LOGI(TAG, "Init VScreen Done.");
 	#endif
 	#ifdef CONFIG_LCD_TEST
 	xTaskCreate(lcdTest, "LCD_TEST", 2048*6, NULL, 2, NULL);
 	#else
 	lcdFillScreen(BLACK);
-	// showJuventusLogo();
-	// showVersionString();
-	// lcdUpdateVScreen();
+	showJuventusLogo();
+	showVersionString();
+	lcdUpdateVScreen();
 	#endif
 }
 

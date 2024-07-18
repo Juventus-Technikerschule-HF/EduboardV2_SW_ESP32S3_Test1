@@ -3,7 +3,7 @@
 
 #define TAG "TEST"
 
-#define UPDATETIME_MS 10
+#define UPDATETIME_MS 100
 
 struct systemdata_t {
     struct {
@@ -150,34 +150,11 @@ void drawTextValues() {
 
 
 void drawMainScreen() {
-    static uint16_t x=0,y=0;
-
-    if(button_get_state(SW0, true) == SHORT_PRESSED) {
-        x+=1;
-    }
-    if(button_get_state(SW1, true) == SHORT_PRESSED) {
-        y+=1;
-    }
-    if(button_get_state(SW2, true) == SHORT_PRESSED) {
-        lcdFillScreen(BLACK);
-    }
-    if(button_get_state(SW3, true) == SHORT_PRESSED) {
-        lcdFillScreen(BLUE);
-    }
-    
-    
-    if(x>=SCREEN_MAX_X) {
-        x=0;
-    }
-    if(y>=SCREEN_MAX_Y) {
-        y=0;
-    }
-    lcdDrawPixel(x,y,RED);
-    // lcdFillScreen(BLACK);
-    // drawTouchPoints();
-    // drawACCValues();
-    // drawTextValues();
-    // lcdUpdateVScreen();
+    lcdFillScreen(BLACK);
+    drawTouchPoints();
+    drawACCValues();
+    drawTextValues();
+    lcdUpdateVScreen();
 }
 
 
@@ -185,7 +162,9 @@ void drawMainScreen() {
 
 
 void testTask(void* p) {
-    
+    uint32_t updates = 0, lastupdates = 0;
+    uint32_t time = 0, lasttime = 0;
+    TickType_t t_updatetime = xTaskGetTickCount();
     // static uint8_t pwmstate = 0;
     // static uint8_t ledstate = 0x00;
     // // static int32_t rotenc_value_last = 0;
@@ -193,20 +172,26 @@ void testTask(void* p) {
     // sem_alarm = xSemaphoreCreateBinary();
     // eduboard_set_buzzer_volume(40);
     for(;;) {
+        time = xTaskGetTickCount();
+        if(time-lasttime >= 1000) {
+            ESP_LOGI(TAG, "Updates/s: %i", (unsigned int)(updates-lastupdates));
+            lastupdates = updates;
+            lasttime = time;
+        }
         switch(state) {
             case STATE_INIT:
                 rtc_set_date(14,SUNDAY, JULY, 2024);
                 rtc_set_time(06,29,00);
-
                 state = STATE_WAITFORMAINSCREEN;
             break;
             case STATE_WAITFORMAINSCREEN:
                 stateManager();
             break;
             case STATE_MAINSCREEN:
-                // readSensorValues();
+                readSensorValues();
                 stateManager();
                 drawMainScreen();
+                updates++;
             break;
         }
         // if(button_get_state(SW0, false) == SHORT_PRESSED) {
@@ -326,8 +311,8 @@ void testTask(void* p) {
         //     buzzer_start(4000, 50);
         //     rtc_config_timer(RTCALARM_DISABLED, NULL, 0);
         // }
-
-        vTaskDelay(UPDATETIME_MS/portTICK_PERIOD_MS);
+        
+        vTaskDelayUntil(&t_updatetime, UPDATETIME_MS/portTICK_PERIOD_MS);
     }
 }
 
@@ -343,7 +328,7 @@ void app_main()
 
     xTaskCreate(testTask, "testTask", 20*2048, NULL, 10, NULL);
     for(;;) {
-        ESP_LOGW(TAG, "-------------------------------------------------------------------");
+        // ESP_LOGW(TAG, "-------------------------------------------------------------------");
         // ESP_LOGI(TAG, "Temp: %.2f°C", tmp112_get_value());
         // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)adc_get_raw(), (unsigned int)adc_get_voltage_mv());
         // float x,y,z;
@@ -357,7 +342,7 @@ void app_main()
         // ESP_LOGI(TAG, "Time: %02i:%02i:%02i", hour,min,sec);
         // ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", day,month,year,weekday);
         // ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_get_unix_timestamp()));
-        //flash_checkConnection();
+        // flash_checkConnection();
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }

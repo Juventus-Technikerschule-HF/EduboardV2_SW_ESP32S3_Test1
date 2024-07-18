@@ -38,9 +38,6 @@ void delayMS(int ms);
 
 void lcd_init();
 
-void lcdSetupFastLCD(rotation_t rotation);
-
-
 void lcdSetupVScreen(rotation_t rotation);
 void lcdUpdateVScreen();
 void lcdClearVScreen();

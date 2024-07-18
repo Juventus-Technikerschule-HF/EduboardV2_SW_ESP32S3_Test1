@@ -38,15 +38,13 @@
 #ifdef CONFIG_ENABLE_LCD
     // #define CONFIG_LCD_ST7789
     #define CONFIG_LCD_ILI9488
-
-    #define CONFIG_ENABLE_SPIFFS
     
     // #define CONFIG_LCD_RESOLUTION_240x240
     // #define CONFIG_LCD_RESOLUTION_240x320
     #define CONFIG_LCD_RESOLUTION_320x480
 
     // #define CONFIG_USE_VSCREEN
-    #define CONFIG_USE_FASTLCD
+    #define CONFIG_USE_DIFFUPDATE
     
     // #define CONFIG_LCD_TEST    
 #endif

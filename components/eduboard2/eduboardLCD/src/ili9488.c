@@ -6,7 +6,8 @@
 
 #ifdef CONFIG_LCD_ILI9488
 
-#define SPI_BUFFER_MAXLENGTH 2880	//1440
+// #define SPI_BUFFER_MAXLENGTH 2880	//1440
+#define SPI_BUFFER_MAXLENGTH 3072	//1440
 #define COLORS_MAXLENGTH SPI_BUFFER_MAXLENGTH/3
 
 static const int SPI_Command_Mode = 0;
@@ -238,12 +239,12 @@ void ili9488_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * c
 
 void ili9488_DrawArea(uint16_t x, uint16_t y, uint16_t size_x, uint16_t size_y, uint16_t * colors) 
 {
-	if (x+size_x > lcddevice->_width) {ESP_LOGE(TAG, "ERROR"); return;}
-	if (y+size_y >= lcddevice->_height) {ESP_LOGE(TAG, "ERROR"); return;}
+	if (x+size_x-1 > lcddevice->_width) {ESP_LOGE(TAG, "ERROR"); return;}
+	if (y+size_y-1 >= lcddevice->_height) {ESP_LOGE(TAG, "ERROR"); return;}
 	uint16_t _x1 = x + lcddevice->_offsetx;
-	uint16_t _x2 = _x1 + size_x;
+	uint16_t _x2 = _x1 + size_x-1;
 	uint16_t _y1 = y + lcddevice->_offsety;
-	uint16_t _y2 = _y1 + size_y;
+	uint16_t _y2 = _y1 + size_y-1;
 	//uint16_t i = 0;
 	ili9488_lcd_setpos(_x1, _x2, _y1, _y2);
 	if(size_x * size_y <= COLORS_MAXLENGTH) {

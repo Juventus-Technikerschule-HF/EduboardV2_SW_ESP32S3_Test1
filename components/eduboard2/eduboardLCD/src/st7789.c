@@ -202,8 +202,8 @@ void st7789_DrawPixel(uint16_t x, uint16_t y, uint16_t color) {
 }
 
 void st7789_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * colors) {
-	if (x+size > lcddevice->_width) return;
-	if (y >= lcddevice->_height) return;
+	if (x+size > lcddevice->_width) {ESP_LOGE(TAG, "ERROR"); return;}
+	if (y >= lcddevice->_height) {ESP_LOGE(TAG, "ERROR"); return;}
 	
 	uint16_t _x1 = x + lcddevice->_offsetx;
 	uint16_t _x2 = _x1 + size;
@@ -215,6 +215,23 @@ void st7789_DrawMultiPixels(uint16_t x, uint16_t y, uint16_t size, uint16_t * co
 	st7789_spi_master_write_addr(_y1, _y2);
 	st7789_spi_master_write_command(0x2C);	//	Memory Write
 	st7789_spi_master_write_colors(colors, size);
+}
+
+void st7789_DrawArea(uint16_t x, uint16_t y, uint16_t size_x, uint16_t size_y, uint16_t * colors) 
+{
+	if (x+size_x-1 > lcddevice->_width) {ESP_LOGE(TAG, "ERROR"); return;}
+	if (y+size_y-1 >= lcddevice->_height) {ESP_LOGE(TAG, "ERROR"); return;}
+	uint16_t _x1 = x + lcddevice->_offsetx;
+	uint16_t _x2 = _x1 + size_x-1;
+	uint16_t _y1 = y + lcddevice->_offsety;
+	uint16_t _y2 = _y1 + size_y-1;
+	//uint16_t i = 0;
+	st7789_spi_master_write_command(0x2A);	// set column(x) address
+	st7789_spi_master_write_addr(_x1, _x2);
+	st7789_spi_master_write_command(0x2B);	// set Page(y) address
+	st7789_spi_master_write_addr(_y1, _y2);
+	st7789_spi_master_write_command(0x2C);	//	Memory Write
+	st7789_spi_master_write_colors(&colors[0], size_x * size_y);
 }
 
 void st7789_DrawFillRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color) {
