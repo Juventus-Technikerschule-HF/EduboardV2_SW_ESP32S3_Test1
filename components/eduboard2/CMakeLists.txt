@@ -19,6 +19,9 @@ idf_component_register(SRCS                 .
                                             ./eduboardRTC/src/eduboard2_rtc_esp32_s3.c
                                             ./eduboardSpiffs/src/fontx.c
                                             ./eduboardSpiffs/src/eduboard2_spiffs.c
+                                            ./eduboardSDCard/src/sd_io.c
+                                            ./eduboardSDCard/src/spi_io.c
+                                            ./eduboardSDCard/src/eduboard2_sdcard_esp32_s3.c
                                             ./eduboardInit/src/eduboard2_init.c
                         INCLUDE_DIRS        . 
                                             eduboardLED 
@@ -32,6 +35,7 @@ idf_component_register(SRCS                 .
                                             eduboardTouch
                                             eduboardRTC
                                             eduboardSpiffs
+                                            eduboardSDCard
                                             eduboardInit
                         REQUIRES            driver 
                                             led_strip_encoder
@@ -39,6 +43,6 @@ idf_component_register(SRCS                 .
                                             lfs
                                             gpi2c
                                             gpspi
-                                            vfs                                            
+                                            vfs
                                             spiffs
                                             )

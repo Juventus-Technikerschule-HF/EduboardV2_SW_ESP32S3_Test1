@@ -58,6 +58,10 @@
     #include "eduboardFlash/eduboard2_flash.h"
 #endif
 
+#ifdef CONFIG_ENABLE_SDCARD
+    #include "eduboardSDCard/eduboard2_sdcard.h"
+#endif
+
 #ifdef CONFIG_ENABLE_SENSOR_TMP112
     #include "eduboardSensor/eduboard2_sensor.h"
 #endif
