@@ -294,16 +294,31 @@ void testADC() {
     lcdUpdateVScreen();
 }
 void testDAC() {    
+    static bool initDone = false;
+    if(initDone == false) {
+        dac_setConfig(DAC_A, DAC_GAIN_1, true);
+        dac_setConfig(DAC_B, DAC_GAIN_1, true);
+        dac_update();
+        initDone = true;
+    }
     for(int i = 0; i < 4; i++) {
         if(button_get_state(i, false) == LONG_PRESSED) {
+            dac_setConfig(DAC_A, DAC_GAIN_1, false);
+            dac_setConfig(DAC_B, DAC_GAIN_1, false);
+            dac_update();
+            initDone = false;
             state++;
         }
     }
     if(button_get_state(SW0, true) == SHORT_PRESSED) {
-        
+        dac_setValue(DAC_A, 0x80);
+        dac_setValue(DAC_B, 0x40);
+        dac_update();
     }
     if(button_get_state(SW1, true) == SHORT_PRESSED) {
-        
+        dac_setValue(DAC_A, 0x40);
+        dac_setValue(DAC_B, 0x80);
+        dac_update();
     }
     if(button_get_state(SW2, true) == SHORT_PRESSED) {
         
@@ -314,13 +329,9 @@ void testDAC() {
     lcdFillScreen(BLACK);
     lcdDrawString(fx32M, 10, 30, "DAC-Test", GREEN);
     lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
-
-    lcdDrawString(fx32M, 10, 100, "Todoooo", RED);
     
-    lcdDrawString(fx24M, 30, 269, "BT1", WHITE);
-    lcdDrawString(fx24M, 150, 269, "BT2", WHITE);
-    lcdDrawString(fx24M, 270, 269, "BT3", WHITE);
-    lcdDrawString(fx24M, 390, 269, "BT4", WHITE);
+    lcdDrawString(fx24M, 10, 269, "0.5V/1V", WHITE);
+    lcdDrawString(fx24M, 130, 269, "1V/0.5V", WHITE);
 
     lcdDrawRect(0, 219, 119, 319, BLUE);
     lcdDrawRect(120, 219, 239, 319, BLUE);

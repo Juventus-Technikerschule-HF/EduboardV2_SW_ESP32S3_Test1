@@ -66,4 +66,6 @@
     // #define CONFIG_RTC_SHOW_TIME
 #endif
 
-// #define CONFIG_ENABLE_FLASH
+//#define CONFIG_ENABLE_FLASH
+
+//#define CONFIG_ENABLE_SDCARD

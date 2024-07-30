@@ -30,7 +30,7 @@
 #endif
 
 #ifdef CONFIG_ENABLE_ANALOG
-    #include "eduboardAnalog/eduboard2_analog.h"
+    #include "eduboardADC/eduboard2_adc.h"
 #endif
 
 #ifdef CONFIG_ENABLE_SPIFFS

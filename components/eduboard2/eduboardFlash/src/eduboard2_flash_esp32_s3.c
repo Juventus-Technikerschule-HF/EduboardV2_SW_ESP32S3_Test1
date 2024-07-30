@@ -126,7 +126,7 @@ void flash_checkConnection() {
 
 void eduboard_init_flash() {
     ESP_LOGI(TAG, "init flash...");    
-    gpspi_init(&dev_flash_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_CS, FLASH_FREQ_MHZ, false);
+    gpspi_init(&dev_flash_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_DAC_CS, FLASH_FREQ_MHZ, false);
     w25_init(&dev_flash_spi);
 
     // mount the filesystem

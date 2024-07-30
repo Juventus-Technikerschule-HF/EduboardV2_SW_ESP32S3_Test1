@@ -54,8 +54,8 @@
     #define GPIO_LCD_CS         11
     #define GPIO_LCD_DC         16
 
-    #define GPIO_FLASH_CS       3
-    #define GPIO_SD_CS          10
+    #define GPIO_FLASH_DAC_CS   3
+    #define GPIO_SD_LDAC_CS     10
     
     #define GPIO_GPIOX0         6
     #define GPIO_GPIOX1         7
@@ -167,6 +167,14 @@
 #endif
 #ifdef CONFIG_ENABLE_DAC
     #define CONFIG_ENABLE_SPI
+#endif
+#ifdef CONFIG_ENABLE_DAC
+    #ifdef CONFIG_ENABLE_FLASH
+        #error "You cant enable Flash and DAC at the same time. CS are shared"
+    #endif
+    #ifdef CONFIG_ENABLE_SDCARD
+        #error "You cant enable SDCARD and DAC at the same time. LDAC and SDCS are shared"
+    #endif
 #endif
 
 #define EDUBOARD2_HWVERSION 2.2

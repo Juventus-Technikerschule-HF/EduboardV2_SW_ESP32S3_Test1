@@ -29,6 +29,7 @@ idf_component_register(SRCS                 .
                                             eduboardAnalog
                                             eduboardLCD
                                             eduboardFlash
+                                            eduboardDAC
                                             eduboardSensor
                                             eduboardTouch
                                             eduboardRTC
