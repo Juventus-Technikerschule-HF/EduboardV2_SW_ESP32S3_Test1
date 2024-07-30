@@ -1,5 +1,5 @@
 #include "../../eduboard2.h"
-#include "../eduboard2_analog.h"
+#include "../eduboard2_adc.h"
 
 #include "soc/soc_caps.h"
 #include "esp_adc/adc_oneshot.h"
@@ -72,12 +72,12 @@ void adcTask(void * parameter) {
         xSemaphoreTake(hADCMutex, portMAX_DELAY);
         ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, AN0_CHANNEL, &adc_raw));
 
-#ifdef CONFIG_AN0_DEBUG
+#ifdef CONFIG_ADC_DEBUG
         ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, AN0_CHANNEL, adc_raw);
 #endif
         if (do_calibration1) {
             ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc1_cali_handle, adc_raw, &voltage));
-#ifdef CONFIG_AN0_DEBUG
+#ifdef CONFIG_ADC_DEBUG
             ESP_LOGI(TAG, "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_1 + 1, AN0_CHANNEL, voltage);
 #endif
         }

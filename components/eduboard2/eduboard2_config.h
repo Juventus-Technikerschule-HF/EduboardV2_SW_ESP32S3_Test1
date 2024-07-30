@@ -29,9 +29,13 @@
 
 /*Analog Input Config*/
 #define CONFIG_ENABLE_AN0
-#ifdef CONFIG_ENABLE_AN0
-    //#define CONFIG_AN0_DEBUG
-#endif
+// #define CONFIG_ENABLE_AN1
+// #define CONFIG_ENABLE_AN2
+// #define CONFIG_ENABLE_AN3
+// #define CONFIG_ENABLE_AN4
+// #define CONFIG_ENABLE_AN5
+// #define CONFIG_ADC_DEBUG
+
 
 /*DAC Output Config*/
 #define CONFIG_ENABLE_DAC
