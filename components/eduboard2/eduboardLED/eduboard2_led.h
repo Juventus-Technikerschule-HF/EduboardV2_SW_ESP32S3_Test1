@@ -27,12 +27,13 @@
 #endif
 
 
-void eduboard_set_led(uint8_t led_num, uint8_t level);
-void eduboard_toggle_led(uint8_t led_num);
+void led_set(uint8_t led_num, uint8_t level);
+void led_toggle(uint8_t led_num);
+void led_setAll(uint8_t newLedValue);
 #ifdef CONFIG_ENABLE_PWMLED
-void eduboard_set_pwmled(uint8_t red, uint8_t green, uint8_t blue);
+void pwmled_set(uint8_t red, uint8_t green, uint8_t blue);
 #endif
 #ifdef CONFIG_ENABLE_WS2812
-void eduboard_set_ws2812(uint8_t red, uint8_t green, uint8_t blue);
+void ws2812_set(uint8_t red, uint8_t green, uint8_t blue);
 #endif
 void eduboard_init_leds();

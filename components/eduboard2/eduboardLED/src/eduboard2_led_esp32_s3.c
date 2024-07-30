@@ -61,25 +61,48 @@ uint8_t checkLEDEnabled(uint8_t led_num) {
     return 1;
 }
 
-void eduboard_set_led(uint8_t led_num, uint8_t level) {
-    if(checkLEDEnabled(led_num) == 0) {
-        ESP_LOGE(TAG, "LED%i not Enabled", led_num);
-        return;
+SemaphoreHandle_t ledLock;
+uint8_t ledValue = 0;
+
+void updateLedValues() {
+    for(int i = 0; i < 8; i++) {
+        uint8_t level = (ledValue >> i) & 0x01;
+        uint8_t ledPin = led_pins[i];
+        gpio_set_level(ledPin, level);
     }
-    gpio_set_level(led_pins[led_num], level);
 }
-void eduboard_toggle_led(uint8_t led_num) {
-    static uint8_t led_stat;
+
+void led_set(uint8_t led_num, uint8_t level) {
     if(checkLEDEnabled(led_num) == 0) {
         ESP_LOGE(TAG, "LED%i not Enabled", led_num);
         return;
     }
-    if(((led_stat >> led_num) & 0x01) == 1) {
-        led_stat &= (~(0x01 << led_num));
-        gpio_set_level(led_pins[led_num], 0);
-    } else {
-        led_stat |= (0x01 << led_num);
-        gpio_set_level(led_pins[led_num], 1);
+    if(xSemaphoreTake(ledLock, 10)) {
+        if(level > 0) {
+            ledValue |= (0x01 << led_num);
+        } else {
+            ledValue &= ~(0x01 << led_num);
+        }
+        updateLedValues();
+        xSemaphoreGive(ledLock);
+    }
+}
+void led_toggle(uint8_t led_num) {
+    if(checkLEDEnabled(led_num) == 0) {
+        ESP_LOGE(TAG, "LED%i not Enabled", led_num);
+        return;
+    }
+    if(xSemaphoreTake(ledLock, 10)) {
+        ledValue ^= (0x01 << led_num);
+        updateLedValues();
+        xSemaphoreGive(ledLock);
+    }
+}
+void led_setAll(uint8_t newLedValue) {
+    if(xSemaphoreTake(ledLock, 10)) {
+        ledValue = newLedValue;
+        updateLedValues();
+        xSemaphoreGive(ledLock);
     }
 }
 #ifdef CONFIG_ENABLE_PWMLED
@@ -94,7 +117,7 @@ void eduboard_toggle_led(uint8_t led_num) {
 #define LEDC_DUTY_RES           LEDC_TIMER_13_BIT // Set duty resolution to 13 bits
 #define LEDC_DUTY               (4095) // Set duty to 50%. ((2 ** 13) - 1) * 50% = 4095
 #define LEDC_FREQUENCY          (5000) // Frequency in Hertz. Set frequency at 5 kHz
-void eduboard_set_pwmled(uint8_t red, uint8_t green, uint8_t blue) {
+void pwmled_set(uint8_t red, uint8_t green, uint8_t blue) {
     red = (red > 100 ? 100 : red);
     green = (green > 100 ? 100 : green);
     blue = (blue > 100 ? 100 : blue);
@@ -158,7 +181,7 @@ void init_pwm_led() {
 rmt_channel_handle_t led_chan = NULL;
 rmt_encoder_handle_t led_encoder = NULL;
 static uint8_t led_strip_pixels[1 * 3];
-void eduboard_set_ws2812(uint8_t red, uint8_t green, uint8_t blue) {
+void ws2812_set(uint8_t red, uint8_t green, uint8_t blue) {
     rmt_transmit_config_t tx_config = {
         .loop_count = 0, // no transfer loop
     };
@@ -190,6 +213,7 @@ void init_ws2812() {
 }
 #endif
 void eduboard_init_leds() {
+    ledLock = xSemaphoreCreateMutex();
     gpio_config_t io_conf = {};
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_OUTPUT;
