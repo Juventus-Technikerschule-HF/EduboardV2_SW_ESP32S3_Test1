@@ -1165,7 +1165,7 @@ void showJuventusLogo() {
 }
 
 void showVersionString() {
-	uint8_t mytext[20];
+	char mytext[20];
 	float version = EDUBOARD2_HWVERSION;
 	sprintf((char *)mytext, "Eduboard V%.1f", version);
 	#ifdef CONFIG_LCD_RESOLUTION_240x240

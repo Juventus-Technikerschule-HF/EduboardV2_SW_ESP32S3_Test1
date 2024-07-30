@@ -61,7 +61,7 @@ void lcdDrawArrow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t w
 void lcdDrawFillArrow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t w, uint16_t color);
 uint16_t rgb565_conv(uint16_t r, uint16_t g, uint16_t b);
 int lcdDrawChar(FontxFile *fx, uint16_t x, uint16_t y, uint8_t ascii, uint16_t color);
-int lcdDrawString(FontxFile *fx, uint16_t x, uint16_t y, uint8_t * ascii, uint16_t color);
+int lcdDrawString(FontxFile *fx, uint16_t x, uint16_t y, char* ascii, uint16_t color);
 int lcdDrawCode(FontxFile *fx, uint16_t x,uint16_t y,uint8_t code,uint16_t color);
 void lcdSetFontDirection(uint16_t dir);
 void lcdSetFontFill(uint16_t color);

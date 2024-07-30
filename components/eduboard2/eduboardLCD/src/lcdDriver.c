@@ -994,7 +994,7 @@ int lcdDrawChar(FontxFile *fxs, uint16_t x, uint16_t y, uint8_t ascii, uint16_t 
 	return next;
 }
 
-int lcdDrawString(FontxFile *fx, uint16_t x, uint16_t y, uint8_t *ascii, uint16_t color)
+int lcdDrawString(FontxFile *fx, uint16_t x, uint16_t y, char* ascii, uint16_t color)
 {
 	int length = strlen((char *)ascii);
 	for (int i = 0; i < length; i++)
