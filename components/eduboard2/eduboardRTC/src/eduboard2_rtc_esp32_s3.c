@@ -424,7 +424,10 @@ uint32_t rtc_get_unix_timestamp() {
 
     uint16_t year = (timedata.century ? 2000 + timedata.year : 1900 + timedata.year);
     uint16_t yday = get_yday(timedata.month, timedata.day, timedata.year)-1;
-    if(year < 1970) return 0;
+    if(year < 1970) {
+        xSemaphoreGive(rtclock);
+        return 0;
+    }
     year -= 1900;
     
     uint32_t timestamp = 0;
