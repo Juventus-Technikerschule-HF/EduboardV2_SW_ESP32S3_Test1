@@ -57,6 +57,9 @@
 #ifdef CONFIG_ENABLE_FLASH
     #include "eduboardFlash/eduboard2_flash.h"
 #endif
+#ifdef CONFIG_ENABLE_DAC
+    #include "eduboardDAC/eduboard2_dac.h"
+#endif
 
 #ifdef CONFIG_ENABLE_SENSOR_TMP112
     #include "eduboardSensor/eduboard2_sensor.h"

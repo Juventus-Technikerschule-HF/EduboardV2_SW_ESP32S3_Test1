@@ -165,6 +165,9 @@
     #define CONFIG_ENABLE_LITTLEFS
     #define CONFIG_ENABLE_SPI
 #endif
+#ifdef CONFIG_ENABLE_DAC
+    #define CONFIG_ENABLE_SPI
+#endif
 
 #define EDUBOARD2_HWVERSION 2.2
 #define EDUBOARD2_SWVERSION 0.1

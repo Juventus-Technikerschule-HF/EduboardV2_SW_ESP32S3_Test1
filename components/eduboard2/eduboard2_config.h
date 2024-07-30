@@ -27,11 +27,14 @@
 
 #define CONFIG_ENABLE_ROTARYENCODER
 
-/*Analog Input COnfig*/
+/*Analog Input Config*/
 #define CONFIG_ENABLE_AN0
 #ifdef CONFIG_ENABLE_AN0
     //#define CONFIG_AN0_DEBUG
 #endif
+
+/*DAC Output Config*/
+#define CONFIG_ENABLE_DAC
 
 /*LCD Config*/
 #define CONFIG_ENABLE_LCD
@@ -63,4 +66,4 @@
     // #define CONFIG_RTC_SHOW_TIME
 #endif
 
-#define CONFIG_ENABLE_FLASH
+// #define CONFIG_ENABLE_FLASH

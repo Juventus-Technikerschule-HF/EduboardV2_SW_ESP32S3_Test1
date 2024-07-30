@@ -13,6 +13,7 @@ idf_component_register(SRCS                 .
                                             ./eduboardLCD/src/decode_jpeg.c
                                             ./eduboardFlash/src/w25.c
                                             ./eduboardFlash/src/eduboard2_flash_esp32_s3.c
+                                            ./eduboardDAC/src/eduboard2_dac_esp32_s3.c
                                             ./eduboardSensor/src/eduboard2_stk8321_esp32_s3.c
                                             ./eduboardSensor/src/eduboard2_tmp112_esp32_s3.c
                                             ./eduboardTouch/src/eduboard2_ft6236_esp32_s3.c
