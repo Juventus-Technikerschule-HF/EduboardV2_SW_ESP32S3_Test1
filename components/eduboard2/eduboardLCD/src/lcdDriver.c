@@ -1120,14 +1120,18 @@ void lcdInversionOn()
 #endif
 }
 
-void lcdDrawDataUInt8(uint16_t x, uint16_t y, uint8_t width, uint8_t height, uint8_t min, uint8_t max, uint8_t *data, uint16_t color)
+void lcdDrawDataUInt8(uint16_t x, uint16_t y, uint16_t width, uint8_t height, uint8_t min, uint8_t max, bool leftToRight, uint8_t *data, uint16_t color)
 {
 	uint8_t diffy = max - min;
 	float cropfactor_y = (float)(height) / (float)(diffy);
 	for (int i = 0; i < width; i++)
-	{
-		uint8_t data_y = (data[i] - min) * cropfactor_y;
-		lcdDrawPixel(x + i, y - data_y, color);
+	{		
+		uint8_t data_y = (float)((data[i] - min)) * cropfactor_y;
+		if(leftToRight) {
+			lcdDrawPixel(x + i, (y+height) - data_y, color);
+		} else {
+			lcdDrawPixel((x+width) - i - 1, (y+height) - data_y, color);
+		}
 	}
 }
 void lcdDrawDataInt8(uint16_t x, uint16_t y, uint8_t width, uint8_t height, int8_t min, int8_t max, int8_t *data, uint16_t color)

@@ -73,5 +73,5 @@ void lcdBacklightOn();
 void lcdInversionOff();
 void lcdInversionOn();
 
-void lcdDrawDataUInt8(uint16_t x, uint16_t y, uint8_t width, uint8_t height, uint8_t min, uint8_t max, uint8_t* data, uint16_t color);
+void lcdDrawDataUInt8(uint16_t x, uint16_t y, uint16_t width, uint8_t height, uint8_t min, uint8_t max, bool leftToRight, uint8_t *data, uint16_t color);
 void lcdDrawDataInt8(uint16_t x, uint16_t y, uint8_t width, uint8_t height, int8_t min, int8_t max, int8_t* data, uint16_t color);
