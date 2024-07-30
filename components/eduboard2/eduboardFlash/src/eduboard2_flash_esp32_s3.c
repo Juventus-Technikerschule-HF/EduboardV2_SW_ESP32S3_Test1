@@ -8,6 +8,11 @@
 #include "freertos/semphr.h"
 #include "esp_log.h"
 #include "esp_system.h"
+
+#ifndef CONFIG_ENABLE_FLASH
+#include "../lfs/lfs.h"
+#endif
+
 #include "w25.h"
 
 #define FLASH_FREQ_MHZ      SPI_MASTER_FREQ_10M
