@@ -1,163 +1,597 @@
 #include "eduboard2.h"
 #include "memon.h"
 
+#include "math.h"
+
 #define TAG "TEST"
 
 #define UPDATETIME_MS 100
 
-struct systemdata_t {
-    struct {
-        float x;
-        float y;
-        float z;
-    }accsensor;
-    struct  {
-        struct  {
-            bool touched;
-            int x;
-            int y;
-        }p1;
-        struct  {
-            bool touched;
-            int x;
-            int y;
-        }p2;
-    }touch;
-    float temperature;
-    int rotation;
-    int adc_raw;
-    int adc_mv;
-    struct  {
-        uint8_t sec;
-        uint8_t min;
-        uint8_t hour;
-        uint8_t day;
-        uint8_t month;
-        uint16_t year;
-        uint8_t weekday;
-        uint32_t unixtimestamp;
-    }rtc;
-} ;
-
-struct systemdata_t systemdata;
-
 enum state {
     STATE_INIT,
     STATE_WAITFORMAINSCREEN,
-    STATE_MAINSCREEN,
+    STATE_TEST_BUTTON,
+    STATE_TEST_LED,
+    STATE_TEST_WS2812,
+    STATE_TEST_BUZZER,
+    STATE_TEST_ROTARYENCODER,
+    STATE_TEST_ADC,
+    STATE_TEST_DAC,
+    STATE_TEST_TOUCH,
+    STATE_TEST_ACCSENSOR,
+    STATE_TEST_TEMPERATURE,
+    STATE_TEST_RTC,
+    STATE_TEST_FLASH,
+    STATE_TEST_USBSERIAL,
 };
+
+
 
 uint8_t state = STATE_INIT;
 
-
-void readSensorValues() {
-    // Read ACC-Sensor STK8321 data
-    stk8321_get_motion_data(&systemdata.accsensor.x,&systemdata.accsensor.y,&systemdata.accsensor.z);
-    // ESP_LOGI(TAG, "ACC: x:%.2f - y:%.2f - z:%.2f", systemdata.accsensor.x, systemdata.accsensor.y, systemdata.accsensor.z);
-
-    // Read Touch Sensor FT6236 data
-    if(ft6236_is_touched()) {
-        touchevent_t touchevent = ft6236_get_touch_event(true);
-        // ESP_LOGI(TAG, "Touched");
-        // ESP_LOGI(TAG, "touches: %i", touchevent.touches);
-        // ESP_LOGI(TAG, "P1: %i:%i", touchevent.points[0].x, touchevent.points[0].y);
-        systemdata.touch.p1.touched = true;
-        systemdata.touch.p1.x = touchevent.points[0].x;
-        systemdata.touch.p1.y = touchevent.points[0].y;
-        if(touchevent.touches > 1) {
-            // ESP_LOGI(TAG, "P2: %i:%i", touchevent.points[1].x, touchevent.points[1].y);
-            systemdata.touch.p2.touched = true;
-            systemdata.touch.p2.x = touchevent.points[1].x;
-            systemdata.touch.p2.y = touchevent.points[1].y;
-        } else {
-            systemdata.touch.p2.touched = false;
-        }
-    } else {
-        systemdata.touch.p1.touched = false;
-        systemdata.touch.p2.touched = false;
-    }
-
-    // Read rtc PCF8563T time and date data
-    rtc_get_time(&systemdata.rtc.hour,&systemdata.rtc.min, &systemdata.rtc.sec);
-    rtc_get_date(&systemdata.rtc.year,&systemdata.rtc.month,&systemdata.rtc.day,&systemdata.rtc.weekday);
-    systemdata.rtc.unixtimestamp = rtc_get_unix_timestamp();
-    // ESP_LOGI(TAG, "Time: %02i:%02i:%02i", systemdata.rtc.hour,systemdata.rtc.min,systemdata.rtc.sec);
-    // ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", systemdata.rtc.day,systemdata.rtc.month,systemdata.rtc.year,systemdata.rtc.weekday);
-    // ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(systemdata.rtc.unixtimestamp));
-
-    // Read TMP112 Temperature data
-    systemdata.temperature = tmp112_get_value();
-    // ESP_LOGI(TAG, "Temp: %.2f°C", systemdata.temperature);
-
-    // Read ADC Values of Potentiometer in raw and mv
-    systemdata.adc_raw = adc_get_raw();
-    systemdata.adc_mv = adc_get_voltage_mv();
-    // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)systemdata.adc_raw, (unsigned int)systemdata.adc_mv);
-
-    // Read rotation value of rotary encoder
-    systemdata.rotation = rotary_encoder_get_rotation(false);
-}
-
-void stateManager() {
-    switch(state) {
-        case STATE_INIT:
-            
-        break;
-        case STATE_WAITFORMAINSCREEN:
-            if(button_get_state(SW0, true) == SHORT_PRESSED) {
-                state = STATE_MAINSCREEN;
-            }
-        break;
-        case STATE_MAINSCREEN:
-            
-        break;
-    }
-}
-
-void drawTouchPoints() {
-    lcdDrawRect(360,0,479,79, RED);
-    if(systemdata.touch.p1.touched) {
-        lcdDrawPixel(360 + (systemdata.touch.p1.x/4), 0 + (systemdata.touch.p1.y/4), PURPLE);
-    }
-    if(systemdata.touch.p2.touched) {
-        lcdDrawPixel(360 + (systemdata.touch.p2.x/4), 0 + (systemdata.touch.p2.y/4), YELLOW);
-    }
-}
-void drawACCValues() {
-    lcdDrawRect(360, 79, 479, 159, RED);
-    lcdDrawFillRect(370, 95, 370 + (1+systemdata.accsensor.x)*50.0, 105, RED);
-    lcdDrawFillRect(370, 115, 370 + (1+systemdata.accsensor.y)*50.0, 125, GREEN);
-    lcdDrawFillRect(370, 135, 370 + (1+systemdata.accsensor.z)*50.0, 145, BLUE);
-}
-
-void drawTextValues() {
-    lcdDrawRect(340, 160, 479, 319, RED);
-    uint8_t mytext[50];
-    sprintf((char *)mytext, "Temp: %.2f C", systemdata.temperature);
-    lcdDrawString(fx16M, 350, 180, &mytext[0], WHITE);
-    sprintf((char *)mytext, "ADC-Raw: %u", (unsigned int)systemdata.adc_raw);
-    lcdDrawString(fx16M, 350, 200, &mytext[0], WHITE);
-    sprintf((char *)mytext, "ADC-V: %umV", (unsigned int)systemdata.adc_mv);
-    lcdDrawString(fx16M, 350, 220, &mytext[0], WHITE);
-    sprintf((char *)mytext, "rotenc: %i", (int)systemdata.rotation);
-    lcdDrawString(fx16M, 350, 240, &mytext[0], WHITE);
+void testButtons() {
+    static uint8_t buttonFade[4] = {0,0,0,0};
     
-    sprintf((char *)mytext, "Time: %02u:%02u:%02u", (unsigned int)systemdata.rtc.hour, (unsigned int)systemdata.rtc.min, (unsigned int)systemdata.rtc.sec);
-    lcdDrawString(fx16M, 350, 260, &mytext[0], WHITE);
-    sprintf((char *)mytext, "Date: %02u:%02u:%04u", (unsigned int)systemdata.rtc.day, (unsigned int)systemdata.rtc.month, (unsigned int)systemdata.rtc.year);
-    lcdDrawString(fx16M, 350, 280, &mytext[0], WHITE);
-}
-
-
-void drawMainScreen() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        buttonFade[0] = 10;
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        buttonFade[1] = 10;
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        buttonFade[2] = 10;
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        buttonFade[3] = 10;
+    }
     lcdFillScreen(BLACK);
-    drawTouchPoints();
-    drawACCValues();
-    drawTextValues();
+    lcdDrawString(fx32M, 10, 30, "Button Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    float percentage = 0;
+    for(int i = 0; i < 4; i++) {        
+        if(buttonFade[i] > 0) {
+            percentage = 1.0/10.0*(float)(buttonFade[i]);
+            lcdDrawFillRect((i*120)+1, 219, (i*120)+118, 319, rgb565_conv((uint8_t)(255.0*percentage), 0x00, (uint8_t)(255.0*percentage)));
+            buttonFade[i]--;
+        }
+    }
+    lcdDrawString(fx24M, 30, 269, "BT1", WHITE);
+    lcdDrawString(fx24M, 150, 269, "BT2", WHITE);
+    lcdDrawString(fx24M, 270, 269, "BT3", WHITE);
+    lcdDrawString(fx24M, 390, 269, "BT4", WHITE);
+
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
     lcdUpdateVScreen();
 }
+void testLED() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            led_setAll(0x00);
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        led_toggle(LED0);
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        led_setAll(0xFF);
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        led_setAll(0x00);
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        led_toggle(LED7);
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "LED-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawString(fx24M, 30, 269, "Left", WHITE);
+    lcdDrawString(fx24M, 150, 269, " On", WHITE);
+    lcdDrawString(fx24M, 270, 269, "OFF", WHITE);
+    lcdDrawString(fx24M, 385, 269, "Right", WHITE);
 
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testWS2812() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            ws2812_set(0x00, 0x00, 0x00);
+            buzzer_set_volume(10);
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        ws2812_set(0xFF, 0x00, 0x00);
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        ws2812_set(0x00, 0xFF, 0x00);
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        ws2812_set(0x00, 0x00, 0xFF);
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        ws2812_set(0xFF, 0x00, 0xFF);
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "WS2812-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawString(fx24M, 30, 269, "RED", WHITE);
+    lcdDrawString(fx24M, 140, 269, "GREEN", WHITE);
+    lcdDrawString(fx24M, 265, 269, "BLUE", WHITE);
+    lcdDrawString(fx24M, 380, 269, "PURPLE", WHITE);
 
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testBuzzer() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        buzzer_start(2000, 100);
+        vTaskDelay(200/portTICK_PERIOD_MS);
+        buzzer_start(2000, 100);
+        vTaskDelay(200/portTICK_PERIOD_MS);
+        buzzer_start(2000, 100);
+        vTaskDelay(200/portTICK_PERIOD_MS);
+        buzzer_start(2000, 100);
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "Buzzer-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawString(fx24M, 30, 269, "Test", WHITE);
+    
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testRotaryEncoder() {
+    static uint8_t rotencbuttonfade = 0;
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        rotary_encoder_get_rotation(true);
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+
+    if(rotary_encoder_button_get_state(true) > NOT_PRESSED) {
+        rotencbuttonfade = 10;
+    }
+
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "RotaryEncoder-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+
+    int32_t rotencvalue = rotary_encoder_get_rotation(false);    
+    int16_t xdif = 0, ydif = 0;
+    int16_t radius = 40;
+    float angle = 360.0/48.0*(float)rotencvalue;
+    float anglerad = M_PI/180.0*angle;
+    xdif = (int16_t)((float)(radius)*cos(anglerad));
+    ydif = (int16_t)((float)(radius)*sin(anglerad));
+
+    uint16_t xmid = 240;
+    uint16_t ymid = 160;
+
+    lcdDrawLine(xmid, ymid, xmid + xdif, ymid + ydif, RED);
+    lcdDrawCircle(xmid,ymid,radius, BLUE);
+
+    if(rotencbuttonfade > 0) {
+        float percentage = 1.0/10.0*(float)(rotencbuttonfade);
+        lcdDrawFillCircle(xmid,ymid,5, rgb565_conv(0x00, (uint8_t)(255.0*percentage), (uint8_t)(255.0*percentage)));
+        rotencbuttonfade--;
+    }
+
+    
+    lcdDrawString(fx24M, 20, 269, "Reset", WHITE);
+    
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+#define ADC_BUFFER_SIZE 400
+void testADC() {
+    static bool init = false;
+    static uint8_t adcRawBuffer[ADC_BUFFER_SIZE];
+    if(init == false) {
+        memset(adcRawBuffer, 0x00, sizeof(adcRawBuffer));
+        init = true;
+    }
+
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+
+    uint32_t adcValue = adc_get_raw();
+    uint32_t adcVoltage_mv = adc_get_voltage_mv();
+
+    for(int i = ADC_BUFFER_SIZE-1; i > 0; i--) {
+        adcRawBuffer[i] = adcRawBuffer[i-1];
+    }
+    adcRawBuffer[0] = (uint8_t)(200.0/4096.0*(float)(adcValue));
+
+    
+
+    lcdFillScreen(BLACK);
+
+    lcdDrawDataUInt8(10, 80, ADC_BUFFER_SIZE, 120, 0, 200, false, adcRawBuffer, YELLOW);
+    lcdDrawRect(10,80, 410, 200, BLUE);
+    char adcText[60];
+    sprintf(adcText, "Raw: %i -> %imV", (int)adcValue, (int)adcVoltage_mv);
+    lcdDrawString(fx16M, 30, 100, adcText, WHITE);
+
+    lcdDrawString(fx32M, 10, 30, "ADC-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testDAC() {    
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "DAC-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+
+    lcdDrawString(fx32M, 10, 100, "Todoooo", RED);
+    
+    lcdDrawString(fx24M, 30, 269, "BT1", WHITE);
+    lcdDrawString(fx24M, 150, 269, "BT2", WHITE);
+    lcdDrawString(fx24M, 270, 269, "BT3", WHITE);
+    lcdDrawString(fx24M, 390, 269, "BT4", WHITE);
+
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testTouch() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "Touch-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    if(ft6236_is_touched()) {
+        touchevent_t touchevent = ft6236_get_touch_event(true);
+        char touchtext[50];
+        lcdDrawPixel(360 + (touchevent.points[0].x/4), 80 + (touchevent.points[0].y/4), PURPLE);
+        sprintf(touchtext, "TouchP1 : x:%i - y:%i", touchevent.points[0].x, touchevent.points[0].y);
+        lcdDrawString(fx16M, 10, 90, touchtext, WHITE);
+        if(touchevent.touches > 1) {
+            lcdDrawPixel(360 + (touchevent.points[1].x/4), 80 + (touchevent.points[1].y/4), YELLOW);
+            sprintf(touchtext, "TouchP2 : x:%i - y:%i", touchevent.points[1].x, touchevent.points[1].y);
+            lcdDrawString(fx16M, 10, 110, touchtext, WHITE);
+        }
+    }
+    lcdDrawRect(360,80,479,159, RED);
+
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+#define ACC_BUFFER_SIZE 400
+void testAccSensor() {
+    static bool init = false;
+    static uint8_t accXBuffer[ACC_BUFFER_SIZE];
+    static uint8_t accYBuffer[ACC_BUFFER_SIZE];
+    static uint8_t accZBuffer[ACC_BUFFER_SIZE];
+    if(init == false) {
+        memset(accXBuffer, 0x00, sizeof(accXBuffer));
+        memset(accYBuffer, 0x00, sizeof(accYBuffer));
+        memset(accZBuffer, 0x00, sizeof(accZBuffer));
+        init = true;
+    }
+
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+
+    float x,y,z;
+    stk8321_get_motion_data(&x,&y,&z);
+
+    for(int i = ACC_BUFFER_SIZE-1; i > 0; i--) {
+        accXBuffer[i] = accXBuffer[i-1];
+        accYBuffer[i] = accYBuffer[i-1];
+        accZBuffer[i] = accZBuffer[i-1];
+    }
+    accXBuffer[0] = (uint8_t)(128.0 + (100.0*x));
+    accYBuffer[0] = (uint8_t)(128.0 + (100.0*y));
+    accZBuffer[0] = (uint8_t)(128.0 + (100.0*z));
+
+    lcdFillScreen(BLACK);
+
+    lcdDrawDataUInt8(10, 80, ACC_BUFFER_SIZE, 120, 0, 255, false, accXBuffer, RED);
+    lcdDrawDataUInt8(10, 80, ACC_BUFFER_SIZE, 120, 0, 255, false, accYBuffer, GREEN);
+    lcdDrawDataUInt8(10, 80, ACC_BUFFER_SIZE, 120, 0, 255, false, accZBuffer, BLUE);
+    
+    lcdDrawRect(10,80, 410, 200, BLUE);
+    char accText[60];
+    sprintf(accText, "X: %.2f - Y: %.2f - Z: %.2f", x,y,z);
+    lcdDrawString(fx16M, 30, 100, accText, WHITE);
+
+    lcdDrawString(fx32M, 10, 30, "ACCSensor-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testTemperature() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+
+    float temperature = tmp112_get_value();
+
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "Temperature-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+
+    char tempstring[60];
+    sprintf(tempstring, "Temperature: %.2f deg Celsius", temperature);
+    lcdDrawString(fx24M, 10, 100, tempstring, WHITE);
+    
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testRTC() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        rtc_set_date(14,SUNDAY, JULY, 2024);
+        rtc_set_time(18,15,00);
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "RTC-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+
+    uint8_t hour,min,sec,month,day,weekday;
+    uint16_t year;
+    rtc_get_time(&hour,&min, &sec);
+    rtc_get_date(&year,&month,&day,&weekday);
+    uint32_t unixtimestamp = rtc_get_unix_timestamp();
+
+    char mytext[60];
+    sprintf((char *)mytext, "Time: %02u:%02u:%02u", (unsigned int)hour, (unsigned int)min, (unsigned int)sec);
+    lcdDrawString(fx16M, 10, 90, &mytext[0], WHITE);
+    sprintf((char *)mytext, "Date: %02u:%02u:%04u", (unsigned int)day, (unsigned int)month, (unsigned int)year);
+    lcdDrawString(fx16M, 10, 110, &mytext[0], WHITE);
+    sprintf((char *)mytext, "Unix: %u", (unsigned int)unixtimestamp);
+    lcdDrawString(fx16M, 10, 130, &mytext[0], WHITE);
+    
+    lcdDrawString(fx24M, 10, 269, "Set Time", WHITE);
+    lcdDrawString(fx24M, 130, 269, "Set Date", WHITE);
+
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testFlash() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state++;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "Flash-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawString(fx32M, 10, 100, "Todoooo", RED);
+
+    lcdDrawString(fx24M, 30, 269, "BT1", WHITE);
+    lcdDrawString(fx24M, 150, 269, "BT2", WHITE);
+    lcdDrawString(fx24M, 270, 269, "BT3", WHITE);
+    lcdDrawString(fx24M, 390, 269, "BT4", WHITE);
+
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
+void testUSBSerial() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            state = STATE_TEST_BUTTON;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        
+    }
+    lcdFillScreen(BLACK);
+    lcdDrawString(fx32M, 10, 30, "USBSerial-Test", GREEN);
+    lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+    
+    lcdDrawString(fx32M, 10, 100, "Todoooo", RED);
+
+    lcdDrawString(fx24M, 30, 269, "BT1", WHITE);
+    lcdDrawString(fx24M, 150, 269, "BT2", WHITE);
+    lcdDrawString(fx24M, 270, 269, "BT3", WHITE);
+    lcdDrawString(fx24M, 390, 269, "BT4", WHITE);
+
+    lcdDrawRect(0, 219, 119, 319, BLUE);
+    lcdDrawRect(120, 219, 239, 319, BLUE);
+    lcdDrawRect(240, 219, 359, 319, BLUE);
+    lcdDrawRect(360, 219, 479, 319, BLUE);
+    
+    lcdUpdateVScreen();
+}
 
 
 
@@ -165,12 +599,6 @@ void testTask(void* p) {
     uint32_t updates = 0, lastupdates = 0;
     uint32_t time = 0, lasttime = 0;
     TickType_t t_updatetime = xTaskGetTickCount();
-    // static uint8_t pwmstate = 0;
-    // static uint8_t ledstate = 0x00;
-    // // static int32_t rotenc_value_last = 0;
-    // SemaphoreHandle_t sem_alarm;
-    // sem_alarm = xSemaphoreCreateBinary();
-    // eduboard_set_buzzer_volume(40);
     for(;;) {
         time = xTaskGetTickCount();
         if(time-lasttime >= 1000) {
@@ -178,171 +606,69 @@ void testTask(void* p) {
             lastupdates = updates;
             lasttime = time;
         }
+        updates++;
         switch(state) {
             case STATE_INIT:
-                rtc_set_date(14,SUNDAY, JULY, 2024);
-                rtc_set_time(06,29,00);
                 state = STATE_WAITFORMAINSCREEN;
             break;
             case STATE_WAITFORMAINSCREEN:
-                stateManager();
+                if(button_get_state(SW0, true) == SHORT_PRESSED) {
+                    state = STATE_TEST_BUTTON;
+                }
             break;
-            case STATE_MAINSCREEN:
-                readSensorValues();
-                stateManager();
-                drawMainScreen();
-                updates++;
+            case STATE_TEST_BUTTON:
+                testButtons();
+            break;
+            case STATE_TEST_LED:
+                testLED();
+            break;
+            case STATE_TEST_WS2812:
+                testWS2812();
+            break;
+            case STATE_TEST_BUZZER:
+                testBuzzer();
+            break;
+            case STATE_TEST_ROTARYENCODER:
+                testRotaryEncoder();
+            break;
+            case STATE_TEST_ADC:
+                testADC();
+            break;
+            case STATE_TEST_DAC:
+                testDAC();
+            break;
+            case STATE_TEST_TOUCH:
+                testTouch();
+            break;
+            case STATE_TEST_ACCSENSOR:
+                testAccSensor();
+            break;
+            case STATE_TEST_TEMPERATURE:
+                testTemperature();
+            break;
+            case STATE_TEST_RTC:
+                testRTC();
+            break;
+            case STATE_TEST_FLASH:
+                testFlash();
+            break;
+            case STATE_TEST_USBSERIAL:
+                testUSBSerial();
             break;
         }
-        // if(button_get_state(SW0, false) == SHORT_PRESSED) {
-        //     ESP_LOGI(TAG, "SW0 = Short:");
-        //     buzzer_start(1000, 100);
-        //     vTaskDelay(100/portTICK_PERIOD_MS);
-        //     buzzer_start(1500, 100);
-        //     vTaskDelay(100/portTICK_PERIOD_MS);
-        //     buzzer_start(2000, 100);
-        // }
-        // if(button_get_state(SW0, true) == LONG_PRESSED) {
-        //     ESP_LOGI(TAG, "SW0 = Long:");
-        //     uint8_t hour,min,sec;
-        //     rtc_get_time(&hour, &min, &sec);
-        //     min += 2;
-        //     rtc_set_alarm_time(RTC_ALARM_DEACTIVATED, min, RTC_ALARM_DEACTIVATED, RTC_ALARM_DEACTIVATED);
-        //     rtc_config_alarm(RTCALARM_ENABLED, sem_alarm);
-        //     ESP_LOGI(TAG, "RTC Alarm set to %02i:%02i:%02i", hour,min,sec);
-        // }
-        // if(button_get_state(SW1, false) == SHORT_PRESSED) {
-        //     ESP_LOGI(TAG, "SW1 = Short:");
-
-        // }
-        // if(button_get_state(SW1, true) == LONG_PRESSED) {
-        //     ESP_LOGI(TAG, "SW1 = Long:");
-        //     rtc_set_timer_time(10);
-        //     rtc_config_timer(RTCTIMER_ENABLED, NULL, RTCFREQ_1HZ);
-        //     ESP_LOGI(TAG, "RTC Alarm started for 10s");
-        // }
-        // if(button_get_state(SW2, false) == SHORT_PRESSED) {
-        //     ESP_LOGI(TAG, "SW2 = Short:");
-
-        // }
-        // if(button_get_state(SW2, true) == LONG_PRESSED) {
-        //     ESP_LOGI(TAG, "SW2 = Long:");
-
-        // }
-        // if(button_get_state(SW3, false) == SHORT_PRESSED) {
-        //     ESP_LOGI(TAG, "SW3 = Short:");
-        //     pwmstate++;
-        //     switch(pwmstate) {
-        //         case 1:
-        //             // eduboard_set_pwmled(10, 50, 100);
-        //             eduboard_set_ws2812(10, 50, 100);
-        //             break;
-        //         case 2:
-        //             // eduboard_set_pwmled(50, 100, 10);
-        //             eduboard_set_ws2812(50, 100, 10);
-        //             break;
-        //         case 3:
-        //             // eduboard_set_pwmled(100, 10, 50);
-        //             eduboard_set_ws2812(100, 10, 50);
-        //             break;
-        //         case 4:
-        //             // eduboard_set_pwmled(100, 100, 100);
-        //             eduboard_set_ws2812(100, 100, 100);
-        //             break;
-        //         case 5:
-        //             // eduboard_set_pwmled(0, 0, 0);
-        //             eduboard_set_ws2812(0, 0, 0);
-        //             pwmstate = 0;
-        //             break;
-        //     }
-        // }
-        // if(button_get_state(SW3, true) == LONG_PRESSED) {
-        //     ESP_LOGI(TAG, "SW3 = Long:");
-        // }
-        // if(rotary_encoder_button_get_state(false) == SHORT_PRESSED) {
-        //     ESP_LOGI(TAG, "RotEnc Button Short Pressed");
-        // }
-        // if(rotary_encoder_button_get_state(true) == LONG_PRESSED) {
-        //     ESP_LOGI(TAG, "RotEnc Button Long Pressed");
-        //     rotary_encoder_get_rotation(true);
-        // }
-        // // int32_t rotenc_value = rotary_encoder_get_rotation(false);
-        // // if(rotenc_value != rotenc_value_last) {
-        // //     ESP_LOGI(TAG, "Rotation: %i", (int)(rotenc_value));
-        // // }
-        // // rotenc_value_last = rotenc_value;
-        // // if(ft6236_is_touched()) {
-        // //     touchevent_t touchevent = ft6236_get_touch_event(true);
-        // //     ESP_LOGI(TAG, "Touched");
-        // //     ESP_LOGI(TAG, "touches: %i", touchevent.touches);
-        // //     ESP_LOGI(TAG, "P1: %i:%i", touchevent.points[0].x, touchevent.points[0].y);
-        // //     if(touchevent.touches > 1) {
-        // //         ESP_LOGI(TAG, "P2: %i:%i", touchevent.points[1].x, touchevent.points[1].y);
-        // //     }
-        // // }
-        // for(int i = 0; i< 8; i++) {
-        //     if(ledstate == i) {
-        //         eduboard_set_led(i, 1);
-        //     } else {
-        //         eduboard_set_led(i, 0);
-        //     }
-        // }
-        // ledstate++;
-        // if(ledstate == 8) {
-        //     ledstate = 0;
-        // }
-        // if(xSemaphoreTake(sem_alarm, 0) == pdTRUE) {
-        //     ESP_LOGI(TAG, "Alarm occured!");
-        //     buzzer_start(2000, 100);
-        //     vTaskDelay(200/portTICK_PERIOD_MS);
-        //     buzzer_start(2000, 100);
-        //     vTaskDelay(200/portTICK_PERIOD_MS);
-        //     buzzer_start(2000, 100);
-        //     vTaskDelay(200/portTICK_PERIOD_MS);
-        //     buzzer_start(2000, 100);
-        //     rtc_config_alarm(RTCALARM_DISABLED, NULL);
-        // }
-        // if(rtc_timer_elapsed()) {
-        //     ESP_LOGI(TAG, "Timer elapsed!");
-        //     buzzer_start(4000, 50);
-        //     vTaskDelay(100/portTICK_PERIOD_MS);
-        //     buzzer_start(2000, 50);
-        //     vTaskDelay(100/portTICK_PERIOD_MS);
-        //     buzzer_start(4000, 50);
-        //     rtc_config_timer(RTCALARM_DISABLED, NULL, 0);
-        // }
-        
         vTaskDelayUntil(&t_updatetime, UPDATETIME_MS/portTICK_PERIOD_MS);
     }
 }
 
 void app_main()
 {
-    //vTaskDelay(5000/portTICK_PERIOD_MS);
     // initMemon();
     // memon_enable();
 
     eduboard2_init();
-    // rtc_set_date(14,SUNDAY, JULY, 2024);
-    // rtc_set_time(06,29,00);
-
+    
     xTaskCreate(testTask, "testTask", 20*2048, NULL, 10, NULL);
     for(;;) {
-        // ESP_LOGW(TAG, "-------------------------------------------------------------------");
-        // ESP_LOGI(TAG, "Temp: %.2f°C", tmp112_get_value());
-        // ESP_LOGI(TAG, "ADC - raw: %u - voltage: %umv", (unsigned int)adc_get_raw(), (unsigned int)adc_get_voltage_mv());
-        // float x,y,z;
-        // stk8321_get_motion_data(&x,&y,&z);
-        // ESP_LOGI(TAG, "ACC: x:%.2f - y:%.2f - z:%.2f", x, y, z);
-        // uint8_t hour,min,sec;
-        // uint16_t year;
-        // uint8_t month,day,weekday;
-        // rtc_get_time(&hour,&min, &sec);
-        // rtc_get_date(&year,&month,&day,&weekday);
-        // ESP_LOGI(TAG, "Time: %02i:%02i:%02i", hour,min,sec);
-        // ESP_LOGI(TAG, "Date: %02i.%02i.%04i - Weekday: %i", day,month,year,weekday);
-        // ESP_LOGI(TAG, "Unix Timestamp: %u", (int)(rtc_get_unix_timestamp()));
-        // flash_checkConnection();
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }
