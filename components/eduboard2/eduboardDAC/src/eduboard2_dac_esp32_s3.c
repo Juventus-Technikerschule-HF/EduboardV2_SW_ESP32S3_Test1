@@ -1,6 +1,7 @@
 #include "../../eduboard2.h"
 #include "../eduboard2_dac.h"
 #include "driver/gpio.h"
+#include "esp_timer.h"
 
 /*************************************************************************
 *               Driver for SPI DAC MCP4802-E/SN
@@ -17,6 +18,9 @@
 #define DAC_CONFIG_OUTPUT_ON    0x1000
 #define DAC_CONFIG_OUTPUT_OFF   0x0000
 
+#ifdef CONFIG_DAC_STREAMING
+QueueHandle_t dacstreamqueue;
+#endif
 
 
 typedef struct {
@@ -47,6 +51,7 @@ void dac_setValue(dac_num_t dacNum, uint8_t value) {
 }
 
 void dac_update() {
+#ifndef CONFIG_DAC_STREAMING
     uint16_t dataA = DAC_A_BASE;
     uint16_t dataB = DAC_B_BASE;
     xSemaphoreTake(dacLock, portMAX_DELAY);
@@ -67,7 +72,10 @@ void dac_update() {
     gpio_set_level(GPIO_SD_LDAC_CS, 0);
     vTaskDelay(1);
     gpio_set_level(GPIO_SD_LDAC_CS, 1);
+#endif
 }
+
+static void periodic_dac_callback(void* arg);
 
 void eduboard_init_dac() {
     ESP_LOGI(TAG, "Init DAC...");
@@ -86,6 +94,17 @@ void eduboard_init_dac() {
     io_conf.pin_bit_mask |= (1ULL<<GPIO_SD_LDAC_CS);
     gpio_config(&io_conf);
     gpio_set_level(GPIO_SD_LDAC_CS, 1);
-    
+#ifdef CONFIG_DAC_STREAMING
+    const esp_timer_create_args_t periodic_timer_args = {
+        .callback = &periodic_dac_callback,
+        .name = "periodic_dac"
+    };
+    esp_timer_handle_t periodic_dac_timer;
+    ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_dac_timer));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_dac_timer, 500000));
+    dacstreamqueue = xQueueCreate(2, CONFIG_DAC_STREAMING_BUFFERSIZE);
+    gpspi_init_nonblocking(&dev_dac_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_DAC_CS, DAC_FREQ_MHZ, false);
+#else
     gpspi_init(&dev_dac_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_DAC_CS, DAC_FREQ_MHZ, false);
+#endif
 }

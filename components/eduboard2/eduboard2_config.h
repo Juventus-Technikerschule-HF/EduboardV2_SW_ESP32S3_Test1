@@ -39,9 +39,15 @@
 
 /*DAC Output Config*/
 #define CONFIG_ENABLE_DAC
+#ifdef CONFIG_ENABLE_DAC
+    #define CONFIG_DAC_STREAMING
+    #ifdef CONFIG_DAC_STREAMING
+        #define CONFIG_DAC_STREAMING_BUFFERSIZE 256
+    #endif
+#endif
 
 /*LCD Config*/
-#define CONFIG_ENABLE_LCD
+// #define CONFIG_ENABLE_LCD
 #ifdef CONFIG_ENABLE_LCD
     // #define CONFIG_LCD_ST7789
     #define CONFIG_LCD_ILI9488
@@ -52,6 +58,8 @@
 
     // #define CONFIG_USE_VSCREEN
     #define CONFIG_USE_DIFFUPDATE
+
+    #define CONFIG_ENABLE_TOUCH_FT6236
     
     // #define CONFIG_LCD_TEST    
 #endif
@@ -59,8 +67,6 @@
 #define CONFIG_ENABLE_SENSOR_TMP112
 
 #define CONFIG_ENABLE_SENSOR_STK8321
-
-#define CONFIG_ENABLE_TOUCH_FT6236
 
 #define CONFIG_ENABLE_SPIFFS
 

@@ -159,13 +159,22 @@
     #ifndef SCREEN_ROTATION
         #define SCREEN_ROTATION 0
     #endif
+    #ifndef SCREEN_MAX_X
+        #define SCREEN_MAX_X 480
+        #define SCREEN_MAX_Y 320
+    #endif
+#endif
+
+#ifndef SCREEN_ROTATION
+    #define SCREEN_ROTATION 0
+#endif
+#ifndef SCREEN_MAX_X
+    #define SCREEN_MAX_X 10
+    #define SCREEN_MAX_Y 10
 #endif
 
 #ifdef CONFIG_ENABLE_FLASH
     #define CONFIG_ENABLE_LITTLEFS
-    #define CONFIG_ENABLE_SPI
-#endif
-#ifdef CONFIG_ENABLE_DAC
     #define CONFIG_ENABLE_SPI
 #endif
 #ifdef CONFIG_ENABLE_DAC
@@ -175,6 +184,12 @@
     #ifdef CONFIG_ENABLE_SDCARD
         #error "You cant enable SDCARD and DAC at the same time. LDAC and SDCS are shared"
     #endif
+    #ifdef CONFIG_DAC_STREAMING
+        #ifdef CONFIG_ENABLE_SPI
+            #error "Something else is already using Spi. DAC Double Buffering is only supported as the only SPI device on the Bus"
+        #endif
+    #endif
+    #define CONFIG_ENABLE_SPI
 #endif
 
 #define EDUBOARD2_HWVERSION 2.2
