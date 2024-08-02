@@ -7,12 +7,29 @@
 
 #define UPDATETIME_MS 100
 
+uint8_t sinedata[] = {0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,
+                        0x7F,0x98,0xB0,0xC6,0xD9,0xE9,0xF4,0xFC,0xFE,0xFC,0xF4,0xE9,0xD9,0xC6,0xB0,0x98,
+                        0x7F,0x66,0x4E,0x38,0x25,0x15,0xA,0x2,0x0,0x2,0xA,0x15,0x25,0x38,0x4E,0x66,};
+
 enum state {
     STATE_INIT,
     STATE_WAITFORMAINSCREEN,
     // STATE_TEST_BUTTON,
     // STATE_TEST_LED,
-    // STATE_TEST_WS2812,
+    STATE_TEST_WS2812,
     // STATE_TEST_BUZZER,
     // STATE_TEST_ROTARYENCODER,
     // STATE_TEST_ADC,
@@ -107,42 +124,43 @@ uint8_t state = STATE_INIT;
     
 //     lcdUpdateVScreen();
 // }
-// void testWS2812() {
-//     for(int i = 0; i < 4; i++) {
-//         if(button_get_state(i, false) == LONG_PRESSED) {
-//             ws2812_set(0x00, 0x00, 0x00);
-//             buzzer_set_volume(10);
-//             state++;
-//         }
-//     }
-//     if(button_get_state(SW0, true) == SHORT_PRESSED) {
-//         ws2812_set(0xFF, 0x00, 0x00);
-//     }
-//     if(button_get_state(SW1, true) == SHORT_PRESSED) {
-//         ws2812_set(0x00, 0xFF, 0x00);
-//     }
-//     if(button_get_state(SW2, true) == SHORT_PRESSED) {
-//         ws2812_set(0x00, 0x00, 0xFF);
-//     }
-//     if(button_get_state(SW3, true) == SHORT_PRESSED) {
-//         ws2812_set(0xFF, 0x00, 0xFF);
-//     }
-//     lcdFillScreen(BLACK);
-//     lcdDrawString(fx32M, 10, 30, "WS2812-Test", GREEN);
-//     lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
+void testWS2812() {
+    for(int i = 0; i < 4; i++) {
+        if(button_get_state(i, false) == LONG_PRESSED) {
+            ws2812_set(0x00, 0x00, 0x00);
+            buzzer_set_volume(10);
+            // state++;
+            state = STATE_TEST_DAC;
+        }
+    }
+    if(button_get_state(SW0, true) == SHORT_PRESSED) {
+        ws2812_set(0xFF, 0x00, 0x00);
+    }
+    if(button_get_state(SW1, true) == SHORT_PRESSED) {
+        ws2812_set(0x00, 0xFF, 0x00);
+    }
+    if(button_get_state(SW2, true) == SHORT_PRESSED) {
+        ws2812_set(0x00, 0x00, 0xFF);
+    }
+    if(button_get_state(SW3, true) == SHORT_PRESSED) {
+        ws2812_set(0xFF, 0x00, 0xFF);
+    }
+    // lcdFillScreen(BLACK);
+    // lcdDrawString(fx32M, 10, 30, "WS2812-Test", GREEN);
+    // lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
     
-//     lcdDrawString(fx24M, 30, 269, "RED", WHITE);
-//     lcdDrawString(fx24M, 140, 269, "GREEN", WHITE);
-//     lcdDrawString(fx24M, 265, 269, "BLUE", WHITE);
-//     lcdDrawString(fx24M, 380, 269, "PURPLE", WHITE);
+    // lcdDrawString(fx24M, 30, 269, "RED", WHITE);
+    // lcdDrawString(fx24M, 140, 269, "GREEN", WHITE);
+    // lcdDrawString(fx24M, 265, 269, "BLUE", WHITE);
+    // lcdDrawString(fx24M, 380, 269, "PURPLE", WHITE);
 
-//     lcdDrawRect(0, 219, 119, 319, BLUE);
-//     lcdDrawRect(120, 219, 239, 319, BLUE);
-//     lcdDrawRect(240, 219, 359, 319, BLUE);
-//     lcdDrawRect(360, 219, 479, 319, BLUE);
+    // lcdDrawRect(0, 219, 119, 319, BLUE);
+    // lcdDrawRect(120, 219, 239, 319, BLUE);
+    // lcdDrawRect(240, 219, 359, 319, BLUE);
+    // lcdDrawRect(360, 219, 479, 319, BLUE);
     
-//     lcdUpdateVScreen();
-// }
+    // lcdUpdateVScreen();
+}
 // void testBuzzer() {
 //     for(int i = 0; i < 4; i++) {
 //         if(button_get_state(i, false) == LONG_PRESSED) {
@@ -307,7 +325,8 @@ void testDAC() {
             dac_setConfig(DAC_B, DAC_GAIN_1, false);
             dac_update();
             initDone = false;
-            state++;
+            // state++;
+            state = STATE_TEST_WS2812;
         }
     }
     if(button_get_state(SW0, true) == SHORT_PRESSED) {
@@ -326,6 +345,7 @@ void testDAC() {
     if(button_get_state(SW3, true) == SHORT_PRESSED) {
         
     }
+    dac_loadStreamData(&sinedata, &sinedata);
     // lcdFillScreen(BLACK);
     // lcdDrawString(fx32M, 10, 30, "DAC-Test", GREEN);
     // lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);
@@ -625,7 +645,7 @@ void testTask(void* p) {
             case STATE_WAITFORMAINSCREEN:
                 if(button_get_state(SW0, true) == SHORT_PRESSED) {
                     // state = STATE_TEST_BUTTON;
-                    state = STATE_TEST_DAC;
+                    state = STATE_TEST_WS2812;
                 }
             break;
             // case STATE_TEST_BUTTON:
@@ -634,9 +654,9 @@ void testTask(void* p) {
             // case STATE_TEST_LED:
             //     testLED();
             // break;
-            // case STATE_TEST_WS2812:
-            //     testWS2812();
-            // break;
+            case STATE_TEST_WS2812:
+                testWS2812();
+            break;
             // case STATE_TEST_BUZZER:
             //     testBuzzer();
             // break;

@@ -12,4 +12,5 @@ typedef enum {
 void dac_setConfig(dac_num_t dacNum, dac_gain_t gain, bool enabled);
 void dac_setValue(dac_num_t dacNum, uint8_t value);
 void dac_update();
+void dac_loadStreamData(uint8_t* dataA, uint8_t* dataB);
 void eduboard_init_dac();
