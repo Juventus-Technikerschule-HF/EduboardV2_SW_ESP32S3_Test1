@@ -313,22 +313,22 @@ void testWS2812() {
 // }
 
 void dacCallbackFunction() {
-    dac_loadStreamData(sinedata, sinedata);
+    dac_load_stream_data(sinedata, sinedata);
 }
 void testDAC() {    
     static bool initDone = false;
     if(initDone == false) {
-        dac_setConfig(DAC_A, DAC_GAIN_1, true);
-        dac_setConfig(DAC_B, DAC_GAIN_1, true);
+        dac_set_config(DAC_A, DAC_GAIN_1, true);
+        dac_set_config(DAC_B, DAC_GAIN_1, true);
         dac_update();
         dac_set_stream_callback(&dacCallbackFunction);
-        dac_loadStreamData(sinedata, sinedata);
+        dac_load_stream_data(sinedata, sinedata);
         initDone = true;
     }
     for(int i = 0; i < 4; i++) {
         if(button_get_state(i, false) == LONG_PRESSED) {
-            dac_setConfig(DAC_A, DAC_GAIN_1, false);
-            dac_setConfig(DAC_B, DAC_GAIN_1, false);
+            dac_set_config(DAC_A, DAC_GAIN_1, false);
+            dac_set_config(DAC_B, DAC_GAIN_1, false);
             dac_set_stream_callback(NULL);
             dac_update();
             initDone = false;
@@ -337,13 +337,13 @@ void testDAC() {
         }
     }
     if(button_get_state(SW0, true) == SHORT_PRESSED) {
-        dac_setValue(DAC_A, 0x80);
-        dac_setValue(DAC_B, 0x40);
+        dac_set_value(DAC_A, 0x80);
+        dac_set_value(DAC_B, 0x40);
         dac_update();
     }
     if(button_get_state(SW1, true) == SHORT_PRESSED) {
-        dac_setValue(DAC_A, 0x40);
-        dac_setValue(DAC_B, 0x80);
+        dac_set_value(DAC_A, 0x40);
+        dac_set_value(DAC_B, 0x80);
         dac_update();
     }
     if(button_get_state(SW2, true) == SHORT_PRESSED) {

@@ -9,9 +9,9 @@ typedef enum {
     DAC_B = 1,
 } dac_num_t;
 
-void dac_setConfig(dac_num_t dacNum, dac_gain_t gain, bool enabled);
-void dac_setValue(dac_num_t dacNum, uint8_t value);
+void dac_set_config(dac_num_t dacNum, dac_gain_t gain, bool enabled);
+void dac_set_value(dac_num_t dacNum, uint8_t value);
 void dac_update();
-void dac_loadStreamData(uint8_t* dataA, uint8_t* dataB);
+void dac_load_stream_data(uint8_t* dataA, uint8_t* dataB);
 void dac_set_stream_callback(void* stream_callback_function);
 void eduboard_init_dac();

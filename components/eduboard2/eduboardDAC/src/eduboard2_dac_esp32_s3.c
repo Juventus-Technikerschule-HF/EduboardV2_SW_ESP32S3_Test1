@@ -49,14 +49,14 @@ dac_data_t dacData[2];
 
 spi_device_handle_t dev_dac_spi;
 
-void dac_setConfig(dac_num_t dacNum, dac_gain_t gain, bool enabled) {
+void dac_set_config(dac_num_t dacNum, dac_gain_t gain, bool enabled) {
     xSemaphoreTake(dacLock, portMAX_DELAY);
     dacData[dacNum].gain = gain;
     dacData[dacNum].enabled = enabled;
     xSemaphoreGive(dacLock);
 }
 
-void dac_setValue(dac_num_t dacNum, uint8_t value) {
+void dac_set_value(dac_num_t dacNum, uint8_t value) {
 #ifndef CONFIG_DAC_STREAMING
     xSemaphoreTake(dacLock, portMAX_DELAY);
     dacData[dacNum].value = value;
@@ -88,7 +88,7 @@ void dac_update() {
     gpio_set_level(GPIO_SD_LDAC_CS, 1);
 #endif
 }
-void dac_loadStreamData(uint8_t* dataA, uint8_t* dataB) {
+void dac_load_stream_data(uint8_t* dataA, uint8_t* dataB) {
 #ifdef CONFIG_DAC_STREAMING
     dac_stream_data_t data;
     for(int i = 0; i < CONFIG_DAC_STREAMING_BUFFERSIZE; i++) {
