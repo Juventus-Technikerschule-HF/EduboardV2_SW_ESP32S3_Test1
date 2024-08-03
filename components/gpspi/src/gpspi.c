@@ -121,7 +121,7 @@ bool gpspi_write_data_nonblocking(spi_device_handle_t* handle, uint8_t* data, ui
 	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
 	SPITransaction.length = len * 8;
 	SPITransaction.tx_buffer = data;
-	ret = spi_device_transmit( *handle, &SPITransaction );
+	ret = spi_device_polling_transmit(*handle, &SPITransaction);
 	assert(ret==ESP_OK); 
 	return true;
 }

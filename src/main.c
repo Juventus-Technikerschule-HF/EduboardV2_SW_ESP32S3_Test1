@@ -311,18 +311,25 @@ void testWS2812() {
     
 //     lcdUpdateVScreen();
 // }
+
+void dacCallbackFunction() {
+    dac_loadStreamData(sinedata, sinedata);
+}
 void testDAC() {    
     static bool initDone = false;
     if(initDone == false) {
         dac_setConfig(DAC_A, DAC_GAIN_1, true);
         dac_setConfig(DAC_B, DAC_GAIN_1, true);
         dac_update();
+        dac_set_stream_callback(&dacCallbackFunction);
+        dac_loadStreamData(sinedata, sinedata);
         initDone = true;
     }
     for(int i = 0; i < 4; i++) {
         if(button_get_state(i, false) == LONG_PRESSED) {
             dac_setConfig(DAC_A, DAC_GAIN_1, false);
             dac_setConfig(DAC_B, DAC_GAIN_1, false);
+            dac_set_stream_callback(NULL);
             dac_update();
             initDone = false;
             // state++;
@@ -345,7 +352,7 @@ void testDAC() {
     if(button_get_state(SW3, true) == SHORT_PRESSED) {
         
     }
-    dac_loadStreamData(&sinedata, &sinedata);
+    
     // lcdFillScreen(BLACK);
     // lcdDrawString(fx32M, 10, 30, "DAC-Test", GREEN);
     // lcdDrawString(fx24M, 10, 60, "Long press any Button for next Test", GREEN);

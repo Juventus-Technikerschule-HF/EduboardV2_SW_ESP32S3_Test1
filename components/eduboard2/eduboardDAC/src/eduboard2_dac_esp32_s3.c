@@ -23,13 +23,13 @@ typedef struct {
     uint8_t dacA[CONFIG_DAC_STREAMING_BUFFERSIZE];
     uint8_t dacB[CONFIG_DAC_STREAMING_BUFFERSIZE];
 } dac_stream_data_t;
+void (*streamCallbackFunction)() = NULL;
 uint32_t dacPos = 0;
 uint8_t selectedBuffer = 0;
 dac_stream_data_t dacBufferA, dacBufferB;
 EventGroupHandle_t dacStreamControl;
 #define EG_STREAMCONTROL_BUFFERA_EMPTY  1 << 0
 #define EG_STREAMCONTROL_BUFFERB_EMPTY  1 << 1
-
 QueueHandle_t dacstreamqueue;
 SemaphoreHandle_t dacBufferSwitchSignal;
 #endif
@@ -57,9 +57,11 @@ void dac_setConfig(dac_num_t dacNum, dac_gain_t gain, bool enabled) {
 }
 
 void dac_setValue(dac_num_t dacNum, uint8_t value) {
+#ifndef CONFIG_DAC_STREAMING
     xSemaphoreTake(dacLock, portMAX_DELAY);
     dacData[dacNum].value = value;
     xSemaphoreGive(dacLock);
+#endif
 }
 
 void dac_update() {
@@ -87,16 +89,21 @@ void dac_update() {
 #endif
 }
 void dac_loadStreamData(uint8_t* dataA, uint8_t* dataB) {
+#ifdef CONFIG_DAC_STREAMING
     dac_stream_data_t data;
     for(int i = 0; i < CONFIG_DAC_STREAMING_BUFFERSIZE; i++) {
         data.dacA[i] = dataA[i];
         data.dacB[i] = dataB[i];
     }
     xQueueSend(dacstreamqueue, &data, portMAX_DELAY);
+#else
+    printf("DAC Streaming must be enabled for this Function to work\n");
+#endif
 }
-
+#ifdef CONFIG_DAC_STREAMING
 static void periodic_dac_callback(void* arg) {
     gpio_set_level(GPIO_SD_LDAC_CS, 0);
+    gpio_set_level(GPIO_SD_LDAC_CS, 1); 
     uint8_t valueA, valueB;
     if(selectedBuffer == 0) {
         valueA = dacBufferA.dacA[dacPos];
@@ -115,23 +122,12 @@ static void periodic_dac_callback(void* arg) {
         }
         xSemaphoreGiveFromISR(dacBufferSwitchSignal, NULL);
         dacPos = 0;
-    } 
-    uint16_t dataA = DAC_A_BASE;
-    uint16_t dataB = DAC_B_BASE;
-    if(dacData[DAC_A].enabled) dataA |= DAC_CONFIG_OUTPUT_ON;
-    if(dacData[DAC_B].enabled) dataB |= DAC_CONFIG_OUTPUT_ON;
-    if(dacData[DAC_A].gain) dataA |= DAC_CONFIG_GAIN_1;
-    if(dacData[DAC_B].gain) dataB |= DAC_CONFIG_GAIN_1;
-    dataA |= ((valueA & 0x00FF)<<4);
-    dataB |= ((valueB & 0x00FF)<<4);
-    gpio_set_level(GPIO_SD_LDAC_CS, 1);
-    uint8_t data[2];
-    data[0] = dataA >> 8;
-    data[1] = dataA & 0xFF;
-    gpspi_write_data_nonblocking(&dev_dac_spi, data, 2);
-    data[0] = dataB >> 8;
-    data[1] = dataB & 0xFF;
-    gpspi_write_data_nonblocking(&dev_dac_spi, data, 2);
+    }
+    uint8_t dataA[2] = {(0x00 | (dacData[DAC_A].enabled ? (DAC_CONFIG_OUTPUT_ON>>8) : 0) | (dacData[DAC_A].gain ? (DAC_CONFIG_GAIN_1>>8) : 0) | (valueA >> 4)), valueA << 4};
+    uint8_t dataB[2] = {(0x80 | (dacData[DAC_A].enabled ? (DAC_CONFIG_OUTPUT_ON>>8) : 0) | (dacData[DAC_A].gain ? (DAC_CONFIG_GAIN_1>>8) : 0) | (valueB >> 4)), valueB << 4};
+    gpspi_write_data_nonblocking(&dev_dac_spi, dataA, 2);
+    gpspi_write_data_nonblocking(&dev_dac_spi, dataB, 2);
+    
 }
 
 void dac_bufferManager(void* param) {
@@ -141,8 +137,7 @@ void dac_bufferManager(void* param) {
     };
     esp_timer_handle_t periodic_dac_timer;
     ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_dac_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_dac_timer, 100));
-    vTaskDelay(1000);
+    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_dac_timer, DAC_STREAM_SAMPLERATE));
     for(;;) {
         xSemaphoreTake(dacBufferSwitchSignal, portMAX_DELAY);
         dac_stream_data_t data;
@@ -161,11 +156,17 @@ void dac_bufferManager(void* param) {
                 }
                 xEventGroupClearBits(dacStreamControl, EG_STREAMCONTROL_BUFFERB_EMPTY);
             }
+            if(streamCallbackFunction != NULL) {
+                (*streamCallbackFunction)();
+            }
         }
     }
 }
+#endif
 
-
+void dac_set_stream_callback(void* stream_callback_function) {
+    streamCallbackFunction = stream_callback_function;
+}
 
 void eduboard_init_dac() {
     ESP_LOGI(TAG, "Init DAC...");
@@ -188,7 +189,7 @@ void eduboard_init_dac() {
     dacstreamqueue = xQueueCreate(2, sizeof(dac_stream_data_t));
     dacBufferSwitchSignal = xSemaphoreCreateBinary();
     dacStreamControl = xEventGroupCreate();
-    gpspi_init_nonblocking(&dev_dac_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_DAC_CS, DAC_FREQ_MHZ, false);
+    gpspi_init_nonblocking(&dev_dac_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_DAC_CS, DAC_FREQ_MHZ, true);
     xTaskCreate(dac_bufferManager, "dac_bufferManagerTask", 2048, NULL, 10, NULL);
 #else
     gpspi_init(&dev_dac_spi, GPIO_MOSI, GPIO_MISO, GPIO_SCK, GPIO_FLASH_DAC_CS, DAC_FREQ_MHZ, false);

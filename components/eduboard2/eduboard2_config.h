@@ -43,6 +43,13 @@
     #define CONFIG_DAC_STREAMING
     #ifdef CONFIG_DAC_STREAMING
         #define CONFIG_DAC_STREAMING_BUFFERSIZE 256
+        // #define DAC_STREAM_SAMPLERATE 50
+        #define DAC_STREAM_SAMPLERATE 60
+        // #define DAC_STREAM_SAMPLERATE 100
+        // #define DAC_STREAM_SAMPLERATE 120
+        // #define DAC_STREAM_SAMPLERATE 200
+        // #define DAC_STREAM_SAMPLERATE 240
+        // #define DAC_STREAM_SAMPLERATE 300
     #endif
 #endif
 

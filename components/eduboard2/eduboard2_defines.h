@@ -189,7 +189,14 @@
             #error "Something else is already using Spi. DAC Double Buffering is only supported as the only SPI device on the Bus"
         #endif
     #endif
-    #define CONFIG_ENABLE_SPI
+    #define CONFIG_ENABLE_SPI    
+    #ifndef DAC_STREAM_SAMPLERATE
+        #define DAC_STREAM_SAMPLERATE 100
+    #else
+        #if DAC_STREAM_SAMPLERATE < 50
+            #error "DAC_STREAM_SAMPLERATE must be 50us at minimum"
+        #endif
+    #endif
 #endif
 
 #define EDUBOARD2_HWVERSION 2.2
