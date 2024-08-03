@@ -40,7 +40,7 @@
 /*DAC Output Config*/
 #define CONFIG_ENABLE_DAC
 #ifdef CONFIG_ENABLE_DAC
-    #define CONFIG_DAC_STREAMING
+    // #define CONFIG_DAC_STREAMING
     #ifdef CONFIG_DAC_STREAMING
         #define CONFIG_DAC_STREAMING_BUFFERSIZE 256
         // #define DAC_STREAM_SAMPLERATE 50
@@ -54,7 +54,7 @@
 #endif
 
 /*LCD Config*/
-// #define CONFIG_ENABLE_LCD
+#define CONFIG_ENABLE_LCD
 #ifdef CONFIG_ENABLE_LCD
     // #define CONFIG_LCD_ST7789
     #define CONFIG_LCD_ILI9488
