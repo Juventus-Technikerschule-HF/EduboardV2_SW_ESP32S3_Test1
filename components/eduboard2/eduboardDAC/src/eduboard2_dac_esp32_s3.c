@@ -165,7 +165,9 @@ void dac_bufferManager(void* param) {
 #endif
 
 void dac_set_stream_callback(void* stream_callback_function) {
+#ifdef CONFIG_DAC_STREAMING
     streamCallbackFunction = stream_callback_function;
+#endif
 }
 
 void eduboard_init_dac() {
